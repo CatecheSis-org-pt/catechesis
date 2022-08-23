@@ -103,6 +103,7 @@ So, start by [installing Docker](https://www.docker.com/get-started/) in your de
 
 - As you develop and change source files in your computer, changes are immediately reflected inside the docker containers (due to bind volumes), so you can see them immediately take effect on the browser.
 
+- Follow the steps in [doc/Compiling_user_manuals.md](doc/Compiling_user_manuals.md) to configure the git submodule that makes the user manuals also available in this repo.
 
 ----
 
