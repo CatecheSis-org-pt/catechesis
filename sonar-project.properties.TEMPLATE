@@ -1,0 +1,18 @@
+# must be unique in a given SonarQube instance
+sonar.projectKey=catechesis
+sonar.host.url=http://localhost:9000
+sonar.login=<YOUR_CREDENTIALS>
+
+# --- optional properties ---
+
+# defaults to project key
+sonar.projectName=catechesis
+# defaults to 'not provided'
+sonar.projectVersion=1.0
+ 
+# Path is relative to the sonar-project.properties file. Defaults to .
+sonar.sources=src,database,catechesis_data
+sonar.exclusions=src/authentication/securimage/**,src/authentication/ulogin/**,src/core/document_generators/classes/**,src/core/document_generators/libraries/**,src/css/**,src/font-awesome/**, src/js/**, src/webcamjs-master/**
+ 
+# Encoding of the source code. Default is default system encoding
+sonar.sourceEncoding=UTF-8

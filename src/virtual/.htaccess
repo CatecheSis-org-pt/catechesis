@@ -1,0 +1,15 @@
+
+RewriteOptions inherit
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^virtual\.catequesecovadapiedade\.pt$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.virtual\.catequesecovadapiedade\.pt$
+RewriteRule ^/?$ "https\:\/\/catequesecovadapiedade\.pt\/virtual\/" [R=301,L]
+
+#Comment | Force all URLs to https WITHOUT www
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://catequesecovadapiedade.pt/virtual/$1 [R,L]
+
+#Comment | Force all URLs to https WITH www
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://www.catequesecovadapiedade.pt/virtual/$1 [R,L]

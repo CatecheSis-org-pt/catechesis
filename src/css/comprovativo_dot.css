@@ -1,0 +1,21 @@
+.badge-green 
+{
+   position:relative;
+}
+
+.badge-green[data-badge]:after 
+{
+   content: attr(data-badge);
+   position: absolute;
+   bottom: 0px;
+   right: -1px;
+   font-size: .7em;
+   background: green !important;
+   color: white !important;
+   width: 8px;
+   height: 8px;
+   text-align: center;
+   line-height: 18px;
+   border-radius: 50%;
+   box-shadow: 0 0 2px #fff !important;
+}

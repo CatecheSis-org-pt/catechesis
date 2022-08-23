@@ -1,0 +1,7 @@
+src/core/config/catechesis_config.inc.template.php
+src/authentication/ulogin/config/main.inc.php
+src/authentication/ulogin/config/pdo.inc.php
+src/authentication/securimage/securimage.php
+catechesis_data/config/catechesis_config.shadow.template.php
+catechesis_data/photos/parish/index.jpg
+catechesis_data/photos/parish/parish_logo.png

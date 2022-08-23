@@ -1,0 +1,181 @@
+body
+{
+    height: 100%;
+    background-color: rgb(20, 85, 148);
+    background-image: url('../img/LoginPage_Background.svg');
+    background-size:100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    background-size: cover;
+    display:flex;
+}
+
+
+h1
+{
+    font-family: Nexa, sans-serif;
+    font-weight: bold;
+    color: #008fcf;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+h2
+{
+    font-family: Nexa, sans-serif;
+    font-size: medium;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+
+#biblic_citation
+{
+    font-family: Petemoss, serif;
+    font-size: xx-large;
+    line-height: 1em;
+}
+
+#biblic_reference
+{
+    font-family: Nexa, sans-serif;
+    font-size: small;
+}
+
+
+#left-text
+{
+    background-color: #008fcf;
+    color: white;
+    text-align: center;
+}
+
+
+#right-form
+{
+    padding: 20px;
+    background-color: white;
+}
+
+.limiter
+{
+    margin: 0 auto;
+}
+
+@media (min-device-width : 768px)
+{
+    .limiter
+    {
+        width: 70%;
+    }
+}
+
+.container-login
+{
+    width: 100%;
+    min-height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.wrap-login
+{
+    background: #fff;
+    overflow: hidden;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+
+
+#login_box
+{
+    margin: auto;
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: white;
+}
+
+
+
+.input_box
+{
+    width: 100%;
+    position: relative;
+    border-bottom: 2px solid #dadada;
+    margin-bottom: 37px;
+    font-family: Nexa, sans-serif;
+    font-weight: bold;
+}
+
+.input_control
+{
+    font-size: 15px;
+    color: #555;
+    line-height: 1.2;
+    display: block;
+    width: 100%;
+    height: 25px;
+    background: 0 0;
+    padding: 0 5px;
+}
+
+input
+{
+    outline: none;
+    border: none;
+}
+
+input::placeholder
+{
+    color: #999;
+}
+
+.focus-input
+{
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+
+.forgot_help_text
+{
+    font-family: Nexa, sans-serif;
+    font-weight: bold;
+    text-align: right;
+    float: right;
+    font-size: small;
+    color: #dadada;
+    cursor: default;
+    margin-top: 5px;
+}
+
+#login_button
+{
+    font-family: Nexa, sans-serif;
+    font-weight: bold;
+    background-color: rgb(20, 85, 148);
+}

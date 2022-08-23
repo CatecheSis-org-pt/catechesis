@@ -1,0 +1,17 @@
+Nome de utilizador		            |	Permissões
+________________________________________________________________________________________
+
+ulogin_auth_user		            | SELECT ul_logins				?ul_blocked_ips?
+ulogin_update_user		            | SELECT UPDATE INSERT ul_logins
+ulogin_delete_user		            | SELECT DELETE ul_logins
+ulogin_session_user		            | SELECT INSERT UPDATE DELETE ul_sessions ul_nonces 	?ul_blocked_ips?
+ulogin_log_user			            | SELECT INSERT DELETE ul_log ul_blocked_ips
+catechesis_log_user		            | SELECT INSERT registosLog; SELECT UPDATE catequizando; SELECT ul_log;
+catechesis_log_clean_user	        | SELECT DELETE registosLog;
+catechesis_default_read_user	    | SELECT catequizando escolaridade pertence grupo inscreve lecciona catequista familiar casados baptismo primeiraComunhao profissaoFe confirmacao registosLog utilizador cod_postais_paroquia pedidoRenovacaoMatricula
+catechesis_default_edit_user	    | SELECT UPDATE INSERT catequizando escolaridade pertence grupo inscreve lecciona catequista familiar casados baptismo primeiraComunhao profissaoFe confirmacao utilizador pedidoRenovacaoMatricula; SELECT INSERT registosLog; DELETE escolaridade inscreve pertence baptismo primeiraComunhao profissaoFe confirmacao casados familiar pedidoRenovacaoMatricula
+catechesis_default_delete_user	    | SELECT DELETE catequizando escolaridade pertence grupo inscreve familiar casados baptismo primeiraComunhao profissaoFe confirmacao pedidoRenovacaoMatricula
+catechesis_group_mgmt_user	        | SELECT INSERT DELETE grupo pertence lecciona; SELECT utilizador catequista
+catechesis_user_mgtm_user	        | SELECT INSERT UPDATE utilizador catequista
+catechesis_config_user		        | SELECT, INSERT, UPDATE configuracoes
+catechesis_online_enrollment_user   | INSERT pedidoRenovacaoMatricula

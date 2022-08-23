@@ -1,0 +1,49 @@
+
+.modal.fade .modal-dialog
+{
+    -webkit-transform: translate(0);
+    -moz-transform: translate(0);
+    transform: translate(0);
+}
+
+.modal.animate .modal-dialog{-webkit-transform:translate(0,0);-ms-transform: translate(0,0);transform:translate(0,0)}
+.modal.animate .a-fadeLeftBig{-webkit-animation:fadeOutLeftBig .5s;animation:fadeOutLeftBig .5s}
+.modal.animate.show .a-fadeLeftBig{-webkit-animation:fadeInLeftBig .5s;animation:fadeInLeftBig .5s}
+.modal.animate .a-fadeRightBig{-webkit-animation:fadeOutRightBig .5s;animation:fadeOutRightBig .5s}
+.modal.animate.show .a-fadeRightBig{-webkit-animation:fadeInRightBig .5s;animation:fadeInRightBig .5s}
+.modal.animate .a-fadeUpBig{-webkit-animation:fadeOutUpBig .5s;animation:fadeOutUpBig .5s}
+.modal.animate.show .a-fadeUpBig{-webkit-animation:fadeInUpBig .5s;animation:fadeInUpBig .5s}
+.modal.animate .a-fadeDownBig{-webkit-animation:fadeOutDownBig .5s;animation:fadeOutDownBig .5s}
+.modal.animate.show .a-fadeDownBig{-webkit-animation:fadeInDownBig .5s;animation:fadeInDownBig .5s}
+.modal.animate .a-fadeRight{-webkit-animation:fadeOutRight .5s;animation:fadeOutRight .5s}
+.modal.animate.show .a-fadeRight{-webkit-animation:fadeInRight .5s;animation:fadeInRight .5s}
+.modal.animate .a-fadeLeft{-webkit-animation:fadeOutLeft .5s;animation:fadeOutLeft .5s}
+.modal.animate.show .a-fadeLeft{-webkit-animation:fadeInLeft .5s;animation:fadeInLeft .5s}
+.modal.animate .a-fadeUp{-webkit-animation:fadeOutUp .5s;animation:fadeOutUp .5s}
+.modal.animate.show .a-fadeUp{-webkit-animation:fadeInUp .5s;animation:fadeInUp .5s}
+.modal.animate .a-fadeDown{-webkit-animation:fadeOutDown .5s;animation:fadeOutDown .5s}
+.modal.animate.show .a-fadeDown{-webkit-animation:fadeInDown .5s;animation:fadeInDown .5s}
+.modal.animate .a-lightSpeed{-webkit-animation:lightSpeedOut .5s;animation:lightSpeedOut .5s}
+.modal.animate.show .a-lightSpeed {-webkit-animation:lightSpeedIn .5s;animation: lightSpeedIn .5s}
+.modal.animate .a-flipX{-webkit-animation:flipOutX .5s;animation:flipOutX .5s}
+.modal.animate.show .a-flipX{-webkit-animation:flipInX .5s;animation:flipInX .5s}
+.modal.animate .a-flipY{-webkit-animation:flipOutY .5s;animation:flipOutY .5s}
+.modal.animate.show .a-flipY{-webkit-animation:flipInY .5s;animation:flipInY .5s}
+.modal.animate .a-roll{-webkit-animation:rollOut .5s;animation: rollOut .5s}
+.modal.animate.show .a-roll{-webkit-animation:rollIn .5s;animation:rollIn .5s}
+.modal.animate .a-bounce{-webkit-animation:bounceOut .5s;animation:bounceOut .5s}
+.modal.animate.show .a-bounce{-webkit-animation:bounceIn .5s;animation:bounceIn .5s}
+.modal.animate .a-rotate{-webkit-animation:rotateOut .5s;animation:rotateOut .5s}
+.modal.animate.show .a-rotate{-webkit-animation:rotateIn .5s;animation:rotateIn .5s}
+.modal.animate .a-zoom{-webkit-animation:zoomOut .5s;animation:zoomOut .5s}
+.modal.animate.show .a-zoom{-webkit-animation:zoomIn .5s;animation:zoomIn .5s}
+.modal.animate .a-zoomUp{-webkit-animation:zoomOutUp .5s;animation:zoomOutUp .5s}
+.modal.animate.show .a-zoomUp{-webkit-animation: zoomInUp .5s;animation:zoomInUp .5s}
+.modal.animate .a-zoomRight {-webkit-animation: zoomOutRight .5s;animation:zoomOutRight .5s}
+.modal.animate.show .a-zoomRight{-webkit-animation: zoomInRight .5s;animation:zoomInRight .5s}
+.modal.animate .a-zoomDown{-webkit-animation:zoomOutDown .5s;animation:zoomOutDown .5s}
+.modal.animate.show .a-zoomDown{-webkit-animation:zoomInDown .5s;animation:zoomInDown .5s}
+.modal.animate .a-zoomLeft{-webkit-animation:zoomOutLeft .5s;animation:zoomOutLeft .5s}
+.modal.animate.show .a-zoomLeft{-webkit-animation:zoomInLeft .5s;animation:zoomInLeft .5s}
+.modal.animate .a-rubberBand{-webkit-animation:rubberBand .25s;animation:rubberBand .25s}
+.modal.animate.show .a-rubberBand{-webkit-animation:rubberBand .25s;animation:rubberBand .25s}

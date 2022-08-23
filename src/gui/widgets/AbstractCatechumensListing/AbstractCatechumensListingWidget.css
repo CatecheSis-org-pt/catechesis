@@ -1,0 +1,41 @@
+
+.results_header {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.rowlink {
+    cursor: pointer;
+}
+
+/** Override this property from DataTables to properly hide the catechumen "attributes" column **/
+table.dataTable
+{
+    border-collapse: collapse !important;
+}
+
+
+@media print
+{
+    /* Hide the DataTables search bar from prints */
+    .dataTables_filter
+    {
+        display: none !important;
+    }
+
+    /* Hide the DataTables columns sort button from prints */
+    table.dataTable thead .sorting::after
+    {
+        display: none !important;
+    }
+
+    table.dataTable thead .sorting_asc::after
+    {
+        display: none !important;
+    }
+
+    table.dataTable thead .sorting_desc::after
+    {
+        display: none !important;
+    }
+}

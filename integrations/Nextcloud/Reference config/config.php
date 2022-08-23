@@ -1,0 +1,32 @@
+<?php
+$CONFIG = array (
+  'instanceid' => '<SECRET>',
+  'passwordsalt' => '<SECRET>',
+  'secret' => '<SECRET>',
+  'trusted_domains' => 
+  array (
+    0 => '<YOUR_DOMAIN>',
+  ),
+  'datadirectory' => '/home/catechesis/nextclouddata',
+  'dbtype' => 'mysql',
+  'version' => '20.0.7.1',
+  'overwrite.cli.url' => 'https://<YOUR_DOMAIN>/cloud',
+  'dbname' => '<SECRET>',
+  'dbhost' => 'localhost',
+  'dbport' => '',
+  'dbtableprefix' => 'oc_',
+  'dbuser' => '<SECRET>',
+  'dbpassword' => '<SECRET>',
+  'installed' => true,
+  'memcache.local' => '\\OC\\Memcache\\APCu',
+  'default_language' => 'pt_PT',
+  'force_language' => 'pt_PT',
+  'default_locale' => 'pt_PT',
+  'force_locale' => 'pt_PT',
+  'default_phone_region' => 'PT',
+  'lost_password_link' => 'disabled',
+  'maintenance' => false,
+  'loglevel' => 3,
+  'theme' => '',
+  'skeletondirectory' => '/home/catechesis/nextclouddata/skeleton',
+);

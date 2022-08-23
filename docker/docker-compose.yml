@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  webserver:
+    build:
+      context: ./web-server
+      dockerfile: Dockerfile
+    image: catechesis-web-dev:1.0.0
+    ports:
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ../src:/var/www/html
+      - ../catechesis_data:/home/catechesis_data
+    links:
+      - db
+    networks:
+      - catechesis
+
+  db:
+    build:
+      #context: ./mysql-server
+      context: ..
+      dockerfile: ./docker/mysql-server/Dockerfile
+    image: catechesis-mysql-dev:1.0.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=catechesis-docker
+      - MYSQL_DATABASE=catequese
+    networks:
+      - catechesis
+
+networks:
+  catechesis:
+

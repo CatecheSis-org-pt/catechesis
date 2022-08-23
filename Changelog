@@ -1,0 +1,458 @@
+# Changelog
+Todas as alterações significativas ao CatecheSis são registadas aqui.
+
+## [UNRELEASED] - 2022-xx-xx
+
+#### Novidades:
+- A folha de presenças inicia agora em Setembro, para suportar paróquias cuja catequese se inicia naquele mês;
+- Novos manuais de utilizador e de instalação; 
+
+#### Correções:
+- Ocorria um erro (página em branco) ao criar grupos de catequese para novo ano;
+- Corrigido scroll para painel de edição de grupo de catequese;
+- Corrigido acordo ortográfico em algumas páginas;
+
+
+## [Versão 2.0.0-beta.2.0] - 2022-06-05
+
+#### Novidades:
+- Adicionados campos de configuração relativos ao RGPD;
+- Logotipo da paróquia é agora incluído no cabeçalho dos documentos Word gerados;
+- Documento relativo ao RGPD é agora automaticamente gerado;
+
+#### Correções:
+- Algumas sessões de catequese virtual não carregavam corretamente;
+- Eliminado espaço branco na página de erro 404; 
+
+
+## [Versão 2.0.0-beta.1.0] - 2022-04-18
+
+Primeiro lançamento (beta) de uma nova linhagem de desenvolvimento (versão *major* 2).
+
+Primeiro marco em direção a uma nova era do CatecheSis, a caminho de se tornar *open-source* e disponível para outras paróquias.
+
+#### Novidades:
+- Alargadas as permissões dos catequistas. Todos catequistas podem agora:
+    - editar as fichas dos seus catequizandos;
+    - registar sacramentos para o seus grupos de catequese;
+    - listar os escuteiros dos seus grupos;
+- Nova imagem da página pública da catequese;
+- Novo logotipo do CatecheSis, esquema de cores, ícones e animações;
+- Novo ecrã de autenticação;
+- Novo ecrã de resumo (*dashboard*) que substitui a antiga página *"minha conta"*;
+- Nova página de configurações que agrega vários painéis de configuração num único lugar;
+- Dados específicos da paróquia são agora configuráveis, nomeadamente:
+    - nome da paróquia e localidade;
+    - logotipo da paróquia;
+    - rodapé mostrado em todas as páginas impressas;
+    - imagem mostrada no site público da catequese;
+    - informações apresentadas nas páginas públicas de inscrição online;
+    - referência multibanco e montante para pagamento de inscrições online;
+    - dia da semana em que a catequese é ministrada;
+    - número de catecismos;
+    - integração com Nextcloud;
+- Reestruturação da arquitetura do software, permitindo:
+    - maior fiabilidade, facilidade de manutenção e extensão (para programadores);
+    - separação física dos dados do utilizador no servidor, melhorando a segurança contra acessos indevidos e facilitando o *backup*;
+
+#### Melhorias de usabilidade:
+- Revista a organização dos menus;
+- Menu sempre visível no topo:
+- As tabelas de todos os resultados de pesquisa podem agora ser ordenadas por qualquer coluna e filtradas;
+- Revista a terminologia utilizada;
+- *Tooltip* que mostra a idade do catequizando ao passar o rato sobre qualquer data de nascimento;
+
+
+
+## [Versão 1.18.1] - 2021-09-26
+
+#### Correções:
+- Corrigida configuração que impedia a geração de documentos PDF, após atualização da versão do PHP;
+
+
+
+## [Versão 1.18.0] - 2021-09-05
+
+#### Novidades:
+- Adicionado suporte para 11º catecismo;
+- Integração com Nextcloud;
+- Adicionada galeria de recursos na nuvem ao editor da catequese virtual;
+
+#### Correções:
+- Melhorias cosméticas nas ilustrações do anúncio da catequese virtual e das inscrições online;
+- O anúncio do Jitsi Meet é agora mostrado no final de uma videochamada de catequese virtual, conforme requerido pela respetiva licença;
+- Corrigidas permissões de acesso a grupos de catequese de anos catequéticos passados;
+
+
+
+## [Versão 1.17.0] - 2021-07-21
+
+#### Novidades:
+- Informação sobre donativos e referência multibanco nas páginas públicas de inscrição e renovação de matrículas;
+- Nova funcionalidade de consulta do estado de pedido de inscrição/renovação de matrícula na página pública, para encarregados de educação;
+- Nova imagem da página inicial da catequese virtual;
+- Novos desenhos para os anúncios da catequese virtual e das inscrições online;
+
+#### Melhorias de usabilidade:
+- Novo seletor de ano catequético na página de processamento de pedidos de inscrição/renovação;
+- Adicionada indicação do ano catequético em todas as páginas de inscrição/renovação de matrícula;
+
+#### Correções:
+- O sistema transita agora para um novo ano catequético a 1 de Julho, de forma consistente em toda a aplicação;
+- Corrigidas permissões de acesso à página de validação de pedidos de inscrição online;
+
+
+
+## [Versão 1.16.2] - 2021-02-07
+
+#### Correções:
+- Corrigidos alguns efeitos visuais de texto da catequese virtual, que não funcionavam em alguns navegadores.
+
+
+## [Versão 1.16.1] - 2021-02-07
+
+#### Correções:
+- Corrigidas datas UTC para formato local no seletor de datas da catequese virtual;
+
+
+## [Versão 1.16.0] - 2021-02-07
+
+#### Novidades:
+- Adicionados novos tipos de letra e tamanhos ao editor da catequese virtual;
+- Adicionados efeitos visuais de texto ao editor da catequese virtual;
+- Todos os catequistas podem agora visualizar as páginas de catequese virtual de todos os grupos (mas só podem editar
+ as dos seus grupos);
+- É agora possível criar catequeses virtuais para qualquer data. 
+  Na página pública, se não for selecionada uma data, é mostrada a sessão mais recentemente publicada nos últimos oito dias;
+
+#### Melhorias de usabilidade:
+- Melhoradas mensagens de erro ao guardar catequese virtual;
+- Adicionada mensagem que confirma que a catequese virtual foi guardada com sucesso;
+- Adicionadas 'tooltips' em todos os botões do editor da catequese virtual;
+
+
+## [Versão 1.15.0] - 2020-12-12
+
+#### Melhorias de usabilidade:
+- Adicionado ícone para sinalizar escuteiros na coluna de atributos, em todas as listagens;
+- Listagem de escuteiros pode agora ser ordenada por qualquer coluna;
+- Anúncios da catequese virtual e das inscrições online lado a lado, na página principal da catequese;
+
+#### Correções:
+- Registo de aproveitamento de catequizandos não funcionava corretamente quando o catequista
+ tinha mais do que um grupo de catequese;
+- Na ficha de inscrição, ao selecionar o encarregado de educação (mãe/pai/outro), por vezes o painel
+com os dados do *outro* encarregado de educação era mostrado equivocadamente;
+
+
+## [Versão 1.14.0] - 2020-12-01
+
+#### Novidades:
+- Os administradores podem agora destituir outros administradores;
+- É agora possível definir um conteúdo pré-definido para a catequese virtual em todos os catecismos/grupos de uma só vez;
+
+#### Melhorias de usabilidade:
+- Melhoradas as opções sobre contas de utilizadores;
+- Simplificado processo de modificação da palavra-passe na página *Minha Conta*;
+- Reduzidas funcionalidades não utilizadas na videochamada (catequese virtual);
+
+#### Correções:
+- Reduzidas invocações desnecessárias ao servidor no contexto da catequese virtual;
+
+
+
+## [Versão 1.13.2] - 2020-11-26
+
+#### Melhorias de usabilidade:
+- Melhorada entrada na videochamada (catequese virtual) em dispositivos móveis 
+(entra agora diretamente pelo browser, sem pedir para instalar a app);
+
+
+
+## [Versão 1.13.1] - 2020-11-10
+
+#### Correções:
+- Catequistas não conseguiam encerrar corretamente a sala de catequese virtual a menos que fossem administradores;
+- Falha ao carregar catequese virtual para um grupo específico, para datas anteriores ao último sábado;
+- Melhorada compatibilidade com sessões de catequese virtual criadas com versões anteriores do CatecheSis;
+
+
+
+## [Versão 1.13.0] - 2020-11-10
+
+#### Novidades:
+- Catequese virtual com videochamada;
+- Catequese virtual acessível para todos os catequistas, e individualizada para cada grupo;
+
+#### Correções:
+- Registo no log aquando da abertura/fecho de inscrições/renovações de matrículas online;
+
+
+
+## [Versão 1.12.2] - 2020-10-22
+
+#### Correções:
+- Corrigidos dados da mãe omissos nas fichas depois da atualização anterior;
+
+
+## [Versão 1.12.1] - 2020-10-21
+
+#### Correções:
+- Erros ao processar inscrições de crianças sem pai ou mãe (ex: Regaço Materno);
+- Erros ao visualizar fichas de crianças sem pai ou mãe (ex: Regaço Materno);
+
+
+## [Versão 1.12.0] - 2020-10-18
+
+#### Novidades:
+- Inscrições online - concluídas ferramentas para visualização e aprovação de pedidos de inscrição para administradores;
+- Botão para abrir/fechar as inscrições e renovações online para o público;
+- Registos de atividade relacionados com o processamento de pedidos de inscrição/renovação;
+
+#### Melhorias de usabilidade:
+- A URL para distribuir ao público para fazer inscrições/renovações online é agora apresentada na interface,
+ junto ao botão para abrir/fechar as inscrições;
+
+#### Correções:
+- Fotos de inscrições online falhadas ficavam perdidas a ocupar espaço no servidor;
+- Ao eliminar um pedido de inscrição a foto é agora também eliminada (ficava perdida a ocupar espaço no servidor);
+- Quando uma inscrição online falha é possível retroceder sem ter de tirar a foto novamente;
+
+
+## [Versão 1.11.2] - 2020-10-13
+
+#### Melhorias de usabilidade:
+- Nova coluna "Escuteiro" na página de renovação de matrículas sinaliza, através de um ícone, os escuteiros;
+- Colunas da página de renovação de matrículas podem agora ser ordenadas e filtradas;
+- Atualizada versão da Font Awesome para 5.15.1;
+
+
+## [Versão 1.11.1] - 2020-10-11
+
+#### Correções:
+- Bugs corrigidos na listagem e criação de novos grupos de catequese;
+
+
+## [Versão 1.11.0] - 2020-10-11
+
+#### Novidades:
+- Renovação de matriculas online;
+- Inscrições online (parcial);
+
+
+## [Versão 1.10.2] - 2020-09-13
+
+#### Outros:
+- Atualizado acordo de licença
+
+
+## [Versão 1.10.1] - 2020-05-01
+
+#### Novidades:
+- Catecismos individualizados na catequese virtual (em vez de agrupados em infância/adolescência);
+
+
+## [Versão 1.10.0] - 2020-04-22
+
+#### Novidades:
+- Botão para aceder ao histórico de sessões de catequese virtual;
+- Atualizada versão do widget seletor de data em todas as páginas (agora em PT-PT!)
+
+#### Melhorias de usabilidade:
+- Substituído menu dropdown por widget selector de data na página de criação de catequese virtual;
+- Melhorias cosméticas na página de registo de sacramentos;
+
+
+## [Versão 1.9.0] - 2020-03-29
+
+#### Novidades:
+- Catequese virtual;
+
+
+## [Versão 1.8.2] - 2019-10-17
+
+#### Melhorias de usabilidade:
+- Adicionada cor de fundo verde/amarela na página de autorizações do catequizando quando impressa, para identificar
+mais rapidamente se o catequizando pode ou não sair sozinho;
+
+#### Correções:
+- Botão imprimir na página de autorizações do catequizando (quem pode vir buscar o catequizando) não funcionava;
+- Melhorada a impressão da ficha, arquivo, e autorizações do catequizando (causava problemas em alguns browsers);
+
+
+
+## [Versão 1.8.1] - 2019-07-13
+
+#### Correções:
+- Trocada a ordem das colunas 'nome' e 'parentesco' na tabela de autorizações;
+
+
+
+## [Versão 1.8.0] - 2019-07-02
+
+#### Novidades:
+- Novo separador 'Autorizações' nas fichas dos catequizandos, com informação sobre quem pode vir buscar a criança;
+- Adicionado campo às fichas dos catequizandos que indica se o consentimento do tratamento de dados (RGPD) foi assinado e entregue;
+
+#### Correções:
+- Corrigido link na notificação de aniversário de catequizandos;
+
+
+
+## [Versão 1.7.0] - 2019-01-10
+
+#### Novidades:
+- Upload de comprovativos de sacramentos;
+- Sistema de apoio à decisão para Baptismos, Primeiras Comunhões e Crismas;
+- Gerador de relatórios de dados inconsistentes;
+- Exportação de listagem de escuteiros para PDF e Excel;
+- Concedidas permissões para qualquer catequista alterar o campo *Observações* do arquivo de um catequizando;
+
+#### Melhorias de usabilidade:
+- Melhorada a UI da página de gestão de utilizadores e catequistas;
+- Adicionado ícon que sinaliza a existência de *Observações* nas listagens de catequizandos;
+- Adicionado ícon que sinaliza a proibição de captura de imagens nas listagens de catequizandos;
+- Adicionado ícon que sinaliza a existência do comprovativo de um sacramento, nas listagens de catequizandos;
+- Melhorias na UI das estatísticas;
+- Menu *Estatísticas* reorganizado e renomeado para *Análise*;
+- Reorganização dos menus *Catequizandos* e *Sacramentos*;
+- Simplificada nomenclatura dos sacramentos;
+- Substituído botão *Logout* por *Sair* ;
+
+#### Correções:
+- Correção de segurança para impedir a injeção de código JavaScript malicioso pelo utilizador, transversal a toda a aplicação;
+- Corrigido bug na estatística do número de catequizandos por catequista, que não aparecia;
+- Corrigida estatística "percursos catequéticos completos" para mostrar apenas até ao ano catequético anterior ao atual; 
+
+
+
+
+## [Versão 1.6.3] - 2018-10-13
+
+#### Correções:
+- Removidos créditos da página inicial;
+
+
+## [Versão 1.6.2] - 2018-10-04
+
+#### Correções:
+- Aumentado tamanho dos campos do utilizador na BD;
+- Corrigido campo *turma* na funcionalidade de registo de sacramentos, que não funcionava corretamente;
+
+
+## [Versão 1.6.1] - 2018-09-29
+
+#### Correções:
+- Aumentados limites do script de limpeza de logs para 20000;
+- Definida codificação de caracteres UTF8 em algumas tabelas da base de dados (onde faltava, por lapso);
+
+
+## [Versão 1.6.0] - 2018-08-02
+Primeira versão oficial instalada num servidor online.
+
+#### Novidades:
+- Inscrição de sacramentos em lote;
+- Novo menu *Sacramentos*;
+
+
+
+## [Versão 1.5.1 RC] - 2018-04-15
+
+#### Novidades:
+- Diversas adaptações ao código para funcionar em ambiente de produção, num servidor web (dominios.pt);
+- Novo mecanimso de upload de fotos com webcam que usa HTML5 e envia a foto em base64, com controlo do tamanho de ficheiro (max 2MB);
+
+
+
+## [Versão 1.5.0 RC] - 2018-01-09
+
+#### Novidades:
+- Adicionada coluna com os sacramentos na pesquisa por catequista e na pagina Meus Catequizandos;
+
+#### Correções:
+- Renomeada a secção de sacramentos para *Sacramentos e celebrações*, a Primeira Comunhao para *Eucaristia (Primeira comunhao)* e o Crisma para *Confirmacao (Crisma)*;
+- Corrigido bug na exportação de documentos para Excel;
+
+
+
+## [Versão 1.4.1 RC] - 2017-05-28
+
+#### Novidades:
+- Adicionado ícone do programa;
+
+#### Correções:
+- Bug corrigido na geracao de fichas de pré-inscrição;
+- Corrigido formato da data nas fichas de pré-inscrição;
+
+
+
+## [Versão 1.4.0 RC] - 2017-05-27
+
+#### Novidades:
+- É agora possível ordenar as fichas dos catequizandos por ordem de modificação (além de ordem alfabética). Possibilita imprimir apenas as inscrições mais recentes num grupo de catequese;
+- É agora possível adicionar linhas suplementares em branco na folha de presenças para escrever à mão mais catequizandos;
+- Aumentado o número de registos de log a manter para 2000;
+
+#### Melhorias de usabilidade:
+- Ao inativar um catequista, a sua conta é também automaticamente bloquada (melhora segurança e usabilidade);
+
+#### Correções:
+- Corrigido bug que impedia fazer renovações de matrículas do 9º para o 10º catecismo;
+- Na renovação de matrículas, ao clicar na caixa "pago" abria-se a ficha do catequizando, o que impedia a ativação dessa caixa (Firefox e Chrome apenas);
+- Aumentadas as dimensões dos campos nome e e-mail;
+
+
+
+## [Versão 1.3.0 RC] - 2016-08-31
+
+#### Novidades:
+- Funcionalidade de processamento em lote de pré-inscrições (renovação de matrículas "com um só clique")
+
+#### Melhorias de usabilidade:
+- Nova página inicial (login) com paralaxe
+
+#### Correções:
+- Corrigida uma query nas fichas dos catequizandos que causava problemas em versões mais recentes da base de dados MySQL
+
+
+
+## [Versão 1.2.0 RC] - 2016-01-26
+
+#### Novidades:
+- Funcionalidade de registo da avaliação dos catequizandos (se passam ou não de ano)
+
+#### Melhorias de usabilidade:
+- Pré-visualização da foto de um catequizando, ao deixar o rato sobre o nome numa listagem ou pesquisa
+- Ao clicar num nome numa listagem ou pesquisa a ficha correspondente abre-se numa nova janela, deixando a janela de pesquisa ainda disponível
+
+
+
+## [Versão 1.0.1 RC] - 2015-11-04
+
+#### Correções:
+- Mini-fichas por ordem alfabética;
+
+
+
+## [Versão 1.0.0 RC] - 2015-10-18
+Primeira versão completamente funcional em ambiente de produção, instalada localmente no PC da catequese (Release Candidate).
+
+#### Novidades:
+- Adicionados campos Bapismo e 1ºComunhão às mini-fichas
+- Matrícula e inscrição num grupo de catequese em simultâneo
+
+#### Melhorias de usabilidade:
+- Traço mais grosso nas mini-fichas
+- Nome do catequizando sombreado nas mini-fichas
+- Folha de presenças é impressa com linhas de cores alternadas
+
+#### Correções:
+- Usernames case sensitive
+- Legenda no gráfico das estatísticas saía fora da área do gráfico
+
+
+
+## [Versão 1.0.0 beta] - 2015-05-26
+Primeira versão beta instalada no PC da catequese, para testes.
+
+Não existem registos anteriores a esta data.

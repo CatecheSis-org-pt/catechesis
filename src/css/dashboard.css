@@ -1,0 +1,13 @@
+
+.greeting-block h2
+{
+    text-align: center;
+    color: #008fcf;
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.panel-heading
+{
+    font-weight: bold;
+}

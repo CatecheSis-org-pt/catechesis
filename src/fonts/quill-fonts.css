@@ -1,0 +1,183 @@
+/* ============== Other custom Quill styles and overrides ======================== */
+.ql-container {
+    min-height: 10em;
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+    /*background: #fefcfc;*/
+}
+
+.ql-toolbar {
+    /*background: #f5f5f5;*/
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+    border-bottom: none;
+}
+
+.ql-snow .ql-picker.ql-font
+{
+    width: auto;
+}
+.ql-snow .ql-picker-label
+{
+    padding-right: 20px;
+}
+
+
+.ql-snow .ql-picker.ql-size
+{
+    width: auto;
+}
+
+
+/* ============= Google Fonts Effects ============== */
+/*
+Query to obtain thess CSS effects manually for each browser:
+https://fonts.googleapis.com/css?family=Rancho&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float
+ */
+
+.font-effect-anaglyph {
+    text-shadow: -0.06em 0 red, 0.06em 0 cyan;
+}
+.font-effect-emboss {
+    text-shadow: 0px 1px 1px #fff, 0 -1px 1px #000;
+    color: #ddd;
+}
+.font-effect-fire {
+    text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70, 0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    color: #ffe;
+}
+@-moz-keyframes font-effect-fire-animation-keyframes {
+    0% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+    25% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0 -0.05em 0.17em #FE0, 0.04em -0.12em 0.22em #FC0, 0.04em -0.13em 0.27em #F90, 0.05em -0.23em 0.33em #F70, 0.07em -0.28em 0.47em #F70, 0.1em -0.3em 0.8em #F50, 0.1em -0.3em 0.9em #F40;
+    }
+    50% {    text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+    75% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0 -0.06em 0.18em #FE0, 0.05em -0.15em 0.23em #FC0, 0.05em -0.15em 0.3em #F90, 0.07em -0.25em 0.4em #F70, 0.09em -0.3em 0.5em #F70, 0.1em -0.3em 0.9em #F50, 0.1em -0.3em 1.0em #F40;
+    }
+    100% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+}
+@-webkit-keyframes font-effect-fire-animation-keyframes {
+    0% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+    25% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0 -0.05em 0.17em #FE0, 0.04em -0.12em 0.22em #FC0, 0.04em -0.13em 0.27em #F90, 0.05em -0.23em 0.33em #F70, 0.07em -0.28em 0.47em #F70, 0.1em -0.3em 0.8em #F50, 0.1em -0.3em 0.9em #F40;
+    }
+    50% {    text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+    75% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0 -0.06em 0.18em #FE0, 0.05em -0.15em 0.23em #FC0, 0.05em -0.15em 0.3em #F90, 0.07em -0.25em 0.4em #F70, 0.09em -0.3em 0.5em #F70, 0.1em -0.3em 0.9em #F50, 0.1em -0.3em 1.0em #F40;
+    }
+    100% {
+        text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.20em 0.3em #F70,0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+    }
+}
+.font-effect-fire-animation {
+    -moz-animation-duration:0.8s;
+    -moz-animation-name:font-effect-fire-animation-keyframes;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-direction:alternate;
+    color: #ffe;
+}
+.font-effect-neon {
+    text-shadow: 0 0 0.1em #fff, 0 0 0.2em #fff, 0 0 0.3em #fff, 0 0 0.4em #f7f,0 0 0.6em #f0f, 0 0 0.8em #f0f, 0 0 1.0em #f0f, 0 0 1.2em #f0f;
+    color: #fff;
+}
+.font-effect-outline {
+    text-shadow:0 1px 1px #000, 0 -1px 1px #000, 1px 0 1px #000, -1px 0 1px #000;
+    color: #fff;
+}
+.font-effect-shadow-multiple {
+    text-shadow: .04em .04em 0 #fff,.08em .08em 0 #aaa;
+}
+.font-effect-3d {
+    text-shadow: 0px 1px 0px #c7c8ca, 0px 2px 0px #b1b3b6, 0px 3px 0px #9d9fa2, 0px 4px 0px #8a8c8e, 0px 5px 0px #77787b, 0px 6px 0px #636466, 0px 7px 0px #4d4d4f, 0px 8px 7px #001135;
+    /*color: #fff;*/
+}
+.font-effect-3d-float {
+    text-shadow: 0 0.032em 0 #b0b0b0, 0px 0.15em 0.11em rgba(0,0,0,0.15), 0px 0.25em 0.021em rgba(0,0,0,0.1), 0px 0.32em 0.32em rgba(0,0,0,0.1);
+    /*color: #fff;*/
+}
+/* ~ Google Fonts Effects */
+
+/* =========================================================== */
+
+
+
+
+/* ============== Quill fonts ======================== */
+
+/* Set default font-family */
+/*#editor-container {
+    font-family: "Roboto", sans-serif;
+    font-size: 18px;
+    height: 375px;
+}
+*/
+
+
+/* Set dropdown font-families */
+#toolbar-container .ql-font span[data-label="Amatic SC"]::before {
+    font-family: "Amatic SC", cursive;
+}
+#toolbar-container .ql-font span[data-label="Boogaloo"]::before {
+    font-family: "Boogaloo", cursive;
+}
+#toolbar-container .ql-font span[data-label="Caveat"]::before {
+    font-family: "Caveat", cursive;
+}
+#toolbar-container .ql-font span[data-label="Fredericka the Great"]::before {
+    font-family: "Fredericka the Great", cursive;
+}
+#toolbar-container .ql-font span[data-label="League script"]::before {
+    font-family: "League script", cursive;
+}
+#toolbar-container .ql-font span[data-label="Permanent marker"]::before {
+    font-family: "Permanent marker", cursive;
+}
+#toolbar-container .ql-font span[data-label="Source Code pro"]::before {
+    font-family: "Source Code pro", monospace;
+}
+#toolbar-container .ql-font span[data-label="Bungee Shade"]::before {
+    font-family: "Bungee Shade", cursive;
+}
+#toolbar-container .ql-font span[data-label="Thasadith"]::before {
+    font-family: "Thasadith", sans-serif;
+}
+
+
+
+/* Set content font-families */
+.ql-font-amatic-sc {
+    font-family: "Amatic SC", cursive;
+}
+.ql-font-bungee-shade {
+    font-family: "Bungee Shade", cursive;
+}
+.ql-font-boogaloo {
+    font-family: "Boogaloo", cursive;
+}
+.ql-font-caveat {
+    font-family: "Caveat", cursive;
+}
+.ql-font-fredericka-the-great {
+    font-family: "Fredericka the Great", cursive;
+}
+.ql-font-league-script {
+    font-family: "League script", cursive;
+}
+.ql-font-permanent-marker {
+    font-family: "Permanent marker", cursive;
+}
+.ql-font-source-code-pro {
+    font-family: "Source Code pro", cursive;
+}
+.ql-font-thasadith {
+    font-family: "Thasadith", cursive;
+}

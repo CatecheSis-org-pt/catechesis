@@ -1,0 +1,3 @@
+[submodule "doc/catechesis-manuals"]
+	path = doc/catechesis-manuals
+	url = git@github.com:CatecheSis-org-pt/catechesis-user-manual.git
