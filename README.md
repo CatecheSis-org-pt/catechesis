@@ -37,12 +37,12 @@ Inclui recursos como:
 
 Para começar a utilizar o CatecheSis na sua paróquia, só precisa de um servidor web e um domínio na Internet.
 
-Descarregue o software compilado e pronto a utilizar a partir de [https://catechesis.org.pt](https://catechesis.org.pt) e instale-o no servidor da sua paróquia.
+Descarregue o software compilado e pronto a utilizar a partir de [https://catechesis.org.pt](https://catechesis.org.pt//transferir.php) e instale-o no servidor da sua paróquia.
 
-O CatecheSis inclui um assistente de instalação passo-a-passo e um [manual de instalação](https://catechesis.org.pt) que o orientará no processo de instalação no servidor.
+O CatecheSis inclui um assistente de instalação passo-a-passo e um [manual de instalação](https://catechesis.org.pt/help/manual_de_instalacao.html) que o orientará no processo de instalação no servidor.
 
 Acreditamos que o CatecheSis é suficientemente simples e intuitivo, e esforçamo-nos para o melhorar dia após dia, para que encontre facilmente tudo aquilo de que precisa. 
-Em todo o caso, o [manual do utilizador](https://catechesis.org.pt) pode ajudá-lo a completar as principais tarefas.
+Em todo o caso, o [manual do utilizador](https://catechesis.org.pt/help/manual_do_utilizador.html) pode ajudá-lo a completar as principais tarefas.
 
 Se ainda tiver dúvidas, a nossa comunidade de desenvolvedores e utilizadores no Discord poderá dar-lhe apoio.
 
@@ -59,7 +59,7 @@ Há várias formas de contribuir para o CatecheSis, como por exemplo:
 - Fazendo sugestões;
 - Implementando código para novas funcionalidades ou correções;
 
-Para começar a contribuir, contacte-nos através do nosso [formulário de contacto](https://catechesis.org.pt/contact) em catechesis.org.pt e junte-se a nós na nossa comunidade no Discord.
+Para começar a contribuir, contacte-nos através do nosso [formulário de contacto](https://catechesis.org.pt/contactos.php) em catechesis.org.pt e junte-se a nós na nossa comunidade no Discord.
 
 Veja também o documento [CONTRIBUTING.md](CONTRIBUTING.md) *(em língua inglesa)*.
 
