@@ -4,8 +4,9 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 ## [UNRELEASED] - 2022-xx-xx
 
 #### Novidades:
+- O CatecheSis torna-se _open-source_ :)
+- Novos manuais de utilizador e de instalação;
 - A folha de presenças inicia agora em Setembro, para suportar paróquias cuja catequese se inicia naquele mês;
-- Novos manuais de utilizador e de instalação; 
 
 #### Correções:
 - Ocorria um erro (página em branco) ao criar grupos de catequese para novo ano;
