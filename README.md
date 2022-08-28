@@ -37,7 +37,7 @@ Inclui recursos como:
 
 Para começar a utilizar o CatecheSis na sua paróquia, só precisa de um servidor web e um domínio na Internet.
 
-Descarregue o software compilado e pronto a utilizar a partir de [https://catechesis.org.pt](https://catechesis.org.pt//transferir.php) e instale-o no servidor da sua paróquia.
+Descarregue o software compilado e pronto a utilizar a partir de [https://catechesis.org.pt](https://catechesis.org.pt/transferir.php) e instale-o no servidor da sua paróquia.
 
 O CatecheSis inclui um assistente de instalação passo-a-passo e um [manual de instalação](https://catechesis.org.pt/help/manual_de_instalacao.html) que o orientará no processo de instalação no servidor.
 
