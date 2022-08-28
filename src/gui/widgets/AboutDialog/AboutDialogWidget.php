@@ -48,10 +48,10 @@ class AboutDialogWidget extends ModalDialogWidget
                         <h3> CatecheSis </h3>
                     </div>
                     <div class="col-xs-12">
-                        <span>Versão 2.x</span>
+                        <span>Versão 2.0.0</span>
                     </div>
                     <div class="col-xs-12">
-                        <span>Última revisão em: __-__-____</span>
+                        <span>Última revisão em: 28-08-2022</span>
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -61,7 +61,7 @@ class AboutDialogWidget extends ModalDialogWidget
             <div style="margin-bottom: 40px;"></div>
 
             <p>O CatecheSis é um sistema livre, <i>open-source</i>, para gestão de grupos de catequese concebido por catequistas e para catequistas para atender às necessidades da sua paróquia.</p>
-            <p>Desenvolvido pelos <a style="cursor: pointer;" onclick='window.open("licenses/CatecheSis/authors.php", "Termos e condições", "width=500, height=700, left=800, top=100, status=no, menubar=no, toolbar=no, location=no, scrollbars=1").focus();'>autores do CatecheSis</a>.</p>
+            <p>Desenvolvido pelos <a style="cursor: pointer;" onclick='window.open("licenses/CatecheSis/authors.php", "Termos e condições", "width=500, height=700, left=800, top=100, status=no, menubar=no, toolbar=no, location=no, scrollbars=1").focus();'>autores e contribuidores do CatecheSis</a>.</p>
             <p>Saiba mais em <a href="https://catechesis.org.pt" target="_blank" rel="noopener noreferrer">catechesis.org.pt</a>.</p>
 
             <div style="margin-bottom: 20px;"></div>
