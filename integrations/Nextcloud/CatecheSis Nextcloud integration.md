@@ -41,8 +41,8 @@ There are two ways of integrating the CatecheSis users database with Nextcloud:
 	'db_type' => 'mariadb',
 	'db_host' => 'localhost',
 	'db_port' => '3306',
-	'db_name' => 'cateches_catequese',
-	'db_user' => 'cateches_main',
+	'db_name' => '<YOUR_DB>',
+	'db_user' => '<YOUR_USER>',
 	'db_password' => '<PASSWORD>',
 	//'mariadb_charset' => 'utf8mb4',
 	'queries' => array(
@@ -131,8 +131,8 @@ Then, set the following two lines in the CatecheSis config file (`catechesis_con
 ...
 //Nextcloud integration
 //  Comment out the following lines if you don't plan to integrate CatecheSis with Nextcloud.
-define('CATECHESIS_NEXTCLOUD_BASE_URL', 'https://catechesis.org.pt/cloud');                                             //Path to Nextcloud front page
-define('CATECGESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL', 'https://catechesis.org.pt/cloud/index.php/s/eziE9rRfNz2cBFD');    //Path to public shared folder in Nextcloud to store virtual catechesis resources
+define('CATECHESIS_NEXTCLOUD_BASE_URL', 'https://<YOUR_DOMAIN>/cloud');                                             //Path to Nextcloud front page
+define('CATECGESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL', 'https://<YOUR_DOMAIN>/cloud/index.php/<NEXTCLOUD_LINK>');     //Path to public shared folder in Nextcloud to store virtual catechesis resources
 ...
 ```
 
@@ -192,8 +192,8 @@ At Cova da Piedade, we set up two cronjobs. On Saturdays, it runs every 15 minut
 Nextcloud. On the remaining week days, it runs every hour.
 
 ```cron
-0 * * * 0-5 /usr/local/bin/php -f /home/cateches/public_html/cloud/cron.php --define apc.enable_cli=1 >/dev/null 2>&1
-*/15 * * * 6 /usr/local/bin/php -f /home/cateches/public_html/cloud/cron.php --define apc.enable_cli=1 >/dev/null 2>&1
+0 * * * 0-5 /usr/local/bin/php -f /home/catechesis/public_html/cloud/cron.php --define apc.enable_cli=1 >/dev/null 2>&1
+*/15 * * * 6 /usr/local/bin/php -f /home/catechesis/public_html/cloud/cron.php --define apc.enable_cli=1 >/dev/null 2>&1
  ```
 
 <br>
