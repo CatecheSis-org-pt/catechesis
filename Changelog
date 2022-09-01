@@ -1,11 +1,18 @@
 # Changelog
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
+## [Versão 2.0.1] - 2022-09-01
+
+#### Correções:
+- Corrigidos links na documentação;
+
+
 ## [Versão 2.0.0] - 2022-08-28
 
 #### Novidades:
 - O CatecheSis torna-se _open-source_ :)
 - Novos manuais de utilizador e de instalação;
+- Introduzido link para a comunidade no Discord, no menu de ajuda;
 - A folha de presenças inicia agora em Setembro, para suportar paróquias cuja catequese se inicia naquele mês;
 
 #### Correções:

@@ -48,10 +48,10 @@ class AboutDialogWidget extends ModalDialogWidget
                         <h3> CatecheSis </h3>
                     </div>
                     <div class="col-xs-12">
-                        <span>Versão 2.0.0</span>
+                        <span>Versão 2.0.1</span>
                     </div>
                     <div class="col-xs-12">
-                        <span>Última revisão em: 28-08-2022</span>
+                        <span>Última revisão em: 01-09-2022</span>
                     </div>
                 </div>
                 <div class="clearfix"></div>
