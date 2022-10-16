@@ -97,13 +97,14 @@ $navbar->renderHTML();
                         <input type="text" class="form-control" id="catequizando_nome" name="catequizando_nome" placeholder="Nome completo do catequizando" style="cursor: auto;" value="" required>
                     </div>
                     <div class="col-lg-3">
-                        <label for="catequizando_catecismo">Último catecismo frequentado:</label>
-                        <select id="catequizando_catecismo" name="catequizando_catecismo" required>
+                        <label for="catequizando_catecismo">Último catecismo que <u>frequentou</u>:</label>
+                        <select id="catequizando_catecismo" name="catequizando_catecismo" class="form-control" required>
+                            <option value=""></option>
                             <?php
-                            for($i = 1; $i <= 10; $i++)
+                            for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) - 1; $i++)
                             {
                             ?>
-                                <option value="<?= $i ?>"><?= $i ?>º</option>
+                                <option value="<?= $i ?>"><?= $i ?>º catecismo</option>
                             <?php
                             }
                             ?>
@@ -122,7 +123,7 @@ $navbar->renderHTML();
                     </div>
                     <div class="col-lg-6">
                         <label for="enc_edu_email">E-mail:</label>
-                        <input type="email" class="form-control" id="enc_edu_email" name="enc_edu_email" placeholder="ex: endereco@servidor.com" style="cursor: auto;" value="">
+                        <input type="email" class="form-control" id="enc_edu_email" name="enc_edu_email" placeholder="ex: endereco@example.com" style="cursor: auto;" value="">
                     </div>
                     <div class="col-lg-3">
                         <label for="enc_edu_tel">Telefone:</label>

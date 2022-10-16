@@ -344,7 +344,7 @@ $db = new PdoDatabaseManager();
            <div class="form-group">
                <div class="col-lg-12">
                    <label for="email">E-mail:</label>
-                   <input type="email" class="form-control" id="email" name="email" placeholder="endereco@servidor.com" value="<?php echo($submission['email']);?>" readonly>
+                   <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php echo($submission['email']);?>" readonly>
                    <span>Para que seja informado de notícias e actividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.</span>
                </div>
                <div class="clearfix"></div>
@@ -371,14 +371,14 @@ $db = new PdoDatabaseManager();
                </div>
                <div class="clearfix"></div>
                <div class="form-group collapse <?php  if(isset($submission['ultimo_catecismo'])){ echo('in');} ?>" id="ultimo_catecismo_collapse">
-                   <div class="col-lg-12">
-                       <label for="ultimo_catecismo">Último catecismo frequentado:</label>
-                       <select id="ultimo_catecismo" name="ultimo_catecismo_disabled" disabled>
+                   <div class="col-lg-3">
+                       <label for="ultimo_catecismo">Último catecismo que frequentou:</label>
+                       <select id="ultimo_catecismo" name="ultimo_catecismo_disabled" class="form-control" disabled>
                            <?php
-                           for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)); $i++)
+                           for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) -1; $i++)
                            {
                            ?>
-                               <option value="<?= $i ?>" <?php if($submission['ultimo_catecismo']==$i){ echo('selected'); } ?>><?= $i ?>º</option>
+                               <option value="<?= $i ?>" <?php if($submission['ultimo_catecismo']==$i){ echo('selected'); } ?>><?= $i ?>º catecismo</option>
                            <?php
                            }
                            ?>

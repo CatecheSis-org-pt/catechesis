@@ -340,7 +340,7 @@ $pageUI->addWidget($footer);
                    <div class="form-group">
                        <div class="col-lg-12">
                            <label for="email">E-mail:</label>
-                           <input type="email" class="form-control" id="email" name="email" placeholder="endereco@servidor.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['email'] . '');} else {echo('');} ?>">
+                           <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['email'] . '');} else {echo('');} ?>">
                            <span>Para que seja informado de notícias e actividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.</span>
                        </div>
                        <div class="clearfix"></div>
@@ -367,19 +367,17 @@ $pageUI->addWidget($footer);
                        </div>
                        <div class="clearfix"></div>
                        <div class="form-group collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ja_frequentou_catequese']=='Sim'){ echo('in');} ?>" id="ultimo_catecismo_collapse">
-                           <div class="col-lg-12">
-                               <label for="ultimo_catecismo">Último catecismo frequentado:</label>
-                               <select id="ultimo_catecismo" name="ultimo_catecismo">
-                                   <option value="1" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==1){ echo('selected');} ?>>1º</option>
-                                   <option value="2" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==2){ echo('selected');} ?>>2º</option>
-                                   <option value="3" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==3){ echo('selected');} ?>>3º</option>
-                                   <option value="4" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==4){ echo('selected');} ?>>4º</option>
-                                   <option value="5" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==5){ echo('selected');} ?>>5º</option>
-                                   <option value="6" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==6){ echo('selected');} ?>>6º</option>
-                                   <option value="7" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==7){ echo('selected');} ?>>7º</option>
-                                   <option value="8" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==8){ echo('selected');} ?>>8º</option>
-                                   <option value="9" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==9){ echo('selected');} ?>>9º</option>
-                                   <option value="10" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==10){ echo('selected');} ?>>10º</option>
+                           <div class="col-lg-3">
+                               <label for="ultimo_catecismo">Último catecismo que <u>frequentou</u>:</label>
+                               <select id="ultimo_catecismo" name="ultimo_catecismo" class="form-control" >
+                                   <?php
+                                   for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) - 1; $i++)
+                                   {
+                                       ?>
+                                       <option value="<?= $i ?>" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==1){ echo('selected');} ?>><?= $i ?>º catecismo</option>
+                                       <?php
+                                   }
+                                   ?>
                                </select>
                            </div>
                            <div class="row" style="margin-bottom:20px; "></div>

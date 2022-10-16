@@ -468,14 +468,6 @@ $navbar->renderHTML();
                 echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
             }
 
-            /*$eid = postEnrollment($nome, $data_nasc, $local_nasc, $num_irmaos, $escuteiro, $autorizacao_fotos, $foto_cam, $observacoes,
-                    $responsibleIndex, $outro_enc_edu_nome, $outro_enc_edu_quem, $outro_enc_edu_prof,
-                    $pai, $prof_pai, $mae, $prof_mae, $casados_como,
-                    $morada, $codigo_postal, $telefone, $telemovel, $email,
-                    $data_baptismo, $paroquia_baptismo, $data_comunhao, $paroquia_comunhao,
-                    $autoriza_saida, $autorizacoes_saida_menores,
-                    $ultimo_catecismo,
-                    $_SERVER['REMOTE_ADDR']);*/
 
             if(isset($eid) && $eid != -1)
             {

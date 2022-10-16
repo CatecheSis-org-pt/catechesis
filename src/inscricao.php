@@ -417,7 +417,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-12">
       <label for="email">Para que seja informado de notícias e actividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.<br>E-mail:</label>
-      <input type="email" class="form-control" id="email" name="email" placeholder="endereco@servidor.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['email'] . '');} else {echo('');} ?>">
+      <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['email'] . '');} else {echo('');} ?>">
     </div>
     <div class="clearfix"></div>
     </div>
