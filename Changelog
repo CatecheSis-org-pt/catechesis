@@ -1,6 +1,13 @@
 # Changelog
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
+
+## [UNRELEASED] - 202X-XX-XX
+
+#### Melhorias de usabilidade:
+- Melhorada nomenclatura e comportamento do campo _último catecismo frequentado_ das páginas de inscrição/renovação de matrícula, para evitar erros de preenchimento;
+
+
 ## [Versão 2.0.1] - 2022-09-01
 
 #### Correções:
