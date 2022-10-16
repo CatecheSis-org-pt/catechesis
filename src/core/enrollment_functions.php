@@ -245,30 +245,45 @@ function addAuthorizationToList(int $cid, string $name, string $relationship, st
  * @param $birthDate
  * @param null $previousCatechism
  */
-function computeRecommendedCatechism($birthDate, $previousCatechism = null)
+function computeRecommendedCatechism($birthDate, $previousCatechism = null): int
 {
-    $recommendation = 1;
 
+    // Compute recommendation based on the previously frequented catechism (if any)
+    $catechumenHistoryRecommendation = 0;
     if(isset($previousCatechism) && intval($previousCatechism) >= 1 && intval($previousCatechism) <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
     {
         //Catechumen already frequented catechesis before (perhaps in another parish)
-        $recommendation = intval($previousCatechism) + 1;
+        $catechumenHistoryRecommendation = intval($previousCatechism) + 1;
     }
-    else
-    {
-        //Catechumen never frequented catechesis before.
-        //We will try to enroll him/her in the most suitable catechism given his/her age
 
+
+    // Compute recomendation based on age
+    $ageRecomendation = 0;
+    {
         $ageInOctober = date_diff(date_create($birthDate), date_create(date('Y-10-31')))->y;
         $ageInDecember = date_diff(date_create($birthDate), date_create(date('Y-12-31')))->y;
 
-        if($ageInOctober < 6)
-            $recommendation = $ageInDecember - 6 + 1;   //Conditional catechumens
+        $conditionalChild = (date_create($birthDate)->format('m') > 10); //Conditional catechumens brithdays are in November or December
+        if($conditionalChild)
+            $ageRecomendation = $ageInDecember - 6 + 1;   //Conditional catechumens
         else
-            $recommendation = $ageInOctober - 6 + 1;    //6 years old maps to 1st catechism
-                                                        //7 years old maps to 2nd catechism
-                                                        //...
+            $ageRecomendation = $ageInOctober - 6 + 1;    //6 years old maps to 1st catechism
+                                                          //7 years old maps to 2nd catechism
+                                                          //...
     }
+
+
+    if(abs($catechumenHistoryRecommendation - $ageRecomendation) <= 1)
+    {
+        // Priority to the continuity of the catechetical path, in case the difference in the recommendations is no more than 1 year
+        $recommendation = $catechumenHistoryRecommendation;
+    }
+    else
+    {
+        // Priority to the age, in case the difference in the recommendations is more than 1 year
+        $recommendation = max($catechumenHistoryRecommendation, $ageRecomendation);
+    }
+
 
     if($recommendation < 1)
         $recommendation = 1;
