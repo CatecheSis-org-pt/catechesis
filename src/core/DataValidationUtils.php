@@ -39,15 +39,24 @@ class DataValidationUtils
      * @param bool $checkAntiPatterns
      * @return bool
      */
-    public static function validatePhoneNumber(string $tel, bool $checkAntiPatterns = false)
+    public static function validatePhoneNumber(string $tel, string $locale, bool $checkAntiPatterns = false)
     {
-        $pattern1 = '/^\d{9}$/';
-        $pattern2 = '/^\+\d{1,}[-\s]{0,1}\d{9}$/';
-        $antipattern1 = "000000000";
-        $antipattern2 = "111111111";
-        $antipattern3 = "123456789";
+        if($locale=="PT")
+        {
+            $pattern = '/^(\+\d{1,}[-\s]{0,1})?\d{9}$/';
+            $antipattern1 = "000000000";
+            $antipattern2 = "111111111";
+            $antipattern3 = "123456789";
+        }
+        else if($locale=="BR")
+        {
+            $pattern = '/^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/';
+            $antipattern1 = "0000-0000";
+            $antipattern2 = "1111-1111";
+            $antipattern3 = "1234-5678";
+        }
 
-        return (preg_match($pattern1, $tel) || preg_match($pattern2, $tel)) && (!$checkAntiPatterns ||
+        return preg_match($pattern, $tel) && (!$checkAntiPatterns ||
                 (strpos($tel, $antipattern1)===false && strpos($tel, $antipattern2)===false && strpos($tel, $antipattern3)===false));
     }
 
@@ -56,7 +65,7 @@ class DataValidationUtils
      * @param $postal
      * @return false|int
      */
-    public static function validateZipCode($postal, $locale)
+    public static function validateZipCode(string $postal, string $locale)
     {
         $pattern = '';
         if($locale == "PT")

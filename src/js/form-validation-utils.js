@@ -1,9 +1,14 @@
 
-function telefone_valido(num)
+function telefone_valido(num, locale)
 {
-    var phoneno = /^\d{9}$/;
-    var internacional = /^\+\d{1,}[-\s]{0,1}\d{9}$/;
-    return (num.match(phoneno) || num.match(internacional));
+    var phoneno = '';
+
+    if(locale==="PT")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\d{9}$/;
+    else if(locale==="BR")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/;
+
+    return !!num.match(phoneno);
 }
 
 function email_valido(email)

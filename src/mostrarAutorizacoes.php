@@ -345,7 +345,7 @@ $menu->renderHTML();
                     echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> É necessário definir o nome do familiar do catequizando.</div>");
                     $inputs_invalidos = true;
                 }
-                if($telemovel_familiar=="" || !DataValidationUtils::validatePhoneNumber($telemovel_familiar))
+                if($telemovel_familiar=="" || !DataValidationUtils::validatePhoneNumber($telemovel_familiar, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
                 {
                     echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
                     $inputs_invalidos = true;
@@ -762,7 +762,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
 function valida_dados_familiar()
 {
     var telemovel = document.getElementById('telemovel').value;
-    if(!telefone_valido(telemovel))
+    if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
     {
         alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
         return false;
@@ -770,19 +770,16 @@ function valida_dados_familiar()
     return true;
 }
 
-function telefone_valido(num)
+function telefone_valido(num, locale)
 {
-    var phoneno = /^\d{9}$/;
-    var internacional = /^\+\d{1,}[-\s]{0,1}\d{9}$/;
-    if(num.match(phoneno) || num.match(internacional))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    var phoneno = '';
 
+    if(locale==="PT")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\d{9}$/;
+    else if(locale==="BR")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/;
+
+    return num.match(phoneno);
 }
 
 function preparar_eliminacao_autorizacao_familiar(fid)

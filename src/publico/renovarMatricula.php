@@ -223,7 +223,7 @@ $footer->renderHTML();
         var telefone = document.getElementById('enc_edu_tel').value;
         var email = document.getElementById('enc_edu_email').value;
 
-        if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone))
+        if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
         {
             alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
             return false;

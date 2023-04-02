@@ -11,7 +11,9 @@
 require_once(__DIR__ . '/PdoDatabaseManager.php');
 require_once(__DIR__ . '/DataValidationUtils.php');
 require_once(__DIR__ . '/Utils.php');
+require_once(__DIR__ . '/Configurator.php');
 
+use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
 use catechesis\DataValidationUtils;
 use catechesis\Utils;
@@ -325,7 +327,7 @@ use catechesis\Utils;
 
 		if(isset($catequizando['telefone']) && $catequizando['telefone'] != "")
 		{
-			if(!DataValidationUtils::validatePhoneNumber($catequizando['telefone'], true))
+			if(!DataValidationUtils::validatePhoneNumber($catequizando['telefone'], Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE), true))
 			{
 				reportar($candidato, $nivel, "Número de telefone inválido.");
 				$res = false;
@@ -334,7 +336,7 @@ use catechesis\Utils;
 
 		if(isset($catequizando['telemovel']) && $catequizando['telemovel'] != "")
 		{
-			if(!DataValidationUtils::validatePhoneNumber($catequizando['telemovel'], true))
+			if(!DataValidationUtils::validatePhoneNumber($catequizando['telemovel'], Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) , true))
 			{
 				reportar($candidato, $nivel, "Número de telemóvel inválido.");
 				$res = false;

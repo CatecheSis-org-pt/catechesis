@@ -267,13 +267,13 @@ $menu->renderHTML();
 	  	}
 	  	
 	  	
-	  	if($telefone!="" && !DataValidationUtils::validatePhoneNumber($telefone))
+	  	if($telefone!="" && !DataValidationUtils::validatePhoneNumber($telefone, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
 	  	
-	  	if($telemovel!="" && !DataValidationUtils::validatePhoneNumber($telemovel))
+	  	if($telemovel!="" && !DataValidationUtils::validatePhoneNumber($telemovel, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
@@ -1012,7 +1012,7 @@ $menu->renderHTML();
                 //echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> É necessário definir o nome do familiar do catequizando.</div>");
                 $inputs_invalidos = true;
             }
-            if($phone!="" && !DataValidationUtils::validatePhoneNumber($phone)) //Podemos admitir familiares sem telefone
+            if($phone!="" && !DataValidationUtils::validatePhoneNumber($phone, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE))) //Podemos admitir familiares sem telefone
             {
                 //echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
                 $inputs_invalidos = true;

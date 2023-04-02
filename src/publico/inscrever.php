@@ -785,12 +785,12 @@ function validar()
 		alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
 		return false; 
         }
-        else if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone))
+        else if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
         {
         	alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
 		return false; 
         }
-        else if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel))
+        else if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
         {
         	alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
 		return false; 
@@ -995,7 +995,7 @@ function verifica_telefone()
 {
 	var telefone = document.getElementById('telefone').value;
 	
-	if(!telefone_valido(telefone) && telefone!="" && telefone!=undefined)
+	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
 	{ 
 		$('#telefone_div').addClass('has-error');
 		$('#telefone_div').addClass('has-feedback');
@@ -1013,7 +1013,7 @@ function verifica_telemovel()
 {
 	var telemovel = document.getElementById('telemovel').value;
 	
-	if(!telefone_valido(telemovel) && telemovel!="" && telemovel!=undefined)
+	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
 	{ 
 		$('#telemovel_div').addClass('has-error');
 		$('#telemovel_div').addClass('has-feedback');
