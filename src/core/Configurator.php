@@ -105,6 +105,8 @@ class Configurator
     const KEY_PARISH_DIOCESE = "PARISH_DIOCESE";                                                                        //Diocese to which this parish belongs
     const KEY_PARISH_CUSTOM_TABLE_FOOTER = "PARISH_CUSTOM_TABLE_FOOTER";                                                //Text/HTML footer used in printed tables
 
+    const KEY_LOCALIZATION_CODE = "LOCALIZATION_CODE";                                                                  //Country code for localization purposes
+
     const KEY_GDPR_RESPONSIBLE_NAME = "GDPR_RESPONSIBLE_NAME";                                                          //Name of the responsible for data processing
     const KEY_GDPR_RESPONSBILE_ADDRESS = "GDPR_RESPONSIBLE_ADDRESS";                                                    //Address of the responsible for data processing
     const KEY_GDPR_RESPONSIBLE_EMAIL = "GDPR_RESPONSIBLE_EMAIL";                                                        //E-mail of the responsible for data processing
@@ -150,6 +152,8 @@ class Configurator
                 self::KEY_PARISH_PLACE => new ConfigurationObject(self::KEY_PARISH_PLACE, ConfigurationObject::TYPE_STRING, null),
                 self::KEY_PARISH_DIOCESE => new ConfigurationObject(self::KEY_PARISH_DIOCESE, ConfigurationObject::TYPE_STRING, null),
                 self::KEY_PARISH_CUSTOM_TABLE_FOOTER => new ConfigurationObject(self::KEY_PARISH_CUSTOM_TABLE_FOOTER, ConfigurationObject::TYPE_STRING, null),
+
+                self::KEY_LOCALIZATION_CODE => new ConfigurationObject(self::KEY_LOCALIZATION_CODE, ConfigurationObject::TYPE_STRING, "PT"),
 
                 self::KEY_GDPR_RESPONSIBLE_NAME => new ConfigurationObject(self::KEY_GDPR_RESPONSIBLE_NAME, ConfigurationObject::TYPE_STRING, "a Catequese Paroquial NOME DA PARÓQUIA"),
                 self::KEY_GDPR_RESPONSBILE_ADDRESS => new ConfigurationObject(self::KEY_GDPR_RESPONSBILE_ADDRESS, ConfigurationObject::TYPE_STRING, null),
