@@ -311,7 +311,7 @@ $navbar->renderHTML();
 	  	}
 	  	
 	  		  	
-	  	if(!DataValidationUtils::validateZipCode($codigo_postal))
+	  	if(!DataValidationUtils::validateZipCode($codigo_postal, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.</div>");
 	  		$inputs_invalidos = true;	  	

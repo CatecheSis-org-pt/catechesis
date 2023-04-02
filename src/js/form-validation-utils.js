@@ -12,9 +12,14 @@ function email_valido(email)
     return (pattern.test(email));
 }
 
-function codigo_postal_valido(codigo)
+function codigo_postal_valido(codigo, locale)
 {
-    var pattern = /[0-9]{4}\-[0-9]{3}\s\S+/;
+    var pattern = "";
+    if(locale==="PT")
+        pattern = /^[0-9]{4}\-[0-9]{3}\s\S+/;
+    else if(locale==="BR")
+        pattern = /^[0-9]{5}\-[0-9]{3}\s\S+/;
+
     return (pattern.test(codigo));
 }
 

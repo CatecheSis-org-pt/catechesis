@@ -118,7 +118,7 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
 
                 <!--Country (localization) -->
                 <div class="col-md-2">
-                    <label for="place">País:</label>
+                    <label for="place">País: <span class="fas fa-question-circle" data-toggle="popover" data-placement="top" data-content='Utilizado para configurações regionais, tais como número de dígitos do código postal e telefone em formulários.'></span></label>
                     <select id="<?=$this->getID()?>_locale" name="locale" class="form-control" disabled>
                         <option value="<?= Locale::PORTUGAL ?>" <?php if($localization_code == Locale::PORTUGAL) echo("selected"); ?>>Portugal</option>
                         <option value="<?= Locale::BRASIL ?>" <?php if($localization_code == Locale::BRASIL) echo("selected"); ?>>Brasil</option>

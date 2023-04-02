@@ -712,7 +712,7 @@ function validar()
         }
         
         
-	if(!codigo_postal_valido(cod_postal))
+	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
 		alert("O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.");
 		return false;
@@ -836,9 +836,13 @@ function telefone_valido(num)
 }
 
 
-function codigo_postal_valido(codigo)
-{	
-	var pattern = /[0-9]{4}\-[0-9]{3}\s\S+/;
+function codigo_postal_valido(codigo, locale)
+{
+    var pattern="";
+    if(locale==="PT")
+	    pattern = /^[0-9]{4}\-[0-9]{3}\s\S+/;
+    else if(locale==="BR")
+        pattern = /^[0-9]{5}\-[0-9]{3}\s\S+/;
 	
 	return (pattern.test(codigo));
 
@@ -896,7 +900,7 @@ function verifica_codigo_postal()
 {
 	var cod = document.getElementById('codigo_postal').value;
 	
-	if(!codigo_postal_valido(cod) && cod!="" && cod!=undefined)
+	if(!codigo_postal_valido(cod, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && cod!="" && cod!=undefined)
 	{ 
 		$('#codigo_postal_div').addClass('has-error');
 		$('#codigo_postal_div').addClass('has-feedback');

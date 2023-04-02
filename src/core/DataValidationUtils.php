@@ -56,9 +56,14 @@ class DataValidationUtils
      * @param $postal
      * @return false|int
      */
-    public static function validateZipCode($postal)
+    public static function validateZipCode($postal, $locale)
     {
-        $pattern = '/[0-9]{4}\-[0-9]{3}\s\S+/';
+        $pattern = '';
+        if($locale == "PT")
+            $pattern = '/^[0-9]{4}\-[0-9]{3}\s\S+/';
+        else if($locale == "BR")
+            $pattern = '/^[0-9]{5}\-[0-9]{3}\s\S+/';
+
         return (preg_match($pattern, $postal));
     }
 
