@@ -80,6 +80,16 @@ class MainNavbar extends Widget
     public function renderJS()
     {
         $this->aboutDialog->renderJS();
+        ?>
+        $(function() {
+            $('[data-toggle="popover"]').popover({
+                html: true,
+                content: function() {
+                    return $('#popover-content').html();
+                }
+            });
+        });
+        <?php
     }
 
     /**
@@ -216,6 +226,25 @@ class MainNavbar extends Widget
 
                     <!-- Right area -->
                     <ul class="nav navbar-nav navbar-right">
+                        <!-- Notifications menu -->
+                        <li class="dropdown"><a class="dropdown-toggle"  data-container="body" data-toggle="popover" data-placement="bottom" data-title="Atualização" href="#"><i class="far fa-bell"></i></a>
+                            <div class="dropdown-menu panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Notificações</h3>
+                                </div>
+                                <div class="panel-body">
+                                    Está disponível uma nova versão do CatecheSis.
+                                </div>
+                            </div>
+                        </li>
+                        <div id="popover-content" style="display: none">
+                            <ul class="list-group custom-popover">
+                                <li class="list-group-item">Airport Pickup</li>
+                                <li class="list-group-item">Food and Beverage</li>
+                                <li class="list-group-item">Yoga Class</li>
+                            </ul>
+                        </div>
+
                         <!-- Settings -->
                         <li <?php if($this->menuOption==MENU_OPTION::SETTINGS) echo(' class="active"'); ?>><a href="configuracoes.php"><i class="fas fa-cog"></i></a></li>
 
