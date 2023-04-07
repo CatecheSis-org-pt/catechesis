@@ -188,7 +188,7 @@ $evaluationPeriodPanel->handlePost();
                                     $log_string .= " reprovado ";
                                 else
                                     $log_string .= " transita ";
-                                $log_string .= " no catecismo " . $row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma']) . " do ano catequético de " . intval($row['ano_lectivo'] / 10000) . "/" .  intval($row['ano_lectivo'] % 10000) . ".";
+                                $log_string .= " no catecismo " . $row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma']) . " do ano catequético de " . Utils::formatCatecheticalYear($row['ano_lectivo']). ".";
 
                                 catechumenArchiveLog($cid, $log_string);
                             }

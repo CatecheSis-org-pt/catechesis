@@ -399,7 +399,7 @@ $menu->renderHTML();
     <!--ano-->
      <div class="col-xs-3">
       <label for="data_nasc">Ano:</label>
-      <span><?php echo("" . intval($ano_catequetico / 10000) . "/" . intval($ano_catequetico % 10000) . "");?></span>
+      <span><?= Utils::formatCatecheticalYear($ano_catequetico); ?></span>
      </div> 
      
      

@@ -8,6 +8,7 @@ require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . '/core/domain/WeekDay.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
@@ -20,6 +21,7 @@ use catechesis\Configurator;
 use catechesis\UserData;
 use catechesis\Utils;
 use core\domain\WeekDay;
+use core\domain\Locale;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
@@ -215,14 +217,14 @@ $menu->renderHTML();
 	function escreve_dias($ano_i, $ano_f)
 	{
         $weekDay = WeekDay::toString(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY));
-		$timestamp = strtotime('first ' . $weekDay . ' of September', strtotime('1-1-' . $ano_i . ''));
+		$timestamp = strtotime('first ' . $weekDay . ' of ' . Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_i));
 
 		setlocale(LC_TIME, "pt_PT");
 		$mes_actual = strftime('%m', $timestamp);
 		$ultimo_mes = strftime('%m', $timestamp);
 	
 		echo("<tr>\n");
-		for($i=0; $timestamp <= strtotime('last ' . $weekDay . ' of June', strtotime('1-1-' . $ano_f . '')); $i++)
+		for($i=0; $timestamp <= strtotime('last ' . $weekDay . ' of ' . Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_f)); $i++)
 		{
 		 	 while($mes_actual==$ultimo_mes)
 			 {
@@ -252,14 +254,14 @@ $menu->renderHTML();
 		if($mes<9)
 			$ano = $ano_f;
 		
-		$timestamp = strtotime('first ' . $weekDay . ' of ' . $months[intval($mes)] . '', strtotime('1-1-' . $ano . ''));
+		$timestamp = strtotime('first ' . $weekDay . ' of ' . $months[intval($mes)], strtotime('1-1-' . $ano));
 
 		setlocale(LC_TIME, "pt_PT");
 		$mes_actual = strftime('%m', $timestamp);
 		$ultimo_mes = strftime('%m', $timestamp);
 		
 		$res = 0;
-		if($timestamp <= strtotime('last ' . $weekDay . ' of June', strtotime('1-1-' . $ano_f)))
+		if($timestamp <= strtotime('last ' . $weekDay . ' of ' . Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_f)))
 		{
 		 	 while($mes_actual==$ultimo_mes)
 			 {
@@ -323,29 +325,46 @@ $menu->renderHTML();
 			{
 				echo("<h4 class='only-print'>Folha de presenças</h4>\n");
 				echo("<span>Ano catequético: ".  Utils::formatCatecheticalYear($ano_catequetico) ."&nbsp;&nbsp;&nbsp;Catecismo: " . intval($catecismo) . "º" . $turma . "</span>");
-                $ano_i = $ano_catequetico / 10000;
-                $ano_f = $ano_catequetico % 10000;
+                $ano_i = Utils::getCatecheticalYearStart($ano_catequetico);
+                $ano_f = Utils::getCatecheticalYearEnd($ano_catequetico);
 				?>
 					<table id="tabela-presencas" class="table table-striped table-bordered table-condensed">
 					<thead>
 						<tr>
 							<th rowspan="2" style="width: 200px; ">Nome</th>
-                            <th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 9));?>">Set</th>
-                            <th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 10));?>">Out</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 11));?>">Nov</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 12));?>">Dez</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 1));?>">Jan</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 2));?>">Fev</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 3));?>">Mar</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 4));?>">Abr</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 5));?>">Mai</th>
-							<th colspan="<?php echo('' . computeNumCatechesisDays($ano_i, $ano_f, 6));?>">Jun</th>
+                            <?php
+                            $month_i = date_parse(Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)));
+                            $month_f = date_parse(Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)));
+                            $months_abrv = array(1 => 'Jan', 2 =>'Fev', 3 =>'Mar', 4 =>'Abr', 5 =>'Mai', 6 =>'Jun', 7 =>'Jul', 8 =>'Ago', 9 =>'Set', 10 =>'Out', 11 =>'Nov', 12 =>'Dez' );
+
+                            $month = $month_i['month'];
+                            for($i = 0; $i < 10; $i++)
+                            {
+                            ?>
+                                <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month)  ?>"><?= $months_abrv[$month] ?></th>
+                            <?php
+                                $month = ($month %12 + 1);
+                            }
+
+                            /*
+                            <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 9)  ?>">Set</th>
+                            <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 10) ?>">Out</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 11) ?>">Nov</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 12) ?>">Dez</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 1)  ?>">Jan</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 2)  ?>">Fev</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 3)  ?>">Mar</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 4)  ?>">Abr</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 5)  ?>">Mai</th>
+							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 6)  ?>">Jun</th>
+                            */
+							?>
 						</tr>
 			
 			
 				<?php	
 		
-				escreve_dias(intval($ano_catequetico / 10000), intval($ano_catequetico % 10000)); //Gera linha da tabela com os dias dos sabados
+				escreve_dias(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico)); //Gera linha da tabela com os dias dos sabados
 			
 				?>
 			
@@ -361,13 +380,22 @@ $menu->renderHTML();
 					//Preencher ficha
 					echo("\t<tr>\n");
 					echo("\t\t<td>" . Utils::firstAndLastName($nome) . "</td>\n\n");
-					
-					for($i=0; $i<10; $i++) 				//10 meses (Set a Jun)
+
+                    $month = $month_i['month'];
+                    for($i = 0; $i < 10; $i++)
+                    {
+                        for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), $month); $j++)
+                            echo("\t\t<td></td>\n");
+
+                        $month = ($month %12 + 1);
+                    }
+
+                    /*for($i=0; $i<10; $i++) 				//10 meses (Set a Jun  ou  Mar-Dez)
 					{
-						for($j=0; $j<computeNumCatechesisDays(intval($ano_catequetico / 10000), intval($ano_catequetico % 10000), (($i + 8)%12 +1)); $j++)
+						for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), (($i + 8)%12 +1)); $j++)
 							echo("\t\t<td></td>\n");
 						echo("\n");
-					}
+					}*/
 					
 					echo("\t</tr>\n");
 				}

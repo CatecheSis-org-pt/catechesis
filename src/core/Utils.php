@@ -2,8 +2,13 @@
 
 namespace catechesis;
 
+require_once(__DIR__ . '/Configurator.php');
+require_once(__DIR__ . '/domain/Locale.php');
+
+use core\domain\Locale;
 use core\domain\Marriage;
 use core\domain\Sacraments;
+use catechesis\Configurator;
 use Exception;
 use DateTime;
 use finfo;
@@ -149,10 +154,40 @@ class Utils
             $mes_actual = $dateObj->format("m");
         }
 
-        if ($mes_actual >= 7)    //De Julho a Dezembro
-            return $ano_actual * 10000 + ($ano_actual + 1);
-        else
-            return ($ano_actual - 1) * 10000 + $ano_actual;
+        if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL)
+        {
+            if ($mes_actual >= 7)    //De Julho a Dezembro
+                return $ano_actual * 10000 + ($ano_actual + 1);
+            else
+                return ($ano_actual - 1) * 10000 + $ano_actual;
+        }
+        else //if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)
+        {
+            //De Março a Dezembro
+            return $ano_actual * 10000 + $ano_actual;
+        }
+    }
+
+    /**
+     * Returns the starting civil year from an enconded catechetical year.
+     * E.g. For catechetical year '20202021' returns 2020.
+     * @param int $catecheticalYear
+     * @return int
+     */
+    public static function getCatecheticalYearStart(int $catecheticalYear)
+    {
+        return intval($catecheticalYear / 10000);
+    }
+
+    /**
+     * Returns the ending civil year from an enconded catechetical year.
+     * E.g. For catechetical year '20202021' returns 2021.
+     * @param int $catecheticalYear
+     * @return int
+     */
+    public static function getCatecheticalYearEnd(int $catecheticalYear)
+    {
+        return intval($catecheticalYear % 10000);
     }
 
 
@@ -164,7 +199,10 @@ class Utils
      */
     public static function formatCatecheticalYear(int $catecheticalYear)
     {
-        return "" . intval($catecheticalYear / 10000) . "/" . intval($catecheticalYear % 10000);
+        if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL)
+            return Utils::getCatecheticalYearStart($catecheticalYear) . "/" . Utils::getCatecheticalYearEnd($catecheticalYear);
+        else //if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)
+            return "" . Utils::getCatecheticalYearStart($catecheticalYear);
     }
 
 

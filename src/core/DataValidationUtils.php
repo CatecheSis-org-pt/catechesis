@@ -3,6 +3,7 @@
 
 namespace catechesis;
 
+use core\domain\Locale;
 use DateTime;
 
 
@@ -41,14 +42,14 @@ class DataValidationUtils
      */
     public static function validatePhoneNumber(string $tel, string $locale, bool $checkAntiPatterns = false)
     {
-        if($locale=="PT")
+        if($locale==Locale::PORTUGAL)
         {
             $pattern = '/^(\+\d{1,}[-\s]{0,1})?\d{9}$/';
             $antipattern1 = "000000000";
             $antipattern2 = "111111111";
             $antipattern3 = "123456789";
         }
-        else if($locale=="BR")
+        else if($locale==Locale::BRASIL)
         {
             $pattern = '/^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/';
             $antipattern1 = "0000-0000";
@@ -68,9 +69,9 @@ class DataValidationUtils
     public static function validateZipCode(string $postal, string $locale)
     {
         $pattern = '';
-        if($locale == "PT")
+        if($locale == Locale::PORTUGAL)
             $pattern = '/^[0-9]{4}\-[0-9]{3}\s\S+/';
-        else if($locale == "BR")
+        else if($locale == Locale::BRASIL)
             $pattern = '/^[0-9]{5}\-[0-9]{3}\s\S+/';
 
         return (preg_match($pattern, $postal));

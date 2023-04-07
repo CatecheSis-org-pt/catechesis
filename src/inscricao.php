@@ -473,11 +473,7 @@ $menu->renderHTML();
                     <div class="col-xs-4" style="margin-top: 3px;">
                      <label for="ano_catequetico">Ano catequético: </label>          
                       <?php
-
-                          $ano_i = intval(Utils::currentCatecheticalYear() / 10000);
-                          $ano_f = intval(Utils::currentCatecheticalYear() % 10000);
-                          echo("<span>" . $ano_i . "/" . $ano_f . "</span>\n");
-                        
+                          echo("<span>" . Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) . "</span>\n");
                       ?>
                     </div>
                      
