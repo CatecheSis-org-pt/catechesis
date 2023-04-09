@@ -340,24 +340,11 @@ $menu->renderHTML();
                             $month = $month_i['month'];
                             for($i = 0; $i < 10; $i++)
                             {
-                            ?>
+                                ?>
                                 <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month)  ?>"><?= $months_abrv[$month] ?></th>
-                            <?php
+                                <?php
                                 $month = ($month %12 + 1);
                             }
-
-                            /*
-                            <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 9)  ?>">Set</th>
-                            <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 10) ?>">Out</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 11) ?>">Nov</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 12) ?>">Dez</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 1)  ?>">Jan</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 2)  ?>">Fev</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 3)  ?>">Mar</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 4)  ?>">Abr</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 5)  ?>">Mai</th>
-							<th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, 6)  ?>">Jun</th>
-                            */
 							?>
 						</tr>
 			
@@ -389,13 +376,6 @@ $menu->renderHTML();
 
                         $month = ($month %12 + 1);
                     }
-
-                    /*for($i=0; $i<10; $i++) 				//10 meses (Set a Jun  ou  Mar-Dez)
-					{
-						for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), (($i + 8)%12 +1)); $j++)
-							echo("\t\t<td></td>\n");
-						echo("\n");
-					}*/
 					
 					echo("\t</tr>\n");
 				}
