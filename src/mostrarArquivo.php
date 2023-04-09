@@ -11,6 +11,7 @@ require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
+require_once(__DIR__ . "/core/domain/Locale.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 require_once(__DIR__ . '/gui/widgets/ModalDialog/ModalDialogWidget.php');
@@ -30,6 +31,7 @@ use catechesis\gui\ModalDialogWidget;
 use catechesis\gui\SacramentRecordPanelWidget;
 use catechesis\gui\Button;
 use catechesis\gui\ButtonType;
+use core\domain\Locale;
 
 
 
@@ -399,10 +401,10 @@ $menu->renderHTML();
 							if($db->enrollCatechumenInGroup($cid, $ins_ano_catequetico, $ins_catecismo, $ins_turma,
                                                             $ins_passa, $ins_pago, Authenticator::getUsername()))
 							{
-									catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+									catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
 									
 									if($ins_pago)
-										catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+										catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
 									
 									echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Catequizando inscrito no " . $ins_catecismo . "º catecismo!</div>");
 							}
@@ -443,7 +445,7 @@ $menu->renderHTML();
                         {
 							if($db->updateCatechumenEnrollmentPayment($cid, $pago_ano_catequetico, $pago_catecismo, $pago_turma, true))
 							{
-							  	catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $pago_catecismo . "º" . $pago_turma . " do ano catequético de " . intval($pago_ano_catequetico / 10000) . "/" .  intval($pago_ano_catequetico % 10000) . ".");
+							  	catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $pago_catecismo . "º" . $pago_turma . " do ano catequético de " . Utils::formatCatecheticalYear($pago_ano_catequetico) . ".");
 							    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Pagamento de inscrição registado. </div>");
 							}
 							else
@@ -482,7 +484,7 @@ $menu->renderHTML();
 						try
                         {
                             $db->unenrollCatechumenFromGroup($cid, $el_ano_catequetico, $el_catecismo, $el_turma);
-                            catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " desinscrito do " . $el_catecismo . "º" . $el_turma . ", do ano catequético de " . intval($el_ano_catequetico / 10000) . "/" .  intval($el_ano_catequetico % 10000) . ".");
+                            catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " desinscrito do " . $el_catecismo . "º" . $el_turma . ", do ano catequético de " . Utils::formatCatecheticalYear($el_ano_catequetico) . ".");
                             echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Entrada removida do percurso catequético. </div>");
 						}
                         catch (Exception $e)
@@ -503,9 +505,18 @@ $menu->renderHTML();
                 $esc_ano_lectivo = Utils::sanitizeInput($_POST['ano_lectivo']);
                 $esc_ano_escolar = Utils::sanitizeInput($_POST['ano_escolar']);
 
-                $matches = NULL;
-                preg_match('/^([0-9]{4})\/([0-9]{4})$/', $esc_ano_lectivo, $matches);
-                $esc_ano_lectivo = 10000 * intval($matches[1]) + intval($matches[2]);
+                if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL)
+                {
+                    $matches = NULL;
+                    preg_match('/^([0-9]{4})\/([0-9]{4})$/', $esc_ano_lectivo, $matches);
+                    $esc_ano_lectivo = 10000 * intval($matches[1]) + intval($matches[2]);
+                }
+                else //if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)
+                {
+                    $matches = NULL;
+                    preg_match('/^([0-9]{4})$/', $esc_ano_lectivo, $matches);
+                    $esc_ano_lectivo = 10000 * intval($matches[1]) + intval($matches[1]); //NOTE: We repeat the same number twice (e.g. '20232023') for compatibility reasons
+                }
 
                 if($esc_ano_lectivo < 1000000 )	//Tem de ser da forma '20152016', logo, com 8 digitos
                 {
@@ -517,7 +528,7 @@ $menu->renderHTML();
                     {
                         if($db->insertCatechumenSchoolingRecord($cid, $esc_ano_lectivo, $esc_ano_escolar))
                         {
-                            catechumenArchiveLog($cid, "Actualizado percurso escolar do catequizando com id=" . $cid . ". Acrescentou-se que no ano lectivo de " . intval($esc_ano_lectivo / 10000) . "/" . intval($esc_ano_lectivo % 10000) . " o ano escolar era " . $esc_ano_escolar . ".");
+                            catechumenArchiveLog($cid, "Actualizado percurso escolar do catequizando com id=" . $cid . ". Acrescentou-se que no ano lectivo de " . Utils::formatCatecheticalYear($esc_ano_lectivo) . " o ano escolar era " . $esc_ano_escolar . ".");
                             echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Percurso escolar do catequizando actualizado!</div>");
                         }
                         else
@@ -550,7 +561,7 @@ $menu->renderHTML();
                     {
                         if($db->deleteCatechumenSchoolingRecord($cid, $el_ano_lectivo_esc))
                         {
-                            catechumenArchiveLog($cid, "Actualizado percurso escolar do catequizando com id=" . $cid . ". Removeu-se dados do ano lectivo de " . intval($el_ano_lectivo_esc / 10000) . "/" . intval($el_ano_lectivo_esc % 10000) . ".");
+                            catechumenArchiveLog($cid, "Actualizado percurso escolar do catequizando com id=" . $cid . ". Removeu-se dados do ano lectivo de " . Utils::formatCatecheticalYear($el_ano_lectivo_esc) . ".");
                             echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Registo eliminado do percurso escolar do catequizando.</div>");
                         }
                         else

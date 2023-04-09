@@ -14,6 +14,7 @@ require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
+require_once(__DIR__ . "/core/domain/Locale.php");
 require_once(__DIR__ . '/core/document_generators/libraries/PHPWord-develop/src/PhpOffice/PhpWord/Settings.php');
 require_once(__DIR__ . '/core/document_generators/libraries/PHPWord-develop/src/PhpOffice/PhpWord/PhpWord.php');
 require_once(__DIR__ . '/core/document_generators/libraries/ZendFramework-2.4.11/library/Zend/Stdlib/StringUtils.php');
@@ -28,6 +29,7 @@ use catechesis\UserData;
 use catechesis\Configurator;
 use core\domain\Sacraments;
 use PhpOffice\PhpWord\Settings;
+use core\domain\Locale;
 
 
 Settings::loadConfig();
@@ -304,7 +306,7 @@ foreach($cids as $cid)
             $grupo_anterior = $catecismo . 'º ' . $turma;
 
             $document->setValue('parish_name', Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME));
-            $document->setValue('ano_catequetico', intval(Utils::currentCatecheticalYear() /10000 +1) . '/' . intval(Utils::currentCatecheticalYear() %10000 +1));
+            $document->setValue('ano_catequetico', Utils::formatCatecheticalYear(Utils::currentCatecheticalYear() +10001));
 
             $document->setValue('grupo_anterior_' . $i, $grupo_anterior);
             $document->setValue('nome_' . $i, $nome);

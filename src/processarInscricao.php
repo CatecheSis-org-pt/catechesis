@@ -1055,9 +1055,9 @@ $menu->renderHTML();
                 {
                     if($db->enrollCatechumenInGroup($cid, $ins_ano_catequetico, $ins_catecismo, $ins_turma, true, $ins_pago, Authenticator::getUsername()))
                     {
-                            catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+                            catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
                             if($ins_pago)
-                                catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+                                catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
                             echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Catequizando inscrito no " . $ins_catecismo . "º catecismo!</div>");
                     }
                     else
