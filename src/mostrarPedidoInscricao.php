@@ -5,6 +5,7 @@ require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/core/enrollment_functions.php');
 require_once(__DIR__ . "/gui/widgets/WidgetManager.php");
@@ -14,6 +15,7 @@ use catechesis\Authenticator;
 use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
+use core\domain\Locale;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
@@ -328,8 +330,8 @@ $db = new PdoDatabaseManager();
                 <!--telemovel-->
                 <div class="col-lg-2">
                     <div id="telemovel_div">
-                      <label for="telm">Telemóvel:</label>
-                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="Telemóvel do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
+                      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
                       <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                     </div>
                     <div class="clearfix"></div>
@@ -518,7 +520,7 @@ $db = new PdoDatabaseManager();
                            <tr>
                                <th>Nome</th>
                                <th>Parentesco</th>
-                               <th>Telemóvel</th>
+                               <th><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?></th>
                            </tr>
                            </thead>
                            <tbody>

@@ -5,6 +5,8 @@ require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/Utils.php');
+require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
@@ -20,6 +22,8 @@ use catechesis\gui\MainNavbar\MENU_OPTION;
 use catechesis\gui\ModalDialogWidget;
 use catechesis\gui\Button;
 use catechesis\gui\ButtonType;
+use core\domain\Locale;
+use catechesis\Configurator;
 
 
 // Create the widgets manager
@@ -513,7 +517,7 @@ $menu->renderHTML();
 	    <!--telemovel-->
 	    <div class="col-xs-2">
 	    <div id="telemovel_div">
-	      <label for="telm">Telemóvel:</label>
+	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <div class="input-group">
 	      <input type="tel" class="form-control" id="telemovel" name="telemovel"  style="cursor: auto;" 
 	      	<?php if($_SESSION['telemovel']){ echo("value='" . $_SESSION['telemovel'] . "'");}?> readonly>

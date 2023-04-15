@@ -4,6 +4,7 @@ namespace catechesis\gui;
 
 require_once(__DIR__ . '/../AbstractCatechumensListing/AbstractCatechumensListingWidget.php');
 require_once(__DIR__ . '/../../../core/Configurator.php');
+require_once(__DIR__ . '/../../../core/domain/Locale.php');
 require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../../../core/UserData.php');
 
@@ -11,6 +12,7 @@ require_once(__DIR__ . '/../../../core/UserData.php');
 use catechesis\Configurator;
 use catechesis\UserData;
 use catechesis\Utils;
+use core\domain\Locale;
 
 
 /**
@@ -386,7 +388,7 @@ class CatechumensReportWidget extends AbstractCatechumensListingWidget
                     <?php
                     echo("(" . $enc_edu . ")<br>\n");
                     if($telemovel != 0)
-                        echo("Telemóvel: " . $telemovel . "<br>\n");
+                        echo(((Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular: ":"Telemóvel: ") . $telemovel . "<br>\n");
                     if ($telefone != 0)
                         echo("Telefone: " . $telefone . "<br>\n");
                     if(isset($email) && $email!="")

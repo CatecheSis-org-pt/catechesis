@@ -1,6 +1,7 @@
 <?php
 
-require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
+require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
@@ -16,6 +17,8 @@ require_once(__DIR__ . '/gui/widgets/ModalDialog/ModalDialogWidget.php');
 use catechesis\DatabaseAccessMode;
 use catechesis\DataValidationUtils;
 use catechesis\Authenticator;
+use catechesis\Configurator;
+use core\domain\Locale;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
 use catechesis\gui\WidgetManager;
@@ -623,7 +626,7 @@ $menu->renderHTML();
                         <tr>
                             <th>Nome</th>
                             <th>Parentesco</th>
-                            <th>Telemóvel</th>
+                            <th><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?></th>
                             <th></th>
                         </tr>
                         </thead>

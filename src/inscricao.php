@@ -4,6 +4,7 @@ require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
@@ -19,6 +20,7 @@ use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
 use catechesis\UserData;
+use core\domain\Locale;
 
 // Create the widgets manager
 $pageUI = new WidgetManager();
@@ -197,8 +199,8 @@ $menu->renderHTML();
     <!--telemovel-->
     <div class="col-xs-2">
     <div id="telemovel_div">
-      <label for="telm">Telemóvel:</label>
-      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="Telemóvel do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel'] . '');} else {echo('');} ?>">
+      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel'] . '');} else {echo('');} ?>">
       <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
     </div>
     <div class="clearfix"></div>
