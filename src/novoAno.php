@@ -374,11 +374,11 @@ $menu->renderHTML();
 <datalist id="anos_catequeticos">
     <?php
     //Print from the last 10 years up to the following 5 years
+    $today = date('d-m-Y');
     for($y = -10; $y < 5; $y++)
     {
-        $year_start = date('Y') + $y;
-        $year_end = date('Y') + $y + 1;
-        echo("<option value='$year_start/$year_end'>");
+        $newDate = date('d-m-Y', strtotime((($y>0)?"+":"")."$y year"));
+        echo("<option value=" . Utils::formatCatecheticalYear(Utils::computeCatecheticalYear($newDate)) . ">");
     }
     ?>
 </datalist>
