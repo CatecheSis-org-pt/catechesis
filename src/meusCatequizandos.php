@@ -236,7 +236,7 @@ $menu->renderHTML();
 			{
                 $catechumensListWidgets[$contador-1]->setCatechumensList($result2);
                 $catechumensListWidgets[$contador-1]->addButtonsToToolbar("
-                    <button type=\"button\" onclick=\"imprime_presencas($contador)\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a área de impressão</button>
+                    <button type=\"button\" onclick=\"imprime_presencas($contador)\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>
                     <button type=\"button\" onclick=\"window.open('aproveitamento.php');\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-check\"></span> Registar aproveitamento </button>
                 ");
                 $catechumensListWidgets[$contador-1]->renderHTML();

@@ -327,7 +327,7 @@ $menu->renderHTML();
 		if($ano_catequetico > 1000000 && $catecismo > 0 && $catecismo <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) && $turma!="")
 		{
 			echo("<div class=\"col-xs-4\">\n");
-			echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a área de impressão</button>\n");
+			echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>\n");
 			echo("</div>\n");
 		}
 		
