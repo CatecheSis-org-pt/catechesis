@@ -24,7 +24,7 @@ $pageUI->addWidget($menu);
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <title>Reprografia</title>
+  <title>Área de Impressão</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <?php $pageUI->renderCSS(); // Render the widgets' CSS ?>
@@ -84,7 +84,7 @@ catch(Exception $e)
 
 <div class="container">
 
-	<h2> Reprografia</h2>
+	<h2> Área de Impressão</h2>
 
 	<div class="row" style="margin-bottom:20px; "></div>
 	

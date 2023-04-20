@@ -164,7 +164,7 @@ $menu->renderHTML();
     </div>
 
   <div class="no-print">
-      <h2> Reprografia</h2>
+      <h2> Área de Impressão</h2>
 
       <div class="row" style="margin-top:40px; "></div>
 
