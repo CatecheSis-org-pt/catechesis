@@ -51,7 +51,7 @@ class AboutDialogWidget extends ModalDialogWidget
                         <span>Versão 2.1.0</span>
                     </div>
                     <div class="col-xs-12">
-                        <span>Última revisão em: 16-04-2023</span>
+                        <span>Última revisão em: 01-05-2023</span>
                     </div>
                 </div>
                 <div class="clearfix"></div>

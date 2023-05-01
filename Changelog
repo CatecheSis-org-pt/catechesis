@@ -2,7 +2,7 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
-## [Versão 2.1.0] - 2023-04-16
+## [Versão 2.1.0] - 2023-05-01
 
 #### Novidades:
 - Configurações regionais: suporte para códigos postais, números de telefone e calendário de anos catequéticos de Portugal e Brasil; 
@@ -11,6 +11,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 - Melhorada nomenclatura e comportamento do campo _último catecismo frequentado_ das páginas de inscrição/renovação de matrícula, para evitar erros de preenchimento;
 - Melhoradas as recomendações de catecismos com base na idade do cadidato e no último catecismo frequentado;
 - Funcionalidade _Reprografia_ renomeada para _Área de Impressão_;
+
 
 ## [Versão 2.0.1] - 2022-09-01
 
