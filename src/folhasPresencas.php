@@ -164,7 +164,7 @@ $menu->renderHTML();
     </div>
 
   <div class="no-print">
-      <h2> Reprografia</h2>
+      <h2> Área de Impressão</h2>
 
       <div class="row" style="margin-top:40px; "></div>
 
@@ -338,11 +338,14 @@ $menu->renderHTML();
                             $months_abrv = array(1 => 'Jan', 2 =>'Fev', 3 =>'Mar', 4 =>'Abr', 5 =>'Mai', 6 =>'Jun', 7 =>'Jul', 8 =>'Ago', 9 =>'Set', 10 =>'Out', 11 =>'Nov', 12 =>'Dez' );
 
                             $month = $month_i['month'];
-                            for($i = 0; $i < 10; $i++)
+                            for($i = 0; $i < 12; $i++)
                             {
                                 ?>
                                 <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month)  ?>"><?= $months_abrv[$month] ?></th>
                                 <?php
+
+                                if($month == $month_f['month'])
+                                    break;
                                 $month = ($month %12 + 1);
                             }
 							?>

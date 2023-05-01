@@ -32,7 +32,7 @@ abstract class Locale
                 return "June";
 
             case self::BRASIL:
-                return "December";
+                return "November";
         }
     }
 }
