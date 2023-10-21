@@ -88,7 +88,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 </div>
 
                 <!-- Grid view -->
-                <div role="tabpanel" class="tab-pane" id="tabGrid">
+                <div role="tabpanel" class="tab-pane catechumens-grid-panel" id="tabGrid">
                     <?php
                     $this->renderGridViewHTML();
                     ?>
@@ -102,7 +102,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     public function renderGridViewHTML()
     {
         ?>
-        <div class="panel panel-default" id="<?=$this->getID()?>_catechist_groups_panel">
+        <div class="panel panel-default catechumens-ground-plane" id="<?=$this->getID()?>_catechist_groups_panel">
             <!--<div class="panel-heading text-center">Catequizandos</div>-->
             <div class="clearfix" style="margin-bottom: 20px"></div>
             <div class="panel-body">

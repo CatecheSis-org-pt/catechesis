@@ -1,3 +1,13 @@
+.catechumens-grid-panel{
+    perspective: 1000px;
+}
+
+.catechumens-ground-plane{
+    transform: rotateX(10deg);
+    transform-origin: center bottom;
+    transform-style: preserve-3d;
+}
+
 .catechumen-card {
     background-color: transparent;
     width: 220px;
@@ -12,11 +22,15 @@
     height: 100%;
     text-align: center;
     transition: transform 0.5s;
-    transform-style: preserve-3d;
+    /*transform-style: preserve-3d;*/
     transform-origin : center bottom;
+    transform: rotateX(-20deg);
+    /*box-shadow: 0 70px 40px -20px rgba(0, 0, 0, 0.2);*/
+    box-shadow: 30px 10px 60px -10px rgba(0, 0, 0, 0.2);
+
 }
 .catechumen-card:hover .catechumen-card-inner {
-    transform: rotateX(90deg);
+    transform: rotateX(10deg);
     transform-origin : center bottom;
 }
 .catechumen-card-front,
