@@ -29,6 +29,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     {
         parent::__construct($id);
         // This widget's dependencies are inherited from AbstractCatechumensListingWidget
+
+        // Static CSS styles of this widget that are common to all instances (only imported once)
+        $this->addCSSDependency('gui/widgets/CatechumensList/CatechumensListWidget.css');
     }
 
 
@@ -65,237 +68,307 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     //NOTE: The renderCSS() method is inherited from AbstractCatechumensListingWidget.
 
 
-    /**
-     * @inheritDoc
-     */
     public function renderHTML()
     {
         ?>
-
-        <!-- Catechumens list widget -->
         <div id="<?=$this->getID()?>" class="catechumens_list_widget<?= $this->getCustomClassesString()?>" style="<?=$this->getCustomInlineStyle()?>">
 
-            <!-- Botoes imprimir, transferir (Excel e PDF), mostrar/ocultar atributos e sacramentos -->
-            <div class="clearfix"></div>
-            <div class="btn-group no-print">
+            <!-- Tabs -->
+            <ul class="nav nav-pills" style="float: right;">
+                <li role="presentation" class="active"><a href="#tabList" aria-controls="tabList" role="tab" data-toggle="tab"><i class="fas fa-th-list"></i></a></li>
+                <li role="presentation" class=""><a href="#tabGrid" aria-controls="tabGrid" role="tab" data-toggle="tab"><i class="fas fa-id-card-alt"></i></a></li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- List view -->
+                <div role="tabpanel" class="tab-pane active" id="tabList">
                 <?php
-                if(isset($this->additional_toolbar_buttons))
-                    echo($this->additional_toolbar_buttons);
+                $this->renderListViewHTML();
                 ?>
-                <button type="button" onclick="window.print()" class="btn btn-default no-print"><span class="glyphicon glyphicon-print"></span> Imprimir</button>
-                <div class="btn-group">
-                    <button type="button" onclick="" class="btn btn-default dropdown-toggle no-print" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-export"></span> Exportar <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'xls');"><img src="img/excel_icon.png" style="width: 10%; height: 10%;"/> Como Microsoft Excel 97-2003 (.xls) <span style="margin-right: 20px;"></span></a></li>
-                        <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'pdf');"><img src="img/pdf_icon.png" style="width: 10%; height: 10%;"/> Como PDF (.pdf) <span style="margin-right: 20px;"></span></a></li>
-                    </ul>
                 </div>
-                <button type="button" onclick="show_hide_catechumen_attributes('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_atributos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar atributos</button>
 
+                <!-- Grid view -->
+                <div role="tabpanel" class="tab-pane" id="tabGrid">
+                    <?php
+                    $this->renderGridViewHTML();
+                    ?>
+                </div>
+            </div>
+
+        </div>
+        <?php
+    }
+
+    public function renderGridViewHTML()
+    {
+        ?>
+        <div class="panel panel-default" id="<?=$this->getID()?>_catechist_groups_panel">
+            <!--<div class="panel-heading text-center">Catequizandos</div>-->
+            <div class="clearfix" style="margin-bottom: 20px"></div>
+            <div class="panel-body">
                 <?php
-                if($this->sacraments_shown)
-                {?>
-                    <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-close"></span> Ocultar sacramentos</button>
+                $counter = 0;
+                foreach($this->catechumens_list as $row)
+                {
+                    $counter++;
+                    $foto = Utils::sanitizeOutput($row['foto']);
+
+                    if($counter % 4 == 0)
+                        echo('<div class="row" style="margin-bottom: 40px;">');
+
+                ?>
+                <div class="col-sm-3">
+                    <div class="catechumen-card" onclick="window.open('mostrarFicha.php?cid=<?=$row['cid']?>');" >
+                        <div class="catechumen-card-inner">
+                            <div class="catechumen-card-front">
+                                <img src="<?php
+                                if($foto && $foto!="")
+                                    echo("resources/catechumenPhoto.php?foto_name=$foto");
+                                else
+                                    echo("img/default-user-icon-profile.png");
+                                ?>">
+                                <h3><?= Utils::firstAndLastName(Utils::sanitizeOutput($row['nome'])) ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <?php
+                    if($counter % 4 == 0)
+                        echo("</div>");
                 }
-                else
-                {?>
-                    <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar sacramentos</button>
-                <?php
-                } ?>
+                ?>
             </div>
+        </div>
+    <?php
+    }
 
-            <form target="_blank" action="transferirResultadosPesquisa.php" method="post" id="<?=$this->getID()?>_transferir_form" name="<?=$this->getID()?>_transferir_form">
-                <input type="hidden" name="file_type" id="<?=$this->getID()?>_transferir_tipo" value="xls">
-                <input type="hidden" name="entity_name" id="<?=$this->getID()?>_entity_name" value="<?= $this->entities_name ?>">
-                <?php
-                //Generate list of cid as required by the download script
-                foreach($this->catechumens_list as $catechumen)
-                {?>
-                    <input type="hidden" name="catechumens_list[]" value="<?= $catechumen['cid'] ?>">
-                <?php
-                }?>
-            </form>
+    /**
+     * @inheritDoc
+     */
+    public function renderListViewHTML()
+    {
+        ?>
 
-
-            <!-- Cabecalho com Num Resultados -->
-            <div class="row no-print" style="margin-top:20px; "></div>
-            <div class="page-header" style="position:relative; z-index:2;">
-                <div class="row">
-                    <div class="col-md-4 pull-left">
-                        <h1 class="results_header"><small><span id="<?=$this->getID()?>_numero_resultados"></span><?php if(count($this->catechumens_list)==0) echo("Sem"); else echo(count($this->catechumens_list));?> <?= $this->entities_name ?><?php if(count($this->catechumens_list)!=1) echo("s"); ?></small></h1>
-                    </div>
-                    <div class="col-md-8 pull-right">
-                        <div id="<?=$this->getID()?>_legenda_sacramentos" class="pull-right" style="<?php if(!$this->sacraments_shown) echo('opacity:0.0;');?>"> <span><span class="label label-success">&nbsp;</span> Nesta paróquia</span> &nbsp; <span><span class="label label-default">&nbsp;</span> Noutra paróquia</span>  <span><span class="badge-green" data-badge="">&nbsp;&nbsp;</span> Comprovativo</span></div>
-                    </div>
-                </div>
-                <div class="clearfix"></div>
+        <!-- Botoes imprimir, transferir (Excel e PDF), mostrar/ocultar atributos e sacramentos -->
+        <div class="clearfix"></div>
+        <div class="btn-group no-print">
+            <?php
+            if(isset($this->additional_toolbar_buttons))
+                echo($this->additional_toolbar_buttons);
+            ?>
+            <button type="button" onclick="window.print()" class="btn btn-default no-print"><span class="glyphicon glyphicon-print"></span> Imprimir</button>
+            <div class="btn-group">
+                <button type="button" onclick="" class="btn btn-default dropdown-toggle no-print" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-export"></span> Exportar <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'xls');"><img src="img/excel_icon.png" style="width: 10%; height: 10%;"/> Como Microsoft Excel 97-2003 (.xls) <span style="margin-right: 20px;"></span></a></li>
+                    <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'pdf');"><img src="img/pdf_icon.png" style="width: 10%; height: 10%;"/> Como PDF (.pdf) <span style="margin-right: 20px;"></span></a></li>
+                </ul>
             </div>
-
+            <button type="button" onclick="show_hide_catechumen_attributes('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_atributos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar atributos</button>
 
             <?php
-            if(count($this->catechumens_list) > 0)
+            if($this->sacraments_shown)
             {?>
-                <!-- Resultados -->
-                <div class="col-xs-12">
-                    <div class="only-print" style="margin-top: -150px; position:relative; z-index:1;"></div>
-                    <table class="table table-hover" id="<?=$this->getID()?>_resultados">
-                        <thead>
+                <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-close"></span> Ocultar sacramentos</button>
+            <?php
+            }
+            else
+            {?>
+                <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar sacramentos</button>
+            <?php
+            } ?>
+        </div>
+
+        <form target="_blank" action="transferirResultadosPesquisa.php" method="post" id="<?=$this->getID()?>_transferir_form" name="<?=$this->getID()?>_transferir_form">
+            <input type="hidden" name="file_type" id="<?=$this->getID()?>_transferir_tipo" value="xls">
+            <input type="hidden" name="entity_name" id="<?=$this->getID()?>_entity_name" value="<?= $this->entities_name ?>">
+            <?php
+            //Generate list of cid as required by the download script
+            foreach($this->catechumens_list as $catechumen)
+            {?>
+                <input type="hidden" name="catechumens_list[]" value="<?= $catechumen['cid'] ?>">
+            <?php
+            }?>
+        </form>
+
+
+        <!-- Cabecalho com Num Resultados -->
+        <div class="row no-print" style="margin-top:20px; "></div>
+        <div class="page-header" style="position:relative; z-index:2;">
+            <div class="row">
+                <div class="col-md-4 pull-left">
+                    <h1 class="results_header"><small><span id="<?=$this->getID()?>_numero_resultados"></span><?php if(count($this->catechumens_list)==0) echo("Sem"); else echo(count($this->catechumens_list));?> <?= $this->entities_name ?><?php if(count($this->catechumens_list)!=1) echo("s"); ?></small></h1>
+                </div>
+                <div class="col-md-8 pull-right">
+                    <div id="<?=$this->getID()?>_legenda_sacramentos" class="pull-right" style="<?php if(!$this->sacraments_shown) echo('opacity:0.0;');?>"> <span><span class="label label-success">&nbsp;</span> Nesta paróquia</span> &nbsp; <span><span class="label label-default">&nbsp;</span> Noutra paróquia</span>  <span><span class="badge-green" data-badge="">&nbsp;&nbsp;</span> Comprovativo</span></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+
+        <?php
+        if(count($this->catechumens_list) > 0)
+        {?>
+            <!-- Resultados -->
+            <div class="col-xs-12">
+                <div class="only-print" style="margin-top: -150px; position:relative; z-index:1;"></div>
+                <table class="table table-hover" id="<?=$this->getID()?>_resultados">
+                    <thead>
+                    <tr>
+                        <th style="background-color: transparent;">
+                            <div class="only-print" style="opacity:0.0;">
+                                <img src="<?= UserData::getParishLogoQueryURL() ?>" style="height: 50px;">
+                                <h3>Pesquisa de catequizandos</h3>
+                                <div class="row" style="margin-bottom:50px; "></div>
+                            </div>
+                            Nome</th>
+                        <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
+                        <th>Data nascimento</th>
+                        <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
+                        <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
+                    </tr>
+                    </thead>
+                    <tfoot class="only-print">
+                    <tr>
+                        <td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                    </tr>
+                    </tfoot>
+                    <tbody data-link="row" class="rowlink">
+                    <?php
+                    foreach($this->catechumens_list as $row)
+                    {
+                        $foto = Utils::sanitizeOutput($row['foto']);
+                        $paroquia_batismo = Utils::sanitizeOutput($row['paroquia_batismo']);
+                        $comprovativo_batismo = Utils::sanitizeOutput($row['comprovativo_batismo']);
+                        $paroquia_comunhao = Utils::sanitizeOutput($row['paroquia_comunhao']);
+                        $comprovativo_comunhao = Utils::sanitizeOutput($row['comprovativo_comunhao']);
+                        $paroquia_crisma = Utils::sanitizeOutput($row['paroquia_crisma']);
+                        $comprovativo_crisma = Utils::sanitizeOutput($row['comprovativo_crisma']);
+                        $escuteiro = (intval($row['escuteiro']) == 1);
+                        $observacoes = Utils::sanitizeOutput($row['obs']);
+                        $autorizou_fotos = (intval($row['autorizou_fotos']) == 1);
+                        $autorizou_saida = (intval($row['autorizou_saida_sozinho']) == 1);
+
+                        //Numerical catechism order for DataTables
+                        $catechismOrder = $row['ano_catecismo']?($row['ano_catecismo']*100 + Utils::toNumber(Utils::sanitizeOutput($row['turma']))):0;
+
+
+                        ?>
                         <tr>
-                            <th style="background-color: transparent;">
-                                <div class="only-print" style="opacity:0.0;">
-                                    <img src="<?= UserData::getParishLogoQueryURL() ?>" style="height: 50px;">
-                                    <h3>Pesquisa de catequizandos</h3>
-                                    <div class="row" style="margin-bottom:50px; "></div>
-                                </div>
-                                Nome</th>
-                            <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
-                            <th>Data nascimento</th>
-                            <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
-                            <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
-                        </tr>
-                        </thead>
-                        <tfoot class="only-print">
-                        <tr>
-                            <td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
-                        </tr>
-                        </tfoot>
-                        <tbody data-link="row" class="rowlink">
+                            <td data-container="body" data-toggle="popover" data-placement="top" data-content="<img src='<?php
+                        if($foto && $foto!="")
+                            echo("resources/catechumenPhoto.php?foto_name=$foto");
+                        else
+                            echo("img/default-user-icon-profile.png");
+                        ?>' style='height:133px;'>">
+                                <a href="mostrarFicha.php?cid=<?=$row['cid']?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
+                            </td>
+
                         <?php
-                        foreach($this->catechumens_list as $row)
-                        {
-                            $foto = Utils::sanitizeOutput($row['foto']);
-                            $paroquia_batismo = Utils::sanitizeOutput($row['paroquia_batismo']);
-                            $comprovativo_batismo = Utils::sanitizeOutput($row['comprovativo_batismo']);
-                            $paroquia_comunhao = Utils::sanitizeOutput($row['paroquia_comunhao']);
-                            $comprovativo_comunhao = Utils::sanitizeOutput($row['comprovativo_comunhao']);
-                            $paroquia_crisma = Utils::sanitizeOutput($row['paroquia_crisma']);
-                            $comprovativo_crisma = Utils::sanitizeOutput($row['comprovativo_crisma']);
-                            $escuteiro = (intval($row['escuteiro']) == 1);
-                            $observacoes = Utils::sanitizeOutput($row['obs']);
-                            $autorizou_fotos = (intval($row['autorizou_fotos']) == 1);
-                            $autorizou_saida = (intval($row['autorizou_saida_sozinho']) == 1);
+                        // Atributos
+                        ?>
+                        <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="max-width:50px; opacity:0">
 
-                            //Numerical catechism order for DataTables
-                            $catechismOrder = $row['ano_catecismo']?($row['ano_catecismo']*100 + Utils::toNumber(Utils::sanitizeOutput($row['turma']))):0;
+                        <?php if(isset($observacoes) && $observacoes!="")
+                        {?>
+                            <span class='glyphicon glyphicon-comment' data-placement='top' data-toggle='popover' title='Observações' data-content='<?= $observacoes ?>' style='float:right'></span>
+                        <?php
+                        }
+                        else
+                        {?>
+                            <span class='glyphicon glyphicon-comment' style='float:right; opacity: 0.0;'></span>
+                        <?php
+                        }
 
+                        if($escuteiro)
+                        {?>
+                            <span class='fas fa-campground' style='float:right; margin-inline: 5px;' data-placement='top' data-toggle='popover' data-content='Escuteiro'>&nbsp;</span>
+                        <?php
+                        }
+                        else
+                        {?>
+                            <span class='fas fa-campground' style='float:right; margin-inline: 5px; opacity: 0.0;'>&nbsp;</span>
+                        <?php
+                        }
 
-                            ?>
-                            <tr>
-                                <td data-container="body" data-toggle="popover" data-placement="top" data-content="<img src='<?php
-                            if($foto && $foto!="")
-                                echo("resources/catechumenPhoto.php?foto_name=$foto");
-                            else
-                                echo("img/default-user-icon-profile.png");
-                            ?>' style='height:133px;'>">
-                                    <a href="mostrarFicha.php?cid=<?=$row['cid']?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
-                                </td>
-
+                        if($autorizou_saida==0)
+                        {?>
+                            <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="O catequizando NÂO está autorizado a sair sozinho.">
+                            <i class='fas fa-door-open icon-stack-base'></i>
+                            <i class='fas fa-ban ban-overlay'></i>
+                        </span>
                             <?php
-                            // Atributos
-                            ?>
-                            <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="max-width:50px; opacity:0">
+                        }
+                        else
+                        { ?>
+                            <span class='fas fa-door-open' style='float:right; margin-inline: 5px; opacity: 1.0;' data-placement='top' data-toggle='popover' data-content='O catequizando pode sair sozinho.'>&nbsp;</span>
+                            <?php
+                        }
 
-                            <?php if(isset($observacoes) && $observacoes!="")
-                            {?>
-                                <span class='glyphicon glyphicon-comment' data-placement='top' data-toggle='popover' title='Observações' data-content='<?= $observacoes ?>' style='float:right'></span>
-                            <?php
-                            }
-                            else
-                            {?>
-                                <span class='glyphicon glyphicon-comment' style='float:right; opacity: 0.0;'></span>
-                            <?php
-                            }
-
-                            if($escuteiro)
-                            {?>
-                                <span class='fas fa-campground' style='float:right; margin-inline: 5px;' data-placement='top' data-toggle='popover' data-content='Escuteiro'>&nbsp;</span>
-                            <?php
-                            }
-                            else
-                            {?>
-                                <span class='fas fa-campground' style='float:right; margin-inline: 5px; opacity: 0.0;'>&nbsp;</span>
-                            <?php
-                            }
-
-                            if($autorizou_saida==0)
-                            {?>
-                                <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="O catequizando NÂO está autorizado a sair sozinho.">
-                                <i class='fas fa-door-open icon-stack-base'></i>
+                        if($autorizou_fotos==0)
+                        {?>
+                            <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="NÃO autoriza a utilização e divulgação de fotografias do educando.">
+                                <i class='fas fa-camera icon-stack-base'></i>
                                 <i class='fas fa-ban ban-overlay'></i>
                             </span>
-                                <?php
-                            }
-                            else
-                            { ?>
-                                <span class='fas fa-door-open' style='float:right; margin-inline: 5px; opacity: 1.0;' data-placement='top' data-toggle='popover' data-content='O catequizando pode sair sozinho.'>&nbsp;</span>
-                                <?php
-                            }
-
-                            if($autorizou_fotos==0)
-                            {?>
-                                <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="NÃO autoriza a utilização e divulgação de fotografias do educando.">
-                                    <i class='fas fa-camera icon-stack-base'></i>
-                                    <i class='fas fa-ban ban-overlay'></i>
-                                </span>
-                            <?php
-                            }
-                            else
-                            { ?>
-                                <span class='icon-stack' style='float:right; opacity: 0.0;'> </span>
-                            <?php
-                            }
-                            ?>
-
-                            </td>
-                            <?php //--Atributos ?>
-
-
-                            <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
-
-                            <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 10%;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
-
-                            <td class="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"');?> >
-
-                            <?php
-                            switch(Utils::sacramentParish($paroquia_batismo))
-                            {
-                                case 1:
-                                    echo("<span class=\"label label-success " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
-                                    break;
-                                case 2:
-                                    echo("<span class=\"label label-default " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
-                                    break;
-                            }
-                            switch(Utils::sacramentParish($paroquia_comunhao))
-                            {
-                                case 1:
-                                    echo("<span class=\"label label-success " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
-                                    break;
-                                case 2:
-                                    echo("<span class=\"label label-default " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
-                                    break;
-                            }
-                            switch(Utils::sacramentParish($paroquia_crisma))
-                            {
-                                case 1:
-                                    echo("<span class=\"label label-success " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
-                                    break;
-                                case 2:
-                                    echo("<span class=\"label label-default " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
-                                    break;
-                            }
-                            ?>
-                            </td>
-                            </tr>
+                        <?php
+                        }
+                        else
+                        { ?>
+                            <span class='icon-stack' style='float:right; opacity: 0.0;'> </span>
                         <?php
                         }
                         ?>
-                        </tbody>
-                    </table>
-                </div>
 
+                        </td>
+                        <?php //--Atributos ?>
+
+
+                        <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
+
+                        <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 10%;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
+
+                        <td class="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"');?> >
+
+                        <?php
+                        switch(Utils::sacramentParish($paroquia_batismo))
+                        {
+                            case 1:
+                                echo("<span class=\"label label-success " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
+                                break;
+                            case 2:
+                                echo("<span class=\"label label-default " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
+                                break;
+                        }
+                        switch(Utils::sacramentParish($paroquia_comunhao))
+                        {
+                            case 1:
+                                echo("<span class=\"label label-success " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
+                                break;
+                            case 2:
+                                echo("<span class=\"label label-default " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
+                                break;
+                        }
+                        switch(Utils::sacramentParish($paroquia_crisma))
+                        {
+                            case 1:
+                                echo("<span class=\"label label-success " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
+                                break;
+                            case 2:
+                                echo("<span class=\"label label-default " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
+                                break;
+                        }
+                        ?>
+                        </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                    </tbody>
+                </table>
             </div>
+
         <?php
         }
     }
