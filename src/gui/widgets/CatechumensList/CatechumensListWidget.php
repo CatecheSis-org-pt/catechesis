@@ -107,16 +107,24 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             <div class="clearfix" style="margin-bottom: 20px"></div>
             <div class="panel-body">
                 <?php
-                $counter = 0;
+                $cardCounter = 0;
+                $rowCounter = 0;
                 foreach($this->catechumens_list as $row)
                 {
-                    $counter++;
                     $foto = Utils::sanitizeOutput($row['foto']);
 
-                    if($counter % 4 == 0)
-                        echo('<div class="row" style="margin-bottom: 40px;">');
+                    if($cardCounter % 4 == 0)
+                    {
+                        echo('<div class="row clearfix" style="margin-bottom: 40px;');
+                        if(($rowCounter+1)%2==0)
+                            echo(' margin-left: 100px;');
+                        echo('">');
+                        $rowCounter++;
+                    }
+                    $cardCounter++;
 
                 ?>
+
                 <div class="col-sm-3">
                     <div class="catechumen-card" onclick="window.open('mostrarFicha.php?cid=<?=$row['cid']?>');" >
                         <div class="catechumen-card-inner">
@@ -133,7 +141,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     </div>
                 </div>
                 <?php
-                    if($counter % 4 == 0)
+                    if($cardCounter % 4 == 0)
                         echo("</div>");
                 }
                 ?>
