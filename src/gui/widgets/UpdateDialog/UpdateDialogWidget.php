@@ -9,6 +9,7 @@ require_once(__DIR__ . '/../ModalDialog/ModalDialogWidget.php');
 require_once(__DIR__ . "/../../common/Animation.php");
 require_once(__DIR__ . "/../../common/Button.php");
 
+
 class UpdateDialogWidget extends ModalDialogWidget
 {
     public function __construct(string $id = null)
@@ -56,27 +57,21 @@ class UpdateDialogWidget extends ModalDialogWidget
                             <tbody>
                                 <tr>
                                     <td style="padding-right: 20px;">Versão instalada:</td>
-                                    <td>2.0.1</td>
+                                    <td><?= $_SESSION['CURRENT_VERSION']  ?></td>
                                 </tr>
                                 <tr>
                                     <td style="padding-right: 10px">Versão disponível:</td>
-                                    <td>2.1.0</td>
+                                    <td><?= $_SESSION['LATEST_AVAILABLE_VERSION'] ?></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="clearfix"></div>
+                <div style="margin-bottom: 40px;"></div>
+                <p><a href="<?= $_SESSION['UPDATE_CHANGELOG_URL'] ?>" target="_blank">Saiba mais</a> acerca das novidades incluídas atualização.</p>
             </div>
             <div class="clearfix"></div>
-
-            <div style="margin-bottom: 40px;"></div>
-
-            <p>As novas versões podem incluir correções de segurança importantes e novas funcionalidades.<br>
-                <a href="https://catechesis.org.pt/releases/2.1.0/changelog.html" target="_blank">Saiba mais</a> acerca das novidades incluídas atualização.</p>
-            <p>Note que o CatecheSis ficará indisponível durante a atualização. É recomnendável realizar uma cópia de segurança da base de dados antes de avançar.</p>
-
-
         </div>
         <?php
     }

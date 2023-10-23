@@ -238,9 +238,17 @@ class MainNavbar extends Widget
 
                     <!-- Right area -->
                     <ul class="nav navbar-nav navbar-right">
-                        <!-- Notifications menu -->
+
+                        <?php
+                        if($_SESSION['IS_UPDATE_AVAILABLE'])
+                        {
+                        ?>
+                        <!-- Updates available -->
                         <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i class="fas fa-cloud-download-alt"></i></a>
                         </li>
+                        <?php
+                        }
+                        ?>
 
                         <!-- Settings -->
                         <li <?php if($this->menuOption==MENU_OPTION::SETTINGS) echo(' class="active"'); ?>><a href="configuracoes.php"><i class="fas fa-cog"></i></a></li>
@@ -276,6 +284,10 @@ class MainNavbar extends Widget
         <?php
 
         $this->aboutDialog->renderHTML();
-        $this->updateDialog->renderHTML();
+
+        if($_SESSION['IS_UPDATE_AVAILABLE'])
+        {
+            $this->updateDialog->renderHTML();
+        }
     }
 }
