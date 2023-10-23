@@ -52,6 +52,7 @@ class MainNavbar extends Widget
         $this->addCSSDependency('css/custom-navbar-colors.css'); //FIXME Remove this when migrating to Bootstrap 5
         $this->addCSSDependency('font-awesome/fontawesome-free-5.15.1-web/css/all.min.css');
         $this->addCSSDependency('gui/widgets/Navbar/MainNavbar.css');
+        $this->addCSSDependency('css/animate.min.css');
 
         $this->addJSDependency('js/jquery.min.js');
         $this->addJSDependency('js/bootstrap.min.js');
@@ -244,7 +245,7 @@ class MainNavbar extends Widget
                         {
                         ?>
                         <!-- Updates available -->
-                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i class="fas fa-cloud-download-alt"></i></a>
+                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i class="fas fa-cloud-download-alt animated animate__animated animate__heartBeat"></i></a>
                         </li>
                         <?php
                         }
