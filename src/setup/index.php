@@ -209,8 +209,7 @@ switch($current_step)
 
             //Populate database
             if(!SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/catechesis_database.sql")
-                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/ulogin_database.sql")
-                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/script_collation.sql"))
+                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/ulogin_database.sql"))
                 {
                     $db_tables_creation_failed = true;
                     break;
