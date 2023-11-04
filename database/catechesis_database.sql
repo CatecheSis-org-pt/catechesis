@@ -14,7 +14,8 @@ CREATE TABLE familiar(
 	RGPD_assinado   TINYINT,        #0=nao, 1=sim
 	
 	PRIMARY KEY (fid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 	
 DROP TABLE IF EXISTS casados;
@@ -26,7 +27,8 @@ CREATE TABLE casados(
 	PRIMARY KEY (fid1, fid2),
 	FOREIGN KEY (fid1) REFERENCES familiar(fid) ON DELETE CASCADE,
 	FOREIGN KEY (fid2) REFERENCES familiar(fid) ON DELETE CASCADE
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 
 DROP TABLE IF EXISTS utilizador;
@@ -39,7 +41,8 @@ CREATE TABLE utilizador(
 	email		VARCHAR(255),
 	
 	PRIMARY KEY (username)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS registosLog;
@@ -52,7 +55,8 @@ CREATE TABLE registosLog(
 	PRIMARY KEY (LSN),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
 	
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 	
 
@@ -86,7 +90,8 @@ CREATE TABLE catequizando(
 	FOREIGN KEY (lastLSN_ficha) REFERENCES registosLog(LSN) ON DELETE SET NULL,
 	FOREIGN KEY (lastLSN_arquivo) REFERENCES registosLog(LSN) ON DELETE SET NULL,
     FOREIGN KEY (lastLSN_autorizacoes) REFERENCES registosLog(LSN) ON DELETE SET NULL
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 	
 	
@@ -99,7 +104,8 @@ CREATE TABLE baptismo(
 	
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -112,7 +118,8 @@ CREATE TABLE primeiraComunhao(
 	
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS profissaoFe;
@@ -124,7 +131,8 @@ CREATE TABLE profissaoFe(
 	
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS confirmacao;
@@ -136,7 +144,8 @@ CREATE TABLE confirmacao(
 	
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -148,7 +157,8 @@ CREATE TABLE escolaridade(
 	
 	PRIMARY KEY (cid, ano_lectivo),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS autorizacaoSaidaMenores;
@@ -160,7 +170,8 @@ CREATE TABLE autorizacaoSaidaMenores(
 	PRIMARY KEY (cid, fid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid) ON DELETE CASCADE,
 	FOREIGN KEY (fid) REFERENCES familiar(fid) ON DELETE CASCADE
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS grupo;
@@ -171,7 +182,8 @@ CREATE TABLE grupo(
 	#atributos catecismo, missa, catequese...?
 	
 	PRIMARY KEY (ano_catecismo, turma, ano_lectivo)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 
 DROP TABLE IF EXISTS pertence;
@@ -185,7 +197,8 @@ CREATE TABLE pertence(
 	PRIMARY KEY (cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
-);	
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;	
 	
 	
 
@@ -198,7 +211,8 @@ CREATE TABLE catequista(
 		
 	PRIMARY KEY (username),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS lecciona;
@@ -211,7 +225,8 @@ CREATE TABLE lecciona(
 	PRIMARY KEY (username, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (username) REFERENCES catequista(username)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS inscreve;
@@ -226,7 +241,8 @@ CREATE TABLE inscreve(
 	PRIMARY KEY (cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (cid, ano_catecismo, turma, ano_lectivo) REFERENCES pertence(cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS cod_postais_paroquia;
@@ -234,7 +250,8 @@ CREATE TABLE cod_postais_paroquia(
 	codigo		VARCHAR(10),
 	
 	PRIMARY KEY (codigo)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS configuracoes;
@@ -243,7 +260,8 @@ CREATE TABLE configuracoes(
 	valor		TEXT,
 	
 	PRIMARY KEY (chave)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS catequese_virtual;
@@ -257,7 +275,8 @@ CREATE TABLE catequese_virtual(
 	
 	PRIMARY KEY (data, ano_catecismo, turma),
 	FOREIGN KEY(ultima_modificacao_user) REFERENCES utilizador(username) ON DELETE SET NULL
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS catequese_virtual_lock;
@@ -271,7 +290,8 @@ CREATE TABLE catequese_virtual_lock
 
     PRIMARY KEY (data, ano_catecismo, turma, lock_user),
     FOREIGN KEY (lock_user) REFERENCES utilizador(username) ON DELETE CASCADE
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS sala_catequese_virtual;
@@ -287,7 +307,8 @@ CREATE TABLE salaCatequeseVirtual(
 
       PRIMARY KEY (data, ano_catecismo, turma),
       FOREIGN KEY(ultima_modificacao_user) REFERENCES utilizador(username) ON DELETE CASCADE
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS pedidoRenovacaoMatricula;
@@ -308,7 +329,8 @@ CREATE TABLE pedidoRenovacaoMatricula
     turma_inscricao			VARCHAR(1) NULL,            # Turma onde o catequizando for inscrito (depois de processado)
 
     PRIMARY KEY (rid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -361,7 +383,8 @@ CREATE TABLE pedidoInscricao
 
 
     PRIMARY KEY (iid)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 # Table for secureimage to store CAPTCHAs
@@ -377,7 +400,8 @@ CREATE TABLE captcha_codes
 
     PRIMARY KEY(id, namespace),
     INDEX(created)
-);
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 #ativa a verificacao das chaves estrangeiras

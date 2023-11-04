@@ -4,6 +4,7 @@ namespace catechesis\gui;
 
 require_once(__DIR__ . '/../AbstractCatechumensListing/AbstractCatechumensListingWidget.php');
 require_once(__DIR__ . '/../../../core/Configurator.php');
+require_once(__DIR__ . '/../../../core/domain/Locale.php');
 require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../../../core/UserData.php');
 
@@ -11,6 +12,7 @@ require_once(__DIR__ . '/../../../core/UserData.php');
 use catechesis\Configurator;
 use catechesis\UserData;
 use catechesis\Utils;
+use core\domain\Locale;
 
 
 /**
@@ -242,7 +244,7 @@ class CatechumensReportWidget extends AbstractCatechumensListingWidget
                         </div>
                         Nome</th>
                     <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
-                    <th>Catecismo (<?php echo('' . intval(Utils::currentCatecheticalYear() / 10000) . '/' . intval(Utils::currentCatecheticalYear() % 10000)); ?>)</th>
+                    <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
                     <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
                     <th class="col_contactos only-print" data-searchable="false">Contactos</th>
                     <th>Relatório</th>
@@ -386,7 +388,7 @@ class CatechumensReportWidget extends AbstractCatechumensListingWidget
                     <?php
                     echo("(" . $enc_edu . ")<br>\n");
                     if($telemovel != 0)
-                        echo("Telemóvel: " . $telemovel . "<br>\n");
+                        echo(((Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular: ":"Telemóvel: ") . $telemovel . "<br>\n");
                     if ($telefone != 0)
                         echo("Telefone: " . $telefone . "<br>\n");
                     if(isset($email) && $email!="")

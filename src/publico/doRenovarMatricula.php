@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $inputs_invalidos = true;
     }
 
-    if(!isset($enc_edu_tel) || $enc_edu_tel=="" || !DataValidationUtils::validatePhoneNumber($enc_edu_tel))
+    if(!isset($enc_edu_tel) || $enc_edu_tel=="" || !DataValidationUtils::validatePhoneNumber($enc_edu_tel, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
     {
         echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
         $inputs_invalidos = true;

@@ -155,8 +155,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="escolher")
 	$ano_matricula = $ano_precedente + 10001;
 	$catecismo_precedente = intval(Utils::sanitizeInput($_POST['catecismo_prec']));
 	$turma_precedente = Utils::sanitizeInput($_POST['turma_prec']);
-	$ano_mat_i = intval($ano_matricula / 10000);
-	$ano_mat_f = intval($ano_matricula % 10000);
+	$ano_mat_i = Utils::getCatecheticalYearStart($ano_matricula);
+	$ano_mat_f = Utils::getCatecheticalYearEnd($ano_matricula);
 }
 
 
@@ -228,9 +228,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
                 {
                     if($db->enrollCatechumenInGroup($cid, $ano_mat, $ins_catecismo, $ins_turma, $ins_passa, $ins_pago, Authenticator::getUsername()))
                     {
-                        catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+                        catechumenArchiveLog($cid, "Catequizando com id=" . $cid . " inscrito no " . $ins_catecismo . "º" . $ins_turma . ", no ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
                         if($ins_pago)
-                            catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . intval($ins_ano_catequetico / 10000) . "/" .  intval($ins_ano_catequetico % 10000) . ".");
+                            catechumenArchiveLog($cid, "Pagamento do catequizando com id=" . $cid . " referente ao catecismo " . $ins_catecismo . "º" . $ins_turma . " do ano catequético de " . Utils::formatCatecheticalYear($ins_ano_catequetico) . ".");
                     }
                     else
                     {
@@ -271,8 +271,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
 	$ano_matricula = $ano_precedente + 10001;
 	$catecismo_precedente = $cat_prec;
 	$turma_precedente = $turma_prec;
-	$ano_mat_i = intval($ano_matricula / 10000);
-	$ano_mat_f = intval($ano_matricula % 10000);
+	$ano_mat_i = Utils::getCatecheticalYearStart($ano_matricula);
+	$ano_mat_f = Utils::getCatecheticalYearEnd($ano_matricula);
 }
 
 //Eliminar pedido de renovacao online
@@ -407,8 +407,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
 		$ano_matricula = $ano_precedente + 10001;
 		$catecismo_precedente = 1;
 		$turma_precedente = 'A';
-		$ano_mat_i = intval($ano_matricula / 10000);
-		$ano_mat_f = intval($ano_matricula % 10000);
+		$ano_mat_i = Utils::getCatecheticalYearStart($ano_matricula);
+		$ano_mat_f = Utils::getCatecheticalYearEnd($ano_matricula);
 	}
 
 	$catecismo_matricula_ap = $catecismo_precedente + 1;
@@ -416,7 +416,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
 
 	if((!$db->hasCatechism($ano_matricula, $catecismo_matricula_ap) && $catecismo_precedente!=intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))) || !$db->hasCatechism($ano_matricula, $catecismo_matricula_rp))
 	{
-	    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Ainda não foram criados os grupos de catequese para $ano_mat_i/$ano_mat_f. Ir para <a href='gerirGrupos.php'> Gerir grupos de catequese </a>. </div>");
+	    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Ainda não foram criados os grupos de catequese para " . Utils::formatCatecheticalYear($ano_matricula) .  ". Ir para <a href='gerirGrupos.php'> Gerir grupos de catequese </a>. </div>");
 	}
 	else 
 	{

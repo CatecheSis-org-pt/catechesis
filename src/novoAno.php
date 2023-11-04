@@ -3,11 +3,12 @@
 require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . '/core/Configurator.php');
 require_once(__DIR__ . '/core/log_functions.php');
- require_once(__DIR__ . "/gui/widgets/WidgetManager.php");
- require_once(__DIR__ . "/gui/widgets/Navbar/MainNavbar.php");
- require_once(__DIR__ . '/core/PdoDatabaseManager.php');
+require_once(__DIR__ . "/gui/widgets/WidgetManager.php");
+require_once(__DIR__ . "/gui/widgets/Navbar/MainNavbar.php");
+require_once(__DIR__ . '/core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/core/Utils.php');
 
  use catechesis\DatabaseAccessMode;
@@ -18,7 +19,7 @@ require_once(__DIR__ . '/core/Utils.php');
  use catechesis\gui\WidgetManager;
  use catechesis\gui\MainNavbar;
  use catechesis\gui\MainNavbar\MENU_OPTION;
-
+ use core\domain\Locale;
 
 
  // Create the widgets manager
@@ -96,17 +97,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $ano_catequetico_original = $ano_catequetico_novo = Utils::sanitizeInput($_POST['ano_catequetico']);
     $modo = intval($_POST['criar_modo']);
 
-    $matches = NULL;
-    preg_match('/^([0-9]{4})\/([0-9]{4})$/', $ano_catequetico_novo, $matches);
-    $ano_catequetico_novo = 10000 * intval($matches[1]) + intval($matches[2]);
+    if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL)
+    {
+        $matches = NULL;
+        preg_match('/^([0-9]{4})\/([0-9]{4})$/', $ano_catequetico_novo, $matches);
+        $ano_catequetico_novo = 10000 * intval($matches[1]) + intval($matches[2]);
+    }
+    else //if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)
+    {
+        $matches = NULL;
+        preg_match('/^([0-9]{4})$/', $ano_catequetico_novo, $matches);
+        $ano_catequetico_novo = 10000 * intval($matches[1]) + intval($matches[1]); //NOTE: We repeat the same number twice (e.g. '20232023') for compatibility reasons
+    }
 
 
-    if($ano_catequetico_novo < 1000000)	//Tem de ser da forma '20152016', logo, com 8 digitos
+    if((Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL  &&  $ano_catequetico_novo < 1000000)
+        || (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL  &&  $ano_catequetico_novo < 1000))
     {
         //echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O ano catequético é inválido. Criação de grupos cancelada.</div>");
         $err2 = true;
-
-;
     }
     else if($modo==1)
     {
@@ -121,14 +130,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 {
                     $err3 = true;
                     $db->rollBack();
-
-;
                 }
             }
 
             $db->commit();
 
-            writeLogEntry("Criados 10 grupos de catequese para o ano catequético " . intval($ano_catequetico_novo / 10000) . "/" . intval($ano_catequetico_novo % 10000) . ".");
+            writeLogEntry("Criados " . Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS) . " grupos de catequese para o ano catequético " . Utils::formatCatecheticalYear($ano_catequetico_novo) . ".");
             redireccionar($ano_catequetico_novo, 1, 0);
 
         }
@@ -170,7 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
                 $db->commit();
 
-                writeLogEntry("Criados " . $count . " grupos de catequese para o ano catequético " . intval($ano_catequetico_novo / 10000) . "/" . intval($ano_catequetico_novo % 10000) . ", seguindo os mesmos grupos que no ano catequético de " . intval($row['ano_lectivo'] / 10000) . "/" . intval($row['ano_lectivo'] % 10000) . ".");
+                writeLogEntry("Criados " . $count . " grupos de catequese para o ano catequético " . Utils::formatCatecheticalYear($ano_catequetico_novo) . ", seguindo os mesmos grupos que no ano catequético de " . Utils::formatCatecheticalYear($row['ano_lectivo']) . ".");
                 redireccionar($ano_catequetico_novo, 2, $count);
 
             }
@@ -328,7 +335,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-4">
       <label for="nome">Ano catequético:</label>
-       <input type="text" class="form-control" id="ano_catequetico" name="ano_catequetico" placeholder="2015/2016" list="anos_catequeticos" required>
+       <input type="text" class="form-control" id="ano_catequetico" name="ano_catequetico" placeholder="<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>" list="anos_catequeticos" required>
     </div>
    </div>
     
@@ -367,11 +374,11 @@ $menu->renderHTML();
 <datalist id="anos_catequeticos">
     <?php
     //Print from the last 10 years up to the following 5 years
+    $today = date('d-m-Y');
     for($y = -10; $y < 5; $y++)
     {
-        $year_start = date('Y') + $y;
-        $year_end = date('Y') + $y + 1;
-        echo("<option value='$year_start/$year_end'>");
+        $newDate = date('d-m-Y', strtotime((($y>0)?"+":"")."$y year"));
+        echo("<option value=" . Utils::formatCatecheticalYear(Utils::computeCatecheticalYear($newDate)) . ">");
     }
     ?>
 </datalist>

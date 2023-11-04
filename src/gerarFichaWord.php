@@ -14,6 +14,7 @@ require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
+require_once(__DIR__ . "/core/domain/Locale.php");
 //require_once(__DIR__ . "/core/document_generators/libraries/vendor/autoload.php");
 
 require_once(__DIR__ . '/core/document_generators/libraries/PHPWord-develop/src/PhpOffice/PhpWord/Settings.php');
@@ -29,6 +30,7 @@ use catechesis\Utils;
 use catechesis\UserData;
 use catechesis\Configurator;
 use PhpOffice\PhpWord\Settings;
+use core\domain\Locale;
 
 
 Settings::loadConfig();
@@ -293,7 +295,7 @@ else
 $document = new \PhpOffice\PhpWord\TemplateProcessor(__DIR__ . '/core/document_generators/TemplateFicha.docx');
 
 $document->setValue('parish_name', Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME));
-$document->setValue('ano_catequetico', intval(Utils::currentCatecheticalYear() /10000) . '/' . intval(Utils::currentCatecheticalYear() %10000));
+$document->setValue('ano_catequetico', Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()));
 
 $document->setValue('nome', $_SESSION['nome']);
 $document->setValue('data_nasc', $_SESSION['data_nasc']);

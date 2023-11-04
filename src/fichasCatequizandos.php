@@ -4,6 +4,7 @@ require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
@@ -17,6 +18,7 @@ use catechesis\Authenticator;
 use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
+use core\domain\Locale;
 use core\domain\Sacraments;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
@@ -105,7 +107,7 @@ $menu->renderHTML();
   
   <div class="no-print">
   
-  <h2> Reprografia</h2>
+  <h2> Área de Impressão</h2>
 
     
   <div class="row" style="margin-top:20px; "></div>
@@ -399,7 +401,7 @@ $menu->renderHTML();
     <!--ano-->
      <div class="col-xs-3">
       <label for="data_nasc">Ano:</label>
-      <span><?php echo("" . intval($ano_catequetico / 10000) . "/" . intval($ano_catequetico % 10000) . "");?></span>
+      <span><?= Utils::formatCatecheticalYear($ano_catequetico); ?></span>
      </div> 
      
      
@@ -528,7 +530,7 @@ $menu->renderHTML();
 	<!--telemovel-->
 	    <div class="col-xs-12">
 	    <div id="telemovel_div">
-	      <label for="telm">Telemóvel:</label>
+	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <span><?php echo("" . $telemovel . "");?></span>
 	    </div>
 	    </div>

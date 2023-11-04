@@ -5,6 +5,7 @@ require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/domain/Locale.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/core/enrollment_functions.php');
 require_once(__DIR__ . "/gui/widgets/WidgetManager.php");
@@ -14,6 +15,7 @@ use catechesis\Authenticator;
 use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
+use core\domain\Locale;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
@@ -328,8 +330,8 @@ $db = new PdoDatabaseManager();
                 <!--telemovel-->
                 <div class="col-lg-2">
                     <div id="telemovel_div">
-                      <label for="telm">Telemóvel:</label>
-                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="Telemóvel do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
+                      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
                       <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                     </div>
                     <div class="clearfix"></div>
@@ -518,7 +520,7 @@ $db = new PdoDatabaseManager();
                            <tr>
                                <th>Nome</th>
                                <th>Parentesco</th>
-                               <th>Telemóvel</th>
+                               <th><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?></th>
                            </tr>
                            </thead>
                            <tbody>
@@ -627,13 +629,7 @@ if(!isset($submission['cid']))
                 <div class="form-group">
                     <div class="col-xs-4" style="margin-top: 3px;">
                         <label for="ano_catequetico">Ano catequético: </label>
-                        <?php
-
-                        $ano_i = intval(Utils::currentCatecheticalYear() / 10000);
-                        $ano_f = intval(Utils::currentCatecheticalYear() % 10000);
-                        echo("<span>" . $ano_i . "/" . $ano_f . "</span>\n");
-
-                        ?>
+                        <span><?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear())?></span>
                     </div>
 
                     <div class="col-xs-4">
@@ -789,7 +785,7 @@ function validar()
         }
         
         
-	if(!codigo_postal_valido(cod_postal))
+	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
 		alert("O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.");
 		return false;
@@ -802,12 +798,12 @@ function validar()
 		alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
 		return false; 
         }
-        else if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone))
+        else if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
         {
         	alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
 		return false; 
         }
-        else if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel))
+        else if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
         {
         	alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
 		return false; 
@@ -897,25 +893,26 @@ function validar()
 
 
 
-function telefone_valido(num)
-{	
-	var phoneno = /^\d{9}$/;  
-	var internacional = /^\+\d{1,}[-\s]{0,1}\d{9}$/;
-	if(num.match(phoneno) || num.match(internacional))  
-	{  
-      		return true;  
-	}  
-     	else  
-	{  
-		return false;  
-	} 
+function telefone_valido(num, locale)
+{
+    var phoneno = '';
 
+    if(locale==="PT")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\d{9}$/;
+    else if(locale==="BR")
+        phoneno = /^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/;
+
+    return num.match(phoneno);
 }
 
 
-function codigo_postal_valido(codigo)
-{	
-	var pattern = /[0-9]{4}\-[0-9]{3}\s\S+/;
+function codigo_postal_valido(codigo, locale)
+{
+    var pattern="";
+    if(locale==="PT")
+        pattern = /^[0-9]{4}\-[0-9]{3}\s\S+/;
+    else if(locale==="BR")
+        pattern = /^[0-9]{5}\-[0-9]{3}\s\S+/;
 	
 	return (pattern.test(codigo));
 
@@ -938,7 +935,7 @@ function verifica_codigo_postal()
 {
 	var cod = document.getElementById('codigo_postal').value;
 	
-	if(!codigo_postal_valido(cod) && cod!="" && cod!=undefined)
+	if(!codigo_postal_valido(cod, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && cod!="" && cod!=undefined)
 	{ 
 		$('#codigo_postal_div').addClass('has-error');
 		$('#codigo_postal_div').addClass('has-feedback');
@@ -1012,7 +1009,7 @@ function verifica_telefone()
 {
 	var telefone = document.getElementById('telefone').value;
 	
-	if(!telefone_valido(telefone) && telefone!="" && telefone!=undefined)
+	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
 	{ 
 		$('#telefone_div').addClass('has-error');
 		$('#telefone_div').addClass('has-feedback');
@@ -1030,7 +1027,7 @@ function verifica_telemovel()
 {
 	var telemovel = document.getElementById('telemovel').value;
 	
-	if(!telefone_valido(telemovel) && telemovel!="" && telemovel!=undefined)
+	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
 	{ 
 		$('#telemovel_div').addClass('has-error');
 		$('#telemovel_div').addClass('has-feedback');

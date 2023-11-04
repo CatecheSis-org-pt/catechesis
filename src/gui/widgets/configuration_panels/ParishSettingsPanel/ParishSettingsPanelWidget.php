@@ -8,6 +8,7 @@ require_once(__DIR__ . '/../../../../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/../../../../core/Configurator.php');
 require_once(__DIR__ . '/../../../../core/Utils.php');
 require_once(__DIR__ . '/../../../../core/UserData.php');
+require_once(__DIR__ . '/../../../../core/domain/Locale.php');
 require_once(__DIR__ . '/../../../../core/log_functions.php');
 
 use catechesis\Authenticator;
@@ -15,6 +16,7 @@ use catechesis\PdoDatabaseManager;
 use catechesis\Configurator;
 use catechesis\UserData;
 use catechesis\Utils;
+use core\domain\Locale;
 use uLogin;
 
 
@@ -51,6 +53,7 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
         $parishPlace = null;
         $parishDiocese = null;
         $parishCustomTableFooter = null;
+        $localization_code = null;
 
         //Get parish data
         try
@@ -59,6 +62,7 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
             $parishPlace = Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_PLACE);
             $parishDiocese = Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_DIOCESE);
             $parishCustomTableFooter = Utils::sanitizeOutput(Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER));
+            $localization_code = Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE);
         }
         catch(\Exception $e)
         {
@@ -97,17 +101,29 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
                 </div>
 
                 <!--Parish place -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label for="place">Localidade:</label>
                   <input type="text" class="form-control" id="<?=$this->getID()?>_place" name="place" placeholder="Freguesia/local" style="cursor: auto;" value="<?= $parishPlace ?>" readonly>
                   <input type="hidden" class="form-control" id="<?=$this->getID()?>_place_backup" value="<?= $parishPlace ?>" readonly>
                 </div>
 
+                <div class="row clearfix" style="margin-bottom:20px; "></div>
+
                 <!--Parish diocese -->
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="place">Diocese:</label>
                     <input type="text" class="form-control" id="<?=$this->getID()?>_diocese" name="diocese" placeholder="Diocese de ..." style="cursor: auto;" value="<?= $parishDiocese ?>" readonly>
                     <input type="hidden" class="form-control" id="<?=$this->getID()?>_diocese_backup" value="<?= $parishDiocese ?>" readonly>
+                </div>
+
+                <!--Country (localization) -->
+                <div class="col-md-2">
+                    <label for="place">País: <span class="fas fa-question-circle" data-toggle="popover" data-placement="top" data-content='Utilizado para configurações regionais, tais como número de dígitos do código postal e telefone em formulários.'></span></label>
+                    <select id="<?=$this->getID()?>_locale" name="locale" class="form-control" disabled>
+                        <option value="<?= Locale::PORTUGAL ?>" <?php if($localization_code == Locale::PORTUGAL) echo("selected"); ?>>Portugal</option>
+                        <option value="<?= Locale::BRASIL ?>" <?php if($localization_code == Locale::BRASIL) echo("selected"); ?>>Brasil</option>
+                    </select>
+                    <input type="hidden" class="form-control" id="<?=$this->getID()?>_locale_backup" value="<?= $localization_code ?>" readonly>
                 </div>
             </div>
 
@@ -145,6 +161,7 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
         document.getElementById("<?=$this->getID()?>_name").readOnly = false;
         document.getElementById("<?=$this->getID()?>_place").readOnly = false;
         document.getElementById("<?=$this->getID()?>_diocese").readOnly = false;
+        document.getElementById("<?=$this->getID()?>_locale").disabled = false;
         <?=$this->getID()?>_quill.root.innerHTML = document.getElementById("<?=$this->getID()?>_footer").value;
         <?=$this->getID()?>_quill.enable();
         document.getElementById("<?=$this->getID()?>_toolbar_container").style = 'pointer-events: initial'; //Enable Quill toolbar
@@ -166,11 +183,13 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
         document.getElementById("<?=$this->getID()?>_name").readOnly = true;
         document.getElementById("<?=$this->getID()?>_place").readOnly = true;
         document.getElementById("<?=$this->getID()?>_diocese").readOnly = true;
+        document.getElementById("<?=$this->getID()?>_locale").disabled = true;
         <?=$this->getID()?>_quill.disable();
         document.getElementById("<?=$this->getID()?>_toolbar_container").style = 'pointer-events: none'; //Disable Quill toolbar
         document.getElementById("<?=$this->getID()?>_name").value = document.getElementById("<?=$this->getID()?>_name_backup").value;
         document.getElementById("<?=$this->getID()?>_place").value = document.getElementById("<?=$this->getID()?>_place_backup").value;
         document.getElementById("<?=$this->getID()?>_diocese").value = document.getElementById("<?=$this->getID()?>_diocese_backup").value;
+        document.getElementById("<?=$this->getID()?>_locale").value = document.getElementById("<?=$this->getID()?>_locale_backup").value;
         document.getElementById("<?=$this->getID()?>_footer").value = document.getElementById("<?=$this->getID()?>_footer_backup").value;
         <?=$this->getID()?>_quill.root.innerHTML = document.getElementById("<?=$this->getID()?>_footer_backup").value;
         <?php
@@ -293,7 +312,13 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
             $editParishName = Utils::sanitizeInput($_POST['name']);
             $editParishPlace = Utils::sanitizeInput($_POST['place']);
             $editParishDiocese = Utils::sanitizeInput($_POST['diocese']);
+            $editLocale = Utils::sanitizeInput($_POST['locale']);
             $editParishCustomFooter = Utils::sanitizeKeepFormattingTags($_POST['footer']); //Will be sanitized on output
+
+            if($editLocale != Locale::PORTUGAL && $editLocale != Locale::BRASIL)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O país que introduziu não é suportado. </div>");
+            }
 
             try
             {
@@ -301,6 +326,7 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
                 Configurator::setConfigurationValue(Configurator::KEY_PARISH_NAME, $editParishName);
                 Configurator::setConfigurationValue(Configurator::KEY_PARISH_PLACE, $editParishPlace);
                 Configurator::setConfigurationValue(Configurator::KEY_PARISH_DIOCESE, $editParishDiocese);
+                Configurator::setConfigurationValue(Configurator::KEY_LOCALIZATION_CODE, $editLocale);
                 Configurator::setConfigurationValue(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER, $editParishCustomFooter);
 
                 writeLogEntry("Modificou os dados da paróquia.");

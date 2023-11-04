@@ -3,6 +3,7 @@
 
 namespace catechesis;
 
+use core\domain\Locale;
 use DateTime;
 
 
@@ -39,15 +40,24 @@ class DataValidationUtils
      * @param bool $checkAntiPatterns
      * @return bool
      */
-    public static function validatePhoneNumber(string $tel, bool $checkAntiPatterns = false)
+    public static function validatePhoneNumber(string $tel, string $locale, bool $checkAntiPatterns = false)
     {
-        $pattern1 = '/^\d{9}$/';
-        $pattern2 = '/^\+\d{1,}[-\s]{0,1}\d{9}$/';
-        $antipattern1 = "000000000";
-        $antipattern2 = "111111111";
-        $antipattern3 = "123456789";
+        if($locale==Locale::PORTUGAL)
+        {
+            $pattern = '/^(\+\d{1,}[-\s]{0,1})?\d{9}$/';
+            $antipattern1 = "000000000";
+            $antipattern2 = "111111111";
+            $antipattern3 = "123456789";
+        }
+        else if($locale==Locale::BRASIL)
+        {
+            $pattern = '/^(\+\d{1,}[-\s]{0,1})?\s*\(?(\d{2}|\d{0})\)?[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/';
+            $antipattern1 = "0000-0000";
+            $antipattern2 = "1111-1111";
+            $antipattern3 = "1234-5678";
+        }
 
-        return (preg_match($pattern1, $tel) || preg_match($pattern2, $tel)) && (!$checkAntiPatterns ||
+        return preg_match($pattern, $tel) && (!$checkAntiPatterns ||
                 (strpos($tel, $antipattern1)===false && strpos($tel, $antipattern2)===false && strpos($tel, $antipattern3)===false));
     }
 
@@ -56,9 +66,14 @@ class DataValidationUtils
      * @param $postal
      * @return false|int
      */
-    public static function validateZipCode($postal)
+    public static function validateZipCode(string $postal, string $locale)
     {
-        $pattern = '/[0-9]{4}\-[0-9]{3}\s\S+/';
+        $pattern = '';
+        if($locale == Locale::PORTUGAL)
+            $pattern = '/^[0-9]{4}\-[0-9]{3}\s\S+/';
+        else if($locale == Locale::BRASIL)
+            $pattern = '/^[0-9]{5}\-[0-9]{3}\s\S+/';
+
         return (preg_match($pattern, $postal));
     }
 
