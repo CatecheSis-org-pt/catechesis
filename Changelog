@@ -2,6 +2,13 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
+## [UNRELEASED] - 2023-xx-xx
+
+#### Correções:
+- A configuração do CHARACTER SET e COLLATION da base de dados não era executada corretamente em algumas versões mais recentes do servidor MySQL;
+
+
+
 ## [Versão 2.1.0] - 2023-05-01
 
 #### Novidades:
