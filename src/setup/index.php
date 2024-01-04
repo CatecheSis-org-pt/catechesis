@@ -61,9 +61,9 @@ $gdprSettings = null;
 
 // Process form steps
 $current_step = 0;
-if($_POST['setup_step'])
+if($_REQUEST['setup_step'])
 {
-    $current_step = intval($_POST['setup_step']);
+    $current_step = intval($_REQUEST['setup_step']);
 }
 else if($_SESSION['setup_step'])
 {
@@ -74,6 +74,7 @@ switch($current_step)
 {
     case -1: //Restart
         $current_step = 0;
+        $_SESSION['setup_step'] = 0;
         unset($_SESSION['username']);
         unset($_SESSION['admin']);
         session_unset();
@@ -320,10 +321,8 @@ switch($current_step)
         break;
 }
 
-
 //Store the current step in the session
 $_SESSION['setup_step'] = $current_step;
-
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -408,7 +407,6 @@ $_SESSION['setup_step'] = $current_step;
                     {
                         case 0:
                             $has_previous = false;
-                            $current_step++;
                             ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
 
@@ -417,13 +415,12 @@ $_SESSION['setup_step'] = $current_step;
 
                             <p>Este assistente vai orientá-lo passo a passo na configuração do CatecheSis para a sua paróquia.</p>
 
-                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step + 1?>">
                         </form>
                     <?php
                         break;
 
                         case 1:
-                            $current_step++;
                             ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                             <h1>Termos e condições</h1>
@@ -446,7 +443,7 @@ $_SESSION['setup_step'] = $current_step;
                                 </div>
                             </div>
 
-                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step+1 ?>">
                         </form>
                             <?php
                             break;
@@ -783,6 +780,14 @@ $_SESSION['setup_step'] = $current_step;
                                 <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
                             </form>
                             <?php
+
+                            // After this page, if the user comes back, restart setup from the beggining
+                            $current_step = -1;
+                            unset($_SESSION['username']);
+                            unset($_SESSION['admin']);
+                            session_unset();
+                            session_destroy();
+
                             break;
                     }
                     ?>
@@ -881,5 +886,9 @@ $_SESSION['setup_step'] = $current_step;
     ?>
 </script>
 
+<?php
+//Store the current step in the session
+$_SESSION['setup_step'] = $current_step;
+?>
 </body>
 </html>

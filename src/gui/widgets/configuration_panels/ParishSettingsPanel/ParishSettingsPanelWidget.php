@@ -291,6 +291,12 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
                 <?=$this->getID()?>_quill.root.dataset.placeholder = ''; //Remove placeholder
             }
 
+            $(function () {
+                $('[data-toggle="popover"]').popover({ trigger: 'hover',
+                    html: true,
+                    delay: { 'show': 500, 'hide': 100 }
+                });
+            })
         </script>
         <?php
     }
