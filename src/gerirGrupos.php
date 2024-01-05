@@ -388,15 +388,20 @@ $menu->renderHTML();
     </div>
    </div>
    </form>
-    
-   
-    
-  
-    
-    
-    <div class="clearfix"></div> 
+
+    <div class="clearfix"></div>
   
    <div class="row" style="margin-top:20px; "></div>
+
+	<?php
+	if($count == 0)
+	{
+		?>
+		<div class="alert alert-info"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Info</strong> Sem catecismos. Crie um novo ano catequético primeiro.</div>
+		<div class="row" style="margin-top:20px; "></div>
+		<?php
+	}
+	?>
 	  
   
 
@@ -417,8 +422,7 @@ $menu->renderHTML();
     	  <?php
     	  	
     	  	$result = NULL;
-    	  	
-       		
+
        		if($ano_catequetico_sel)
        		{
 	       		//Obter catecismos e turmas
