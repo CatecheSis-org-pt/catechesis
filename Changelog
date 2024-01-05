@@ -2,7 +2,10 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
-## [UNRELEASED] - 2023-xx-xx
+## [UNRELEASED] - 2024-xx-xx
+
+#### Melhorias de usabilidade:
+- Melhorada mensagem na página *Gerir grupos de catequese* quando não existem anos catequéticos;
 
 #### Correções:
 - A configuração do CHARACTER SET e COLLATION da base de dados não era executada corretamente em algumas versões mais recentes do servidor MySQL;
