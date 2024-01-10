@@ -41,6 +41,7 @@ $dir_already_exists = false;
 $dir_copy_failed = false;
 $main_config_creation_failed = false;
 $shadow_config_creation_failed = false;
+$htaccess_config_creation_failed = false;
 $main_config_file = '';
 $db_connection_failed = false;
 $db_tables_creation_failed = false;
@@ -118,7 +119,7 @@ switch($current_step)
         $catechesis_root = dirname(__DIR__) . "/";
         $_SESSION['catechesis_base_url'] = str_replace("/setup/", "", Utils::getBaseUrl());
 
-        //Populate directoris list
+        //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
         $scan = scandir(posix_getpwuid(posix_getuid())['dir']);
@@ -174,6 +175,18 @@ switch($current_step)
                     $shadow_settings = array();
                     $shadow_settings['<CATECHESIS_UL_SITE_KEY>'] = Utils::secureRandomString(64);
                     SetupUtils\replace_strings_in_file($_SESSION['shadow_config_file'], $shadow_settings);
+
+                    // Write URLs for error pages in main .htaccess file
+                    $error_pages = array();
+                    $error_pages['<ERROR_PAGE_404>'] = $_SESSION['catechesis_base_url'] . '/erro404.php';
+                    $error_pages['<ERROR_PAGE_400>'] = $_SESSION['catechesis_base_url'] . '/erro500.html';
+                    $error_pages['<ERROR_PAGE_500>'] = $_SESSION['catechesis_base_url'] . '/erro500.html';
+                    if(!SetupUtils\xcopy(__DIR__ . "/TEMPLATE.htaccess", $catechesis_root . '/.htaccess'))
+                    {
+                        $htaccess_config_creation_failed = true;
+                        break;
+                    }
+                    SetupUtils\replace_strings_in_file($catechesis_root . '/.htaccess', $error_pages);
 
                 }
             }
@@ -528,6 +541,13 @@ $_SESSION['setup_step'] = $current_step;
                             {
                                 ?>
                                 <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível criar o ficheiro de configuração "shadow" do CatecheSis em <code><?= $_SESSION['shadow_config_file'] ?></code>.<br>
+                                    Por favor verifqiue se o utilizador Apache tem permissões de escrita.</div>
+                                <?php
+                            }
+                            if($htaccess_config_creation_failed)
+                            {
+                                ?>
+                                <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível configurar o ficheiro .htaccess no diretório base do CatecheSis.<br>
                                     Por favor verifqiue se o utilizador Apache tem permissões de escrita.</div>
                                 <?php
                             }
