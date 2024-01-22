@@ -294,23 +294,6 @@ CREATE TABLE catequese_virtual_lock
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
-DROP TABLE IF EXISTS sala_catequese_virtual;
-CREATE TABLE salaCatequeseVirtual(
-      data						    DATE NOT NULL,
-      ano_catecismo		            TINYINT NOT NULL,
-      turma                         VARCHAR(1) DEFAULT '',      # '' allows a catechism session not tied to a particular group (compatibility with previous version)
-      url				            VARCHAR(255),
-      passwordSala                  VARCHAR(255),
-      aberta                        TINYINT,                    # 1 = aberta, 0 = fechada
-      ultima_modificacao_user       VARCHAR(50) NOT NULL,
-      ultima_modificacao_timestamp  DATETIME,
-
-      PRIMARY KEY (data, ano_catecismo, turma),
-      FOREIGN KEY(ultima_modificacao_user) REFERENCES utilizador(username) ON DELETE CASCADE
-)
-CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-
 DROP TABLE IF EXISTS pedidoRenovacaoMatricula;
 CREATE TABLE pedidoRenovacaoMatricula
 (

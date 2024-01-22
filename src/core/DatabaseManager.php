@@ -213,11 +213,6 @@ interface DatabaseManager
                                                   int $catechism = null, string $group = null);
     public function getListOfVirtualCatechesisObservers(string $sessionDate, int $timeThreshold, int $catechism = null, // Returns the list of users currently editing a virtual catechesis
                                                         string $group = null, string $excludeUsername = null);
-    public function postVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, string $url,          // Creates or updates the URL of a virtual catechesis room
-                                              string $roomPassword, string $username);
-    public function getVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, int $timeThreshold=90);// Returns the URL, password and status of a virtual catechesis room
-    public function updateVirtualCatechisRoomStatus(string $sessionDate, int $catechism, string $group, int $status);   // Changes the open/closed status of a virtual catechesis room
-    public function closeVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group);                     // Sets the status of a virtual room as closed
 
     // Settings
     public function getConfigValue(string $key);                                                                        // Returns the configuration value associated with the given key
