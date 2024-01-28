@@ -1,0 +1,3 @@
+ErrorDocument 404 <ERROR_PAGE_404>
+ErrorDocument 400 <ERROR_PAGE_400>
+ErrorDocument 500 <ERROR_PAGE_500>
