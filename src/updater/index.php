@@ -89,6 +89,9 @@ switch($current_step)
                 // Unarchive from the tar
                 $phar = new PharData($update_package_file_uncompressed);
                 $phar->extractTo($update_package_folder, null, true);
+
+                //TODO Immediately update the updater itself, so that the actions that follow (license, requirements, etc)
+                //can be apropriately set for this update
             }
             catch(Exception $e)
             {
@@ -102,7 +105,8 @@ switch($current_step)
         $current_step++;
         break;
 
-    case 4:
+
+    case 5:
         // Define requirements
         $checker->requirePhpVersion('>=7.4')
             ->requirePhpExtensions(['pdo_mysql', 'gd', 'xml', 'XMLWriter', /*'xsl',*/ 'zip', 'DOM', 'MBString'])
@@ -171,6 +175,8 @@ $_SESSION['setup_step'] = $current_step;
                         <?php
                         $STEPS = ["Início",
                                     "Descarregar atualização",
+                                    "",                                     // invisible step
+                                    "Extrair pacote de atualização",
                                     "Termos e condições",
                                     "Verificação de requisitos",
                                     "Atualizar base de dados",
@@ -187,7 +193,7 @@ $_SESSION['setup_step'] = $current_step;
                                 <li><b><i class="fas fa-caret-right"></i> <?= $item ?></b></li>
                             <?php
                             }
-                            else if($idx<$current_step  ||  $current_step == (count($STEPS)-1)) //When we reach the last step ("finalized"), mark it as already checked
+                            else if(($idx<$current_step  ||  $current_step == (count($STEPS)-1)) && $item!='') //When we reach the last step ("finalized"), mark it as already checked
                             {
                                 ?>
                                 <li><i class="fas fa-check"></i> <?= $item ?></li>
@@ -333,7 +339,8 @@ $_SESSION['setup_step'] = $current_step;
                             <?php
                             break;
 
-                        case 4:
+
+                        case 5:
                     ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                             <h1>Verificação de requisitos</h1>
@@ -360,8 +367,6 @@ $_SESSION['setup_step'] = $current_step;
                         </form>
                         <?php
                             break;
-
-                        case 4:
 
 
 
