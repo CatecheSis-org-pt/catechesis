@@ -245,7 +245,7 @@ class MainNavbar extends Widget
                         {
                         ?>
                         <!-- Updates available -->
-                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i class="fas fa-cloud-download-alt animated animate__animated animate__heartBeat"></i></a>
+                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i class="fas fa-arrow-alt-circle-up animated animate__animated animate__heartBeat"></i></a>
                         </li>
                         <?php
                         }
