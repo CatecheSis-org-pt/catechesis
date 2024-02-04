@@ -144,7 +144,7 @@ echo "#Put this file in the CatecheSis root folder of your server!" >>$dstDirect
 echo "" >>$dstDirectory/delete_old_files.sh
 while read -r filename; do
   echo "rm ${filename#$srcDirectory}" >> $dstDirectory/delete_old_files.sh #Write file names except the leading src directory
-done <$dstDirectory/deleted_files.txt
+done < $dstDirectory/deleted_files.txt
 echo "echo \"Done! Some empty folders may have been left...\"" >>$dstDirectory/delete_old_files.sh
 
 # Create SQL upgrade scripts

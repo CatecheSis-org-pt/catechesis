@@ -18,7 +18,7 @@ class UpdateDialogWidget extends ModalDialogWidget
 
         $this->setSize(ModalDialogWidget::SIZE_MEDIUM);
         $this->setTitle("Atualização do CatecheSis");
-        $this->addButton(new Button("Atualizar", ButtonType::PRIMARY));
+        $this->addButton(new Button("Atualizar", ButtonType::PRIMARY, "window.open('updater/index.php?setup_step=-1')"));
         $this->addButton(new Button("Fechar", ButtonType::SECONDARY));
     }
 

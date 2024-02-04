@@ -1,18 +1,24 @@
 <?php
+require_once(__DIR__ . '/../core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/../authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/../authentication/Authenticator.php');
 require_once(__DIR__ . '/../core/DataValidationUtils.php');
 require_once(__DIR__ . '/../core/Utils.php');
 require_once(__DIR__ . '/../gui/widgets/WidgetManager.php');
+require_once(__DIR__ . '/../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/Checker.php');
 require_once(__DIR__ . '/utils.php');
 require_once(__DIR__ . '/../core/UpdateChecker.php');
+
+
 
 use catechesis\DataValidationUtils;
 use catechesis\Utils;
 use catechesis\gui\WidgetManager;
 use catechesis\UpdateChecker;
 use MirazMac\Requirements\Checker;
+use catechesis\PdoDatabaseManager;
+use catechesis\Configurator;
 
 
 // Instantiate a widget manager
@@ -35,10 +41,18 @@ $has_next = true;
 
 // Status variables
 $checker = new Checker;
+$update_package_file = __DIR__ . '/update_package.tar.gz';
+$update_package_file_uncompressed = __DIR__ . '/update_package.tar';
+$update_package_folder = __DIR__ . '/update_patch';
 $error_donwload_package = false;
 $error_extract_package = false;
 $https_pass = true;
 $reqs_satisfied = false;
+$error_missing_recipe = false;
+$error_update_database = false;
+$error_update_files = false;
+$error_remove_obsolete_files = false;
+$error_updating_configuration_files = false;
 
 
 // Process form steps
@@ -61,9 +75,6 @@ switch($current_step)
         break;
 
     case 3:
-        $update_package_file = __DIR__ . '/update_package.tar.gz';
-        $update_package_file_uncompressed = __DIR__ . '/update_package.tar';
-        $update_package_folder = __DIR__ . '/update_patch';
 
         //Delete previous packages if exist
         if(file_exists($update_package_file))
@@ -133,6 +144,40 @@ switch($current_step)
         }
         break;
 
+
+    case 8:
+        //Update datebase
+        //$recipe_file = $update_package_folder . '/update_recipe.php';
+        $recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
+        if(file_exists($recipe_file))
+        {
+            require_once($recipe_file);
+            $error_update_database = !update_database();
+        }
+        else
+        {
+            $error_missing_recipe = true;
+        }
+
+        break;
+
+    case 10:
+        //Update files
+        //$recipe_file = $update_package_folder . '/update_recipe.php';
+        $recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
+        if(file_exists($recipe_file))
+        {
+            require_once($recipe_file);
+            $error_update_files = !update_files();
+            $error_remove_obsolete_files = !delete_obolete_files();
+            $error_updating_configuration_files = !update_configuration_files();
+        }
+        else
+        {
+            $error_missing_recipe = true;
+        }
+        break;
+
 }
 
 
@@ -180,9 +225,10 @@ $_SESSION['setup_step'] = $current_step;
                                     "Termos e condições",
                                     "Verificação de requisitos",
                                     "Atualizar base de dados",
+                                    "",
                                     "Atualizar ficheiros",
-                                    "Remover ficheiros",
-                                    "Limpeza"];
+                                    "",
+                                    "Fim"];
 
                         $idx = 0;
                         foreach($STEPS as $item)
@@ -368,9 +414,158 @@ $_SESSION['setup_step'] = $current_step;
                         <?php
                             break;
 
+                        case 6:
+                            $has_previous = false;
+                            $has_next = false;
+                            $current_step++;
+                            ?>
+                            <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                <h1>Atualizar base de dados</h1>
+
+                                <div style="margin-bottom: 20px;"></div>
+                                <p>A atualizar a base de dados. Por favor aguarde...</p>
+                                <div class="progress" style="width: 80%">
+                                    <div id="global-progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                                </div>
+
+                                <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            </form>
+                            <?php
+                            break;
 
 
                         case 8:
+                            $has_previous = false;
+                            $has_next = false;
+
+                            if($error_missing_recipe)
+                            {
+                                $has_previous = true;
+                                ?>
+                            <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                <h1>Erro</h1>
+
+                                <div style="margin-bottom: 20px;"></div>
+
+                                <div class="alert alert-danger"><strong>ERRO!</strong> O pacote de atualização está corrompido.<br>
+                                    Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                </div>
+
+                                <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            </form>
+                            <?php
+                            }
+                            else if($error_update_database)
+                            {
+                                $has_previous = true;
+                            ?>
+                            <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                <h1>Erro</h1>
+
+                                <div style="margin-bottom: 20px;"></div>
+
+                                <div class="alert alert-danger"><strong>ERRO!</strong> Ocorreu um erro ao atualizar a base de dados.<br>
+                                    Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                </div>
+
+                                <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            </form>
+                            <?php
+                            }
+                            else
+                            {
+                                $current_step++;
+                                ?>
+                            <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                <h1>Atualizar ficheiros</h1>
+
+                                <div style="margin-bottom: 20px;"></div>
+                                <p>A atualizar ficheiros. Por favor aguarde...</p>
+                                <div class="progress" style="width: 80%">
+                                    <div id="global-progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                                </div>
+
+                                <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            </form>
+                            <?php
+                            }
+                            break;
+
+
+                        case 10:
+                            $has_previous = false;
+                            $has_next = false;
+                            if($error_missing_recipe)
+                            {
+                                $has_previous = true;
+                            ?>
+                                <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                    <h1>Erro</h1>
+
+                                    <div style="margin-bottom: 20px;"></div>
+
+                                    <div class="alert alert-danger"><strong>ERRO!</strong> O pacote de atualização está corrompido.<br>
+                                        Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                    </div>
+
+                                    <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                                </form>
+                                <?php
+                            }
+                            else if($error_update_files)
+                            {
+                                $has_previous = true;
+                                ?>
+                                <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                    <h1>Erro</h1>
+
+                                    <div style="margin-bottom: 20px;"></div>
+
+                                    <div class="alert alert-danger"><strong>ERRO!</strong> Ocorreu um erro ao atualizar os ficheiros do programa.<br>
+                                        Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                    </div>
+
+                                    <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                                </form>
+                                <?php
+                            }
+                            else if($error_remove_obsolete_files)
+                            {
+                                $has_previous = true;
+                                ?>
+                                <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                    <h1>Erro</h1>
+
+                                    <div style="margin-bottom: 20px;"></div>
+
+                                    <div class="alert alert-danger"><strong>ERRO!</strong> Ocorreu um erro ao eliminar ficheiros obsoletos do programa.<br>
+                                    Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                    </div>
+
+                                    <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                                </form>
+                            <?php
+                            }
+                            else if($error_updating_configuration_files)
+                            {
+                                $has_previous = true;
+                                ?>
+                                <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                                    <h1>Erro</h1>
+
+                                    <div style="margin-bottom: 20px;"></div>
+
+                                    <div class="alert alert-danger"><strong>ERRO!</strong> Ocorreu um erro ao atualizar os ficheiros de configuração do CatecheSis.<br>
+                                        Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                                    </div>
+
+                                    <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                                </form>
+                                <?php
+                            }
+                            else
+                            {
+
                             $has_previous = true;
                             $has_next = false;
 
@@ -384,8 +579,8 @@ $_SESSION['setup_step'] = $current_step;
                                 $cleanup_success = false;
                             }*/
                             ?>
-                            <h1>Instalação concluída!</h1>
-                            <h2>Concluiu com sucesso a instalação do CatecheSis na sua paróquia!</h2>
+                            <h1>Atualização concluída!</h1>
+                            <h2>Concluiu com sucesso a atualização do CatecheSis!</h2>
 
                             <?php
                             /*if(!$cleanup_success)
@@ -403,6 +598,7 @@ $_SESSION['setup_step'] = $current_step;
                                 <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
                             </form>
                             <?php
+                            }
                             break;
                     }
                     ?>
@@ -480,7 +676,9 @@ $_SESSION['setup_step'] = $current_step;
         switch($current_step)
         {
             case 2:
-                // Refresh page automatically to actually start the download
+            case 7:
+            case 9:
+                // Refresh page automatically to actually start the download/update
                 $current_step++;
                 ?>
 
