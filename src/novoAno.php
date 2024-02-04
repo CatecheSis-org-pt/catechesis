@@ -1,4 +1,4 @@
- <?php
+<?php
   
 require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
@@ -208,12 +208,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <?php $pageUI->renderCSS(); // Render the widgets' CSS ?>
   <link rel="stylesheet" href="css/custom-navbar-colors.css">
 
-    <?php
-    $pageUI->renderJS(); // Render the widgets' JS code
-    ?>
-  <script src="js/rowlink.js"></script>
-
-  
   <style>
   	@media print
 	{    
@@ -373,5 +367,11 @@ $menu->renderHTML();
 </datalist>
 
 <?php endif ?>
+
+<?php
+$pageUI->renderJS(); // Render the widgets' JS code
+?>
+<script src="js/rowlink.js"></script>
+
 </body>
 </html>
