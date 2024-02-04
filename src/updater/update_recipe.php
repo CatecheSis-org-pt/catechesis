@@ -1,5 +1,37 @@
 <?php
 
+
+/**
+ * Update the updater itself.
+ * This function should be run prior to any other update, to prepair the updater
+ * to a new API in this file, for example.
+ * @return bool
+ */
+function update_updater()
+{
+    $source_dir = __DIR__ . "/dummy_changes/src/updater"; //FIXME
+    $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "updater";
+    return SetupUtils\xcopy($source_dir, $dest_dir);
+}
+
+/**
+ * Update the CatecheSis licenses and terms first.
+ * These will be shown during the update wizard itself.
+ * @return bool
+ */
+function update_licenses()
+{
+    $source_dir = __DIR__ . "/dummy_changes/src/licenses"; //FIXME
+    $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "licenses";
+    return SetupUtils\xcopy($source_dir, $dest_dir);
+}
+
+
+/**
+ * Update the databasew schema.
+ * Create new tables and/or columns, migrate/convert any data as necessary.
+ * @return bool
+ */
 function update_database()
 {
     $db_host = constant('CATECHESIS_HOST');
@@ -11,6 +43,10 @@ function update_database()
 }
 
 
+/**
+ * Update main application files.
+ * @return bool
+ */
 function update_files()
 {
     $source_dir = __DIR__ . "/dummy_changes/src"; //FIXME
@@ -19,6 +55,10 @@ function update_files()
 }
 
 
+/**
+ * Remove files that are not used anymore in the new version.
+ * @return int|true
+ */
 function delete_obolete_files()
 {
     $res = true;
@@ -27,21 +67,20 @@ function delete_obolete_files()
     {
         // Each line contains one file to remove
         $filename = constant('CATECHESIS_ROOT_DIRECTORY') . $line; //realpath(constant('CATECHESIS_ROOT_DIRECTORY') . "/" . $line);
-        file_put_contents(__DIR__ . "/debug.txt", "Removing $filename\n");
         if(file_exists($filename))
         {
-            file_put_contents(__DIR__ . "/debug.txt", "Removing $filename\n");
             $res &= unlink($filename);
-        }
-        else
-        {
-            file_put_contents(__DIR__ . "/debug.txt", "File $filename not found\n");
         }
     }
 
     return $res;
 }
 
+
+/**
+ * Update the CatecheSis textual configuration files.
+ * @return bool
+ */
 function update_configuration_files()
 {
     $updated_main_config_file = __DIR__ . "/dummy_changes/src/core/config/catechesis_config.inc.template.php"; //FIXME
@@ -156,6 +195,10 @@ function update_configuration_files()
 }
 
 
+/**
+ * Main script to execute this update in a shell (without the wizard GUI).
+ * @return void
+ */
 function main()
 {
     //Execute this when calling the script in a shell

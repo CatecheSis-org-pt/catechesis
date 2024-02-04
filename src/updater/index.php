@@ -101,8 +101,20 @@ switch($current_step)
                 $phar = new PharData($update_package_file_uncompressed);
                 $phar->extractTo($update_package_folder, null, true);
 
-                //TODO Immediately update the updater itself, so that the actions that follow (license, requirements, etc)
-                //can be apropriately set for this update
+                //Immediately update the updater itself, so that the actions that follow (license, requirements, etc) can be apropriately set for this update
+                //$recipe_file = $update_package_folder . '/update_recipe.php';
+                $recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
+                if(file_exists($recipe_file))
+                {
+                    require_once($recipe_file);
+                    update_updater();
+                    update_licenses();
+                }
+                else
+                {
+                    $error_extract_package = true;
+                }
+
             }
             catch(Exception $e)
             {
