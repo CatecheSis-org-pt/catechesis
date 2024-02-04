@@ -146,7 +146,7 @@ switch($current_step)
 
 
     case 8:
-        //Update datebase
+        //Update database
         //$recipe_file = $update_package_folder . '/update_recipe.php';
         $recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
