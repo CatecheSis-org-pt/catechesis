@@ -11,7 +11,11 @@ function update_updater()
 {
     $source_dir = __DIR__ . "/dummy_changes/src/updater"; //FIXME
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "updater";
-    return SetupUtils\xcopy($source_dir, $dest_dir);
+
+    if(file_exists($source_dir))
+        return SetupUtils\xcopy($source_dir, $dest_dir);
+    else
+        return true;
 }
 
 /**
@@ -23,7 +27,11 @@ function update_licenses()
 {
     $source_dir = __DIR__ . "/dummy_changes/src/licenses"; //FIXME
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "licenses";
-    return SetupUtils\xcopy($source_dir, $dest_dir);
+
+    if(file_exists($source_dir))
+        return SetupUtils\xcopy($source_dir, $dest_dir);
+    else
+        return true;
 }
 
 
@@ -34,12 +42,17 @@ function update_licenses()
  */
 function update_database()
 {
+    $sql_update_file = __DIR__ . "/dummy_update.sql"; //FIXME
+
     $db_host = constant('CATECHESIS_HOST');
     $db_name = constant('CATECHESIS_DB');
     $db_user = constant('USER_LOG'); //constant('USER_DEFAULT_EDIT'); //  //FIXME
     $db_pass = constant('PASS_LOG'); //constant('PASS_DEFAULT_EDIT'); //  //FIXME
 
-    return SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/dummy_update.sql"); //FIXME
+    if(file_exists($sql_update_file))
+        return SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, $sql_update_file);
+    else
+        return true;
 }
 
 
@@ -51,7 +64,11 @@ function update_files()
 {
     $source_dir = __DIR__ . "/dummy_changes/src"; //FIXME
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY'); //__DIR__ . "/../";
-    return SetupUtils\xcopy($source_dir, $dest_dir);
+
+    if(file_exists($source_dir))
+        return SetupUtils\xcopy($source_dir, $dest_dir);
+    else
+        return true;
 }
 
 
@@ -63,17 +80,23 @@ function delete_obolete_files()
 {
     $res = true;
     $delete_list_file = __DIR__ . "/dummy_changes/deleted_files.txt"; //FIXME
-    foreach(file($delete_list_file, FILE_IGNORE_NEW_LINES) as $line)
-    {
-        // Each line contains one file to remove
-        $filename = constant('CATECHESIS_ROOT_DIRECTORY') . $line; //realpath(constant('CATECHESIS_ROOT_DIRECTORY') . "/" . $line);
-        if(file_exists($filename))
-        {
-            $res &= unlink($filename);
-        }
-    }
 
-    return $res;
+    if(file_exists($delete_list_file))
+    {
+        foreach(file($delete_list_file, FILE_IGNORE_NEW_LINES) as $line)
+        {
+            // Each line contains one file to remove
+            $filename = constant('CATECHESIS_ROOT_DIRECTORY') . $line; //realpath(constant('CATECHESIS_ROOT_DIRECTORY') . "/" . $line);
+            if(file_exists($filename))
+            {
+                $res &= unlink($filename);
+            }
+        }
+
+        return $res;
+    }
+    else
+        return true;
 }
 
 
