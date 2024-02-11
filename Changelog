@@ -4,6 +4,10 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 ## [UNRELEASED] - 2024-xx-xx
 
+#### Novidades:
+- Notificação de atualização disponível;
+- Assistente de atualização automática;
+
 #### Melhorias de usabilidade:
 - Melhorada mensagem na página *Gerir grupos de catequese* quando não existem anos catequéticos;
 - Geração automática do ficheiro `.htaccess` durante a instalação. A instalação é agora completamente automática;
