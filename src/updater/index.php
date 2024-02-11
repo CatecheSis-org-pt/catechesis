@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../core/UpdateChecker.php');
 /* TODO:
 - [x] Apagar pasta e .tar no final;
 - [x] Verificar permissoes de admin;
-- [ ] Fazer backup dos ficheiros de config antes de atualizar;
+- [x] Fazer backup dos ficheiros de config antes de atualizar;
 - [ ] Atualizar variavel de sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
 - [ ] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
 - [ ] Enviar pais no pedido;

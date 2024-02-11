@@ -118,10 +118,13 @@ function update_configuration_files()
 
         $main_config_file = constant('CATECHESIS_ROOT_DIRECTORY') . "core/config/catechesis_config.inc.php";
 
-        if(!SetupUtils\xcopy($updated_main_config_file, $main_config_file))
-        {
+        //Backup
+        if(!SetupUtils\xcopy($main_config_file, $main_config_file . date("Y-m-d") . ".BAK"))
             return false;
-        }
+
+        //Replace by new template
+        if(!SetupUtils\xcopy($updated_main_config_file, $main_config_file))
+            return false;
 
         $main_settings = array();
         $main_settings['<CATECHESIS_DOMAIN>'] = constant('CATECHESIS_DOMAIN');
@@ -139,10 +142,13 @@ function update_configuration_files()
 
         $shadow_config_file = constant('CATECHESIS_DATA_DIRECTORY') . "/config/catechesis_config.shadow.php";
 
-        if(!SetupUtils\xcopy($updated_shadow_config_file, $shadow_config_file))
-        {
+        //Backup
+        if(!SetupUtils\xcopy($shadow_config_file, $shadow_config_file . date("Y-m-d") . ".BAK"))
             return false;
-        }
+
+        //Replace by new template
+        if(!SetupUtils\xcopy($updated_shadow_config_file, $shadow_config_file))
+            return false;
 
         $shadow_settings = array();
         $shadow_settings['<CATECHESIS_UL_SITE_KEY>'] = constant('CATECHESIS_UL_SITE_KEY');
