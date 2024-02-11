@@ -2,12 +2,16 @@
 
 namespace catechesis\gui;
 
-use Dompdf\Exception;
+
 
 require_once(__DIR__ . '/../Widget.php');
 require_once(__DIR__ . '/../ModalDialog/ModalDialogWidget.php');
 require_once(__DIR__ . "/../../common/Animation.php");
 require_once(__DIR__ . "/../../common/Button.php");
+require_once(__DIR__ . "/../../../authentication/Authenticator.php");
+
+use Dompdf\Exception;
+use catechesis\Authenticator;
 
 
 class UpdateDialogWidget extends ModalDialogWidget
@@ -18,7 +22,8 @@ class UpdateDialogWidget extends ModalDialogWidget
 
         $this->setSize(ModalDialogWidget::SIZE_MEDIUM);
         $this->setTitle("Atualização do CatecheSis");
-        $this->addButton(new Button("Atualizar", ButtonType::PRIMARY, "window.open('updater/index.php?setup_step=-1')"));
+        if(Authenticator::isAdmin())
+            $this->addButton(new Button("Atualizar", ButtonType::PRIMARY, "window.open('updater/index.php?setup_step=-1')"));
         $this->addButton(new Button("Fechar", ButtonType::SECONDARY));
     }
 
@@ -70,6 +75,15 @@ class UpdateDialogWidget extends ModalDialogWidget
                 <div class="clearfix"></div>
                 <div style="margin-bottom: 40px;"></div>
                 <p><a href="<?= $_SESSION['UPDATE_CHANGELOG_URL'] ?>" target="_blank">Saiba mais</a> acerca das novidades incluídas atualização.</p>
+
+                <?php
+                if(!Authenticator::isAdmin())
+                {
+                    ?>
+                    <p>Peça a um administrador para atualizar o CatecheSis na sua paróquia.</p>
+                    <?php
+                }
+                ?>
             </div>
             <div class="clearfix"></div>
         </div>
