@@ -17,6 +17,8 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 - Assistente de Instalação agora permite reiniciar uma instalação mesmo após ter atingido a última etapa;
 - Corrigido bug que afetava alguns sistemas na criação de novo ano catequético;
 - Removida funcionalidade de videochamadas Jitsi devido a [alterações na política de utilização do serviço](https://jitsi.org/blog/authentication-on-meet-jit-si/) alheias ao CatecheSis;
+- Corrigidas posições nas caixas nas fichas de pré-inscrição geradas em .docx;
+
 
 
 ## [Versão 2.1.0] - 2023-05-01
