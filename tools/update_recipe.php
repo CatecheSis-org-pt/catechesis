@@ -132,7 +132,7 @@ function update_configuration_files()
     }
 
 
-    $updated_shadow_config_file = __DIR__ . "/catechesis_data/config/catechesis_config.shadow.template.php";
+    $updated_shadow_config_file = __DIR__ . "/changes/catechesis_data/config/catechesis_config.shadow.template.php";
     if(file_exists($updated_shadow_config_file))
     {
         //Rewrite shadow config file
