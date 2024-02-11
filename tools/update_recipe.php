@@ -86,7 +86,12 @@ function delete_obolete_files()
         foreach(file($delete_list_file, FILE_IGNORE_NEW_LINES) as $line)
         {
             // Each line contains one file to remove
-            $filename = constant('CATECHESIS_ROOT_DIRECTORY') . $line; //realpath(constant('CATECHESIS_ROOT_DIRECTORY') . "/" . $line);
+
+            // Replace abstract paths by real paths
+            $filename = $line;
+            $filename = str_replace("src/", constant('CATECHESIS_ROOT_DIRECTORY'), $filename);
+            $filename = str_replace("catechesis_data/", constant('CATECHESIS_DATA_DIRECTORY') . "/", $filename);
+
             if(file_exists($filename))
             {
                 $res &= unlink($filename);
