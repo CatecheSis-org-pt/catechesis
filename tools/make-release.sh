@@ -20,6 +20,8 @@ dstDirectory="../build/release"                   #Destination directory to buil
 
 echo "Building CatecheSis release package for version $currentHashOrTag"
 
+cp ../AUTHORS $srcDirectory/licenses/CatecheSis/AUTHORS   # Update AUTHORS inside src with eventual changes on AUTHORS in the project root
+
 # Create destination directories
 packageDirectory=$dstDirectory/CatecheSis-$currentHashOrTag
 mkdir -p $dstDirectory
