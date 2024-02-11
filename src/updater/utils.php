@@ -139,6 +139,7 @@ function run_sql_script(string $db_host, string $db_name, string $username, stri
     }
     catch (PDOException $e)
     {
+        file_put_contents($scriptFilePath . ".error_log", $e);
         return false;
     }
 }

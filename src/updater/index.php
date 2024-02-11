@@ -16,6 +16,10 @@ require_once(__DIR__ . '/../core/UpdateChecker.php');
 - Criar package especial para deploy em sistemas existentes;
 - Enviar pais no pedido;
 - Adicionar menu "Verificar existencia de atualizacoes";
+- Script para correr atualizacao na command line;
+- Atualizar variavel se sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
+- Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
+- Fazer backup dos ficheiros de config antes de atualizar;
 */
 
 use catechesis\DataValidationUtils;
