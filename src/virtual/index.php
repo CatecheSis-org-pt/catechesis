@@ -238,15 +238,11 @@ $pageUI->addWidget($footer);
             //Carregar conteudo da sessao
             if($catecismo)
             {
-                $salaAberta = false;
                 try
                 {
                     //Carregar conteudo da catequese
                     //(se nao houver uma sessao para este catecismo especifico, procura recursivamente uma sessao generica)
                     $conteudo_carregado = $db->getVirtualCatechesisContent($data_sessao, $catecismo, $turma, true);
-
-                    if($db->getVirtualCatechesisRoom($HOJE, $catecismo, $turma))
-                        $salaAberta = true;
                 }
                 catch(Exception $e)
                 {
@@ -269,7 +265,6 @@ $pageUI->addWidget($footer);
                         <input type="hidden" name="data_sessao" id="data_sessao_input">
                     </form>
                     <button class="btn btn-default btn" id="button" data-date-format="dd-mm-yyyy" data-date="<?php echo($data_sessao);?>"><span class="glyphicon glyphicon-calendar"></span> Selecionar outra data</button>
-                    <button class="btn btn-primary no-print" type="button" onclick="entrarSalaVirtual()" id="botao_entrar_sala" style="display: <?php if($salaAberta) echo(""); else echo("none"); ?>;"><span class="glyphicon glyphicon-facetime-video"></span>&nbsp; Entrar na sala</button>
                 </div>
 
                 <div class="row" style="margin-bottom:20px; "></div>
@@ -483,72 +478,6 @@ if($on_landing_page)
         });
 </script>
 
-
-<?php
-if($catecismo)
-{ ?>
-<script>
-    function entrarSalaVirtual()
-    {
-        window.open("<?php echo(constant('CATECHESIS_BASE_URL'));?>/virtual/salaVirtual.php?catecismo=<?php echo($catecismo);?>&turma=<?php echo($turma);?>", '_blank');
-
-    }
-
-    const REFRESH_RATE_SALA_VIRTUAL = 60000;               //Refrescar estado da sala virtual a cada 60s
-
-    function check_virtual_room()
-    {
-        var dataSessao = '<?= $HOJE ?>';
-        var catecismo = '<?= $catecismo ?>';
-        var turma = '<?= $turma ?>';
-
-        $.post("salaVirtualStatus.php", {dataSessao: dataSessao, catecismo: catecismo, turma: turma}, function(data, status)
-        {
-            var obj = $.parseJSON(data);
-
-            if(obj.room_status === "open")
-            {
-                open_room();
-            }
-            else
-            {
-                closed_room();
-            }
-        });
-    }
-
-    var intervalID = setInterval(function(){check_virtual_room();}, REFRESH_RATE_SALA_VIRTUAL);  //Correr a funcao check_virtual_room() periodicamente
-
-
-    //Quando o utilizador muda de tab no browser
-    $(window).blur(function()
-    {
-        clearInterval(intervalID); //Parar o polling
-    });
-
-    //Quando o utilizador volta a esta tab no browser
-    $(window).focus(function()
-    {
-        check_virtual_room();
-        intervalID = setInterval(function(){check_virtual_room();}, REFRESH_RATE_SALA_VIRTUAL);  //Reativar o polling
-    });
-
-
-    function closed_room()
-    {
-        document.getElementById("botao_entrar_sala").style.display = "none";
-    }
-
-    function open_room()
-    {
-        document.getElementById("botao_entrar_sala").style.display = "";
-        clearInterval(intervalID); //Parar o pooling
-    }
-</script>
-
-<?php
-}
-?>
 
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 <script type="text/javascript">

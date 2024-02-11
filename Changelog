@@ -12,7 +12,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 - A configuração do CHARACTER SET e COLLATION da base de dados não era executada corretamente em algumas versões mais recentes do servidor MySQL;
 - Assistente de Instalação agora permite reiniciar uma instalação mesmo após ter atingido a última etapa;
 - Corrigido bug que afetava alguns sistemas na criação de novo ano catequético;
-
+- Removida funcionalidade de videochamadas Jitsi devido a [alterações na política de utilização do serviço](https://jitsi.org/blog/authentication-on-meet-jit-si/) alheias ao CatecheSis;
 
 
 ## [Versão 2.1.0] - 2023-05-01
