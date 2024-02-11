@@ -11,17 +11,6 @@ require_once(__DIR__ . '/utils.php');
 require_once(__DIR__ . '/../core/UpdateChecker.php');
 require_once(__DIR__ . '/../core/log_functions.php');
 
-/* TODO:
-- [x] Apagar pasta e .tar no final;
-- [x] Verificar permissoes de admin;
-- [x] Fazer backup dos ficheiros de config antes de atualizar;
-- [x] Atualizar variavel de sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
-- [x] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
-- [x] Enviar pais no pedido;
-- [x] Adicionar menu "Verificar existencia de atualizacoes";
-- [ ] Script para correr atualizacao na command line; https://devlateral.com/guides/php/how-to-run-a-php-script-in-cli-mode-only
-- [ ] Criar package especial para deploy em sistemas existentes;
-*/
 
 use catechesis\DataValidationUtils;
 use catechesis\Utils;
