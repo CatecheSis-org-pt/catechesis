@@ -11,15 +11,15 @@ require_once(__DIR__ . '/utils.php');
 require_once(__DIR__ . '/../core/UpdateChecker.php');
 
 /* TODO:
-- [ ] Apagar pasta e .tar no final;
+- [x] Apagar pasta e .tar no final;
 - [x] Verificar permissoes de admin;
-- [ ] Criar package especial para deploy em sistemas existentes;
+- [ ] Fazer backup dos ficheiros de config antes de atualizar;
+- [ ] Atualizar variavel se sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
+- [ ] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
 - [ ] Enviar pais no pedido;
 - [ ] Adicionar menu "Verificar existencia de atualizacoes";
 - [ ] Script para correr atualizacao na command line; https://devlateral.com/guides/php/how-to-run-a-php-script-in-cli-mode-only
-- [ ] Atualizar variavel se sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
-- [ ] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
-- [ ] Fazer backup dos ficheiros de config antes de atualizar;
+- [ ] Criar package especial para deploy em sistemas existentes;
 */
 
 use catechesis\DataValidationUtils;
@@ -600,30 +600,36 @@ $_SESSION['setup_step'] = $current_step;
                             $has_previous = true;
                             $has_next = false;
 
-                            // Delete the setup folder
-                            /*try
+                            $cleanup_success = true;
+
+                            // Delete the update patch folder and files
+                            try
                             {
-                                $cleanup_success = SetupUtils\delete_dir(__DIR__);
+                                if(file_exists($update_package_file))
+                                    unlink($update_package_file);
+                                if (file_exists($update_package_file_uncompressed))
+                                    unlink($update_package_file_uncompressed);
+                                if(file_exists($update_package_folder))
+                                    $cleanup_success = SetupUtils\delete_dir($update_package_folder);
                             }
                             catch (Exception $e)
                             {
                                 $cleanup_success = false;
-                            }*/
+                            }
                             ?>
                             <h1>Atualização concluída!</h1>
                             <h2>Concluiu com sucesso a atualização do CatecheSis!</h2>
 
                             <?php
-                            /*if(!$cleanup_success)
+                            if(!$cleanup_success)
                             {
                             ?>
-                                <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível eliminar a diretoria <code><?= __DIR__ ?></code>.<br>
-                                    A presença desta diretoria num sistema em produção representa um RISCO DE SEGURANÇA grave, permitindo que terceiros acedam aos seus dados.<br>
-                                    Por favor, elimine manualmente a diretoria <code><?= __DIR__ ?></code> do seu servidor.</div>
+                                <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível eliminar o ficheiro <code><?= $update_package_file ?></code> e/ou a diretoria <code><?= $update_package_folder ?></code>.<br>
+                                    Por favor, elimine manualmente este ficheiro e/ou a diretoria <code><?= $update_package_folder ?></code> do seu servidor.</div>
                             <?php
-                            }*/
+                            }
                             ?>
-                            <p>Pode fechar este assistente e aceder à página principal do CatecheSis em <a href="<?=$_SESSION['catechesis_base_url']?>"><?=$_SESSION['catechesis_base_url']?></a></p>
+                            <p>Pode fechar este assistente e aceder à página principal do CatecheSis em <a href="<?= constant('CATECHESIS_BASE_URL')?>"><?=constant('CATECHESIS_BASE_URL')?></a></p>
 
                             <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                                 <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
