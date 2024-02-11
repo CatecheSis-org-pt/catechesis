@@ -2,6 +2,7 @@
 
 namespace catechesis\gui;
 
+use catechesis\Authenticator;
 use Dompdf\Exception;
 
 require_once(__DIR__ . '/../Widget.php');
@@ -54,6 +55,16 @@ class AboutDialogWidget extends ModalDialogWidget
                     <div class="col-xs-12">
                         <span>Última revisão em: <?= constant("VERSION_RELEASE_DATE") ?></span>
                     </div>
+                    <?php
+                    if(Authenticator::isAdmin())
+                    {
+                    ?>
+                    <div class="col-xs-12" style="margin-top: 10px">
+                        <button type="button" class="btn btn-xs btn-default" onclick="window.open('updater/index.php?setup_step=-1')"><i class="fas fa-undo"></i> Procurar atualizações </button>
+                    </div>
+                    <?php
+                    }
+                    ?>
                 </div>
                 <div class="clearfix"></div>
             </div>
