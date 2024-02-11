@@ -10,7 +10,13 @@ require_once(__DIR__ . '/Checker.php');
 require_once(__DIR__ . '/utils.php');
 require_once(__DIR__ . '/../core/UpdateChecker.php');
 
-
+/* TODO:
+- Apagar pasta e .tar no final;
+- Verificar permissoes de admin;
+- Criar package especial para deploy em sistemas existentes;
+- Enviar pais no pedido;
+- Adicionar menu "Verificar existencia de atualizacoes";
+*/
 
 use catechesis\DataValidationUtils;
 use catechesis\Utils;

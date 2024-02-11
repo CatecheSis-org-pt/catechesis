@@ -9,7 +9,7 @@
  */
 function update_updater()
 {
-    $source_dir = __DIR__ . "/update_patch/src/updater";
+    $source_dir = __DIR__ . "/update_patch/changes/src/updater";
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "updater";
 
     if(file_exists($source_dir))
@@ -25,7 +25,7 @@ function update_updater()
  */
 function update_licenses()
 {
-    $source_dir = __DIR__ . "/update_patch/src/licenses";
+    $source_dir = __DIR__ . "/update_patch/changes/src/licenses";
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY') . "licenses";
 
     if(file_exists($source_dir))
@@ -62,7 +62,7 @@ function update_database()
  */
 function update_files()
 {
-    $source_dir = __DIR__ . "/update_patch/src";
+    $source_dir = __DIR__ . "/update_patch/changes/src";
     $dest_dir = constant('CATECHESIS_ROOT_DIRECTORY'); //__DIR__ . "/../";
 
     if(file_exists($source_dir))
@@ -106,7 +106,7 @@ function delete_obolete_files()
  */
 function update_configuration_files()
 {
-    $updated_main_config_file = __DIR__ . "/update_patch/src/core/config/catechesis_config.inc.template.php";
+    $updated_main_config_file = __DIR__ . "/update_patch/changes/src/core/config/catechesis_config.inc.template.php";
     if(file_exists($updated_main_config_file))
     {
         //Rewrite main config file
@@ -196,7 +196,7 @@ function update_configuration_files()
         SetupUtils\replace_strings_in_file($shadow_config_file, $shadow_settings);
     }
 
-    $updated_htaccess_file = __DIR__ . "/update_patch/src/.htaccess";
+    $updated_htaccess_file = __DIR__ . "/update_patch/changes/src/.htaccess";
     if(file_exists($updated_htaccess_file))
     {
         $htaccess_file = constant('CATECHESIS_ROOT_DIRECTORY') . ".htaccess";
