@@ -9,13 +9,14 @@ require_once(__DIR__ . '/../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/Checker.php');
 require_once(__DIR__ . '/utils.php');
 require_once(__DIR__ . '/../core/UpdateChecker.php');
+require_once(__DIR__ . '/../core/log_functions.php');
 
 /* TODO:
 - [x] Apagar pasta e .tar no final;
 - [x] Verificar permissoes de admin;
 - [x] Fazer backup dos ficheiros de config antes de atualizar;
-- [ ] Atualizar variavel de sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
-- [ ] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
+- [x] Atualizar variavel de sessao que guarda versao mais recente (para nao aparecer novamente o popup de atualizacao disponivel);
+- [x] Inserir registo no log do CatecheSis a dizer que o utilizador atual atualizou o CatecheSis;
 - [ ] Enviar pais no pedido;
 - [ ] Adicionar menu "Verificar existencia de atualizacoes";
 - [ ] Script para correr atualizacao na command line; https://devlateral.com/guides/php/how-to-run-a-php-script-in-cli-mode-only
@@ -52,8 +53,6 @@ $pageUI->addJSDependency('js/jquery.min.js');
 $pageUI->addJSDependency('js/bootstrap.min.js');
 
 
-$updateChecker = new UpdateChecker();
-
 // Control whether the previous/next buttons should be shown
 $has_previous = true;
 $has_next = true;
@@ -85,12 +84,26 @@ else if($_SESSION['setup_step'])
     $current_step = $_SESSION['setup_step'];
 }
 
+
+$updateChecker = null;
+
 switch($current_step)
 {
     case -1: //Restart
         $current_step = 0;
     case 0:
     case 1:
+
+        // Update environment variables
+        //include(__DIR__ . '/../core/version_info.php');     // Force refresh version info
+        //include(__DIR__ . '/../core/UpdateChecker.php');    // Force load updated version info
+        require_once(__DIR__ . '/../core/check_for_updates.php');
+        //check_for_updates();
+        $updateChecker = new UpdateChecker();
+        $_SESSION['IS_UPDATE_AVAILABLE'] = $updateChecker->isUpdateAvailable();
+        $_SESSION['LATEST_AVAILABLE_VERSION'] = $updateChecker->getLatestVersion();
+        $_SESSION['CURRENT_VERSION'] = $updateChecker->getCurrentVersion();
+        $_SESSION['UPDATE_CHANGELOG_URL'] = $updateChecker->getChangelogUrl();
         break;
 
     case 3:
@@ -104,6 +117,7 @@ switch($current_step)
             SetupUtils\delete_dir($update_package_folder);
 
         //Download the update package
+        $updateChecker = new UpdateChecker();
         $success = file_put_contents($update_package_file, file_get_contents($updateChecker->getDownloadUrl()));
 
         if ($success)
@@ -198,10 +212,14 @@ switch($current_step)
         //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
         {
+            // Update files
             require_once($recipe_file);
             $error_update_files = !update_files();
             $error_remove_obsolete_files = !delete_obolete_files();
             $error_updating_configuration_files = !update_configuration_files();
+
+            // Write log entry
+            writeLogEntry("Atualizou o CatecheSis para a versão " . $_SESSION['LATEST_AVAILABLE_VERSION']);
         }
         else
         {
@@ -347,9 +365,13 @@ $_SESSION['setup_step'] = $current_step;
                             </div>
 
                                 <div class="clearfix" style="margin-bottom: 20px"></div>
-                            <p><b>AVISO! O CatecheSis ficará indisponível para todos os utilizadores durante alguns minutos, enquanto decorre a atualização.<br>
-                                Por favor faça uma cópia de segurança da base de dados antes de avançar</b>.<br><br>
-                            Para começar a atualização, clique em Seguinte.</p>
+
+                                <div class="alert alert-warning"><strong>AVISO!</strong> O CatecheSis poderá ficar indisponível para todos os utilizadores durante alguns minutos, enquanto decorre a atualização.</div>
+                                <div class="alert alert-info"><strong>RECOMENDAÇÃO!</strong> Por favor faça uma cópia de segurança da base de dados antes de avançar.</div>
+
+                                <div class="clearfix" style="margin-bottom: 20px"></div>
+
+                                <p>Para começar a atualização, clique em Seguinte.</p>
 
                             <?php
                             }
@@ -629,7 +651,16 @@ $_SESSION['setup_step'] = $current_step;
                             <?php
                             }
                             ?>
-                            <p>Pode fechar este assistente e aceder à página principal do CatecheSis em <a href="<?= constant('CATECHESIS_BASE_URL')?>"><?=constant('CATECHESIS_BASE_URL')?></a></p>
+
+                                <p>As atualizações do CatecheSis são incrementais, pelo que poderão existir mais atualizações para aplicar.</p>
+
+                                <div class="clearfix" style="margin-bottom: 20px"></div>
+
+                                <div class="form-group">
+                                    <div class="col-md-4 center-block">
+                                        <button id="restart_button" type="submit" class="btn btn-primary" onclick="restart()"><i class="fas fa-undo"></i> <strong>Verificar a existência de atualizações</strong></button>
+                                    </div>
+                                </div>
 
                             <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                                 <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
