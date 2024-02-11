@@ -7,9 +7,12 @@ require_once(__DIR__ . '/ulogin/main.inc.php');
 require_once(__DIR__ . '/../core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/../core/database_cleanup.php');
+require_once(__DIR__ . '/../core/check_for_updates.php');
+
 
 use Exception;
 use catechesis\PdoDatabaseManager;
+
 
 
 class Authenticator
@@ -131,7 +134,10 @@ class Authenticator
                 $_SESSION['admin'] = $userAccount['admin'];
 
                 if ($userAccount['admin'])
-                    database_cleanup(); //Executa a limpeza periodica dos logs, se necessario
+                {
+                    database_cleanup();     // Executes periodic log cleanup, if necessary
+                    check_for_updates();    // Checks for updates (if some conditions are met)
+                }
             }
             else
             {//Conta bloqueada
