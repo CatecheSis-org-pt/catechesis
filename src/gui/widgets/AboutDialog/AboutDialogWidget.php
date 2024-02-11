@@ -2,12 +2,14 @@
 
 namespace catechesis\gui;
 
+use catechesis\Authenticator;
 use Dompdf\Exception;
 
 require_once(__DIR__ . '/../Widget.php');
 require_once(__DIR__ . '/../ModalDialog/ModalDialogWidget.php');
 require_once(__DIR__ . "/../../common/Animation.php");
 require_once(__DIR__ . "/../../common/Button.php");
+require_once(__DIR__ . "/../../../core/version_info.php");
 
 class AboutDialogWidget extends ModalDialogWidget
 {
@@ -48,11 +50,21 @@ class AboutDialogWidget extends ModalDialogWidget
                         <h3> CatecheSis </h3>
                     </div>
                     <div class="col-xs-12">
-                        <span>Versão 2.1.0</span>
+                        <span>Versão <?= constant("VERSION_STRING"); ?></span>
                     </div>
                     <div class="col-xs-12">
-                        <span>Última revisão em: 01-05-2023</span>
+                        <span>Última revisão em: <?= constant("VERSION_RELEASE_DATE") ?></span>
                     </div>
+                    <?php
+                    if(Authenticator::isAdmin())
+                    {
+                    ?>
+                    <div class="col-xs-12" style="margin-top: 10px">
+                        <button type="button" class="btn btn-xs btn-default" onclick="window.open('updater/index.php?setup_step=-1')"><i class="fas fa-undo"></i> Procurar atualizações </button>
+                    </div>
+                    <?php
+                    }
+                    ?>
                 </div>
                 <div class="clearfix"></div>
             </div>

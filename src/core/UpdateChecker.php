@@ -2,6 +2,7 @@
 
 namespace catechesis;
 require_once(__DIR__ . '/Configurator.php');
+require_once(__DIR__ . '/version_info.php');
 
 use catechesis\Configurator;
 
@@ -26,8 +27,8 @@ class UpdateChecker
 
     public function getCurrentVersion()
     {
-        //FIXME Store the current version in a separate file
-        return "2.0.1";
+        // Current version stored in version_info.php
+        return constant("VERSION_STRING");
     }
 
     public function isUpdateAvailable()
@@ -58,7 +59,8 @@ class UpdateChecker
         $data = ['installed_version' => $this->getCurrentVersion(),
                  'parish' => Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME),
                  'diocese' => Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_DIOCESE),
-                 'locality' => Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_PLACE)
+                 'locality' => Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_PLACE),
+                 'locale' => Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)
                 ];
 
         // use key 'http' even if you send the request to https://...
