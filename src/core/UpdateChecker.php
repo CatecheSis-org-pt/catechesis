@@ -17,18 +17,21 @@ class UpdateChecker
     private /*string/ $_downloadUrl;
 
     private /*string*/ $_changelogUrl;
+    private /*string*/ $_forcedCurrentVersion;
 
-
-    public function __construct()
+    public function __construct($forceCurrentVersion = null)
     {
+        $this->_forcedCurrentVersion = $forceCurrentVersion;
         $this->checkForUpdates();
     }
 
 
     public function getCurrentVersion()
     {
-        // Current version stored in version_info.php
-        return constant("VERSION_STRING");
+        if($this->_forcedCurrentVersion)
+            return $this->_forcedCurrentVersion;
+        else
+            return constant("VERSION_STRING");      // Current version stored in version_info.php
     }
 
     public function isUpdateAvailable()

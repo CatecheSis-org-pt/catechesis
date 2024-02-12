@@ -73,6 +73,13 @@ else if($_SESSION['setup_step'])
     $current_step = $_SESSION['setup_step'];
 }
 
+// Force current version (to force repeating a failed update, for example)
+$force_current_version = null;
+if($_REQUEST['force_current_version'])
+{
+    $force_current_version = $_REQUEST['force_current_version'];
+}
+
 
 $updateChecker = null;
 
@@ -88,7 +95,7 @@ switch($current_step)
         //include(__DIR__ . '/../core/UpdateChecker.php');    // Force load updated version info
         require_once(__DIR__ . '/../core/check_for_updates.php');
         //check_for_updates();
-        $updateChecker = new UpdateChecker();
+        $updateChecker = new UpdateChecker($force_current_version);
         $_SESSION['IS_UPDATE_AVAILABLE'] = $updateChecker->isUpdateAvailable();
         $_SESSION['LATEST_AVAILABLE_VERSION'] = $updateChecker->getLatestVersion();
         $_SESSION['CURRENT_VERSION'] = $updateChecker->getCurrentVersion();
@@ -106,7 +113,7 @@ switch($current_step)
             SetupUtils\delete_dir($update_package_folder);
 
         //Download the update package
-        $updateChecker = new UpdateChecker();
+        $updateChecker = new UpdateChecker($force_current_version);
         $success = file_put_contents($update_package_file, file_get_contents($updateChecker->getDownloadUrl()));
 
         if ($success)
@@ -336,7 +343,7 @@ $_SESSION['setup_step'] = $current_step;
                                                 <tbody>
                                                 <tr>
                                                     <td style="padding-right: 20px;">Versão instalada:</td>
-                                                    <td><?= $updateChecker->getCurrentVersion()  ?></td>
+                                                    <td><?= $updateChecker->getCurrentVersion() ?><?php if($force_current_version) echo(' (forged)'); ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td style="padding-right: 10px">Versão disponível:</td>
@@ -375,6 +382,14 @@ $_SESSION['setup_step'] = $current_step;
                             ?>
 
                             <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <?php
+                            if($force_current_version)
+                            {
+                            ?>
+                                <input type="hidden" id="force_current_version" name="force_current_version" value="<?= $force_current_version ?>">
+                            <?php
+                            }
+                            ?>
                         </form>
                     <?php
                         break;
@@ -394,12 +409,38 @@ $_SESSION['setup_step'] = $current_step;
                             </div>
 
                             <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <?php
+                            if($force_current_version)
+                            {
+                                ?>
+                                <input type="hidden" id="force_current_version" name="force_current_version" value="<?= $force_current_version ?>">
+                                <?php
+                            }
+                            ?>
                         </form>
                         <?php
                             break;
 
                         case 4:
                             $current_step++;
+
+                            if($error_donwload_package)
+                            {?>
+                        <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
+                            <h1>Erro</h1>
+
+                            <div style="margin-bottom: 20px;"></div>
+
+                            <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível transferir ou extraír o pacote de atualização.<br>
+                                Por favor tente novamente. Se o problema persistir, reporte em <a href="https://catechesis.org.pt/contactos.php">https://catechesis.org.pt/contactos.php</a>
+                            </div>
+
+                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                        </form>
+                            <?php
+                            }
+                            else
+                            {
                             ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                             <h1>Termos e condições</h1>
@@ -425,6 +466,7 @@ $_SESSION['setup_step'] = $current_step;
                             <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
                         </form>
                             <?php
+                            }
                             break;
 
 
@@ -745,7 +787,7 @@ $_SESSION['setup_step'] = $current_step;
                 var millisecondsBeforeRefresh = 0;
                 window.setTimeout(function () {
                     //document.location.reload();
-                    window.location = window.location.href;
+                    window.location = window.location.href <?php if($force_current_version) echo("+\"?force_current_version=$force_current_version\""); ?>;
                 }, millisecondsBeforeRefresh);
             };
                     <?php
