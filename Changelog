@@ -2,6 +2,12 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
+## [Versão 2.2.1] - 2024-02-13
+
+#### Correções:
+- Corrigido bug que provocava erro fatal (array nulo) em alguns sistemas;
+
+
 ## [Versão 2.2.0] - 2024-02-13
 
 #### Novidades:
