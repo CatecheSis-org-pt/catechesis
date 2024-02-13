@@ -128,7 +128,7 @@ switch($current_step)
                 $phar->extractTo($update_package_folder, null, true);
 
                 //Immediately update the updater itself, so that the actions that follow (license, requirements, etc) can be apropriately set for this update
-                $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
+                $recipe_file = SetupUtils\joinPaths($update_package_folder, '/update_recipe.php');
                 //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
                 if(file_exists($recipe_file))
                 {
@@ -185,7 +185,7 @@ switch($current_step)
 
     case 8:
         //Update database
-        $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
+        $recipe_file = SetupUtils\joinPaths($update_package_folder, '/update_recipe.php');
         //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
         {
@@ -201,7 +201,7 @@ switch($current_step)
 
     case 10:
         //Update files
-        $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
+        $recipe_file = SetupUtils\joinPaths($update_package_folder, '/update_recipe.php');
         //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
         {

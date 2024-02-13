@@ -10,7 +10,7 @@
 function update_updater()
 {
     $source_dir = __DIR__ . "/changes/src/updater";
-    $dest_dir = joinPaths(constant('CATECHESIS_ROOT_DIRECTORY') , "updater");
+    $dest_dir = SetupUtils\joinPaths(constant('CATECHESIS_ROOT_DIRECTORY') , "updater");
 
     if(file_exists($source_dir))
         return SetupUtils\xcopy($source_dir, $dest_dir);
@@ -26,7 +26,7 @@ function update_updater()
 function update_licenses()
 {
     $source_dir = __DIR__ . "/changes/src/licenses";
-    $dest_dir = joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), "licenses");
+    $dest_dir = SetupUtils\joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), "licenses");
 
     if(file_exists($source_dir))
         return SetupUtils\xcopy($source_dir, $dest_dir);
@@ -89,8 +89,8 @@ function delete_obolete_files()
 
             // Replace abstract paths by real paths
             $filename = $line;
-            $filename = str_replace("src/", joinPaths(constant('CATECHESIS_ROOT_DIRECTORY')) . '/', $filename);                 // joinPaths with 1 argument removes the traling '/' if any
-            $filename = str_replace("catechesis_data/", joinPaths(constant('CATECHESIS_DATA_DIRECTORY')) . "/", $filename);
+            $filename = str_replace("src/", SetupUtils\joinPaths(constant('CATECHESIS_ROOT_DIRECTORY')) . '/', $filename);                 // SetupUtils\joinPaths with 1 argument removes the traling '/' if any
+            $filename = str_replace("catechesis_data/", SetupUtils\joinPaths(constant('CATECHESIS_DATA_DIRECTORY')) . "/", $filename);
 
             if(file_exists($filename))
             {
@@ -116,7 +116,7 @@ function update_configuration_files()
     {
         //Rewrite main config file
 
-        $main_config_file = joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), "core/config/catechesis_config.inc.php");
+        $main_config_file = SetupUtils\joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), "core/config/catechesis_config.inc.php");
 
         //Backup
         if(!SetupUtils\xcopy($main_config_file, $main_config_file . date("Y-m-d") . ".BAK"))
@@ -140,7 +140,7 @@ function update_configuration_files()
     {
         //Rewrite shadow config file
 
-        $shadow_config_file = joinPaths(constant('CATECHESIS_DATA_DIRECTORY'), "/config/catechesis_config.shadow.php");
+        $shadow_config_file = SetupUtils\joinPaths(constant('CATECHESIS_DATA_DIRECTORY'), "/config/catechesis_config.shadow.php");
 
         //Backup
         if(!SetupUtils\xcopy($shadow_config_file, $shadow_config_file . date("Y-m-d") . ".BAK"))
@@ -210,7 +210,7 @@ function update_configuration_files()
     $updated_htaccess_file = __DIR__ . "/changes/src/.htaccess";
     if(file_exists($updated_htaccess_file))
     {
-        $htaccess_file = joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), ".htaccess");
+        $htaccess_file = SetupUtils\joinPaths(constant('CATECHESIS_ROOT_DIRECTORY'), ".htaccess");
 
         // Write URLs for error pages in main .htaccess file
         $error_pages = array();
