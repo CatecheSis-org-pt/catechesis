@@ -8,6 +8,27 @@ use PDOException;
 
 
 /**
+ * Join path snippets, without duplicating slashes.
+ * Sample usage:
+ *      joinPaths(array('my/path', 'is', '/an/array'));
+ *      joinPaths('my/paths/', '/are/', 'a/r/g/u/m/e/n/t/s/');
+ * @return string
+ */
+function joinPaths()
+{
+    $args = func_get_args();
+    $paths = array();
+    foreach ($args as $arg) {
+        $paths = array_merge($paths, (array)$arg);
+    }
+
+    //$paths = array_map(create_function('$p', 'return trim($p, "/");'), $paths);
+    $paths = array_map(function($p) {return trim($p, "/");}, $paths);
+    $paths = array_filter($paths);
+    return join('/', $paths);
+}
+
+/**
  * Copy a file, or recursively copy a folder and its contents
  * @param       string   $source    Source path
  * @param       string   $dest      Destination path

@@ -91,10 +91,7 @@ switch($current_step)
     case 1:
 
         // Update environment variables
-        //include(__DIR__ . '/../core/version_info.php');     // Force refresh version info
-        //include(__DIR__ . '/../core/UpdateChecker.php');    // Force load updated version info
         require_once(__DIR__ . '/../core/check_for_updates.php');
-        //check_for_updates();
         $updateChecker = new UpdateChecker($force_current_version);
         $_SESSION['IS_UPDATE_AVAILABLE'] = $updateChecker->isUpdateAvailable();
         $_SESSION['LATEST_AVAILABLE_VERSION'] = $updateChecker->getLatestVersion();
@@ -131,7 +128,7 @@ switch($current_step)
                 $phar->extractTo($update_package_folder, null, true);
 
                 //Immediately update the updater itself, so that the actions that follow (license, requirements, etc) can be apropriately set for this update
-                $recipe_file = $update_package_folder . '/update_recipe.php';
+                $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
                 //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
                 if(file_exists($recipe_file))
                 {
@@ -165,7 +162,7 @@ switch($current_step)
             ->requireClasses(['PDO', 'finfo', 'stdClass'])
             //->requireApacheModules(['mod_rewrite'])
             ->requireFunctions(['random_bytes'])
-            ->requireFile(__DIR__ . "/../core/config/catechesis_config.inc.template.php", Checker::CHECK_FILE_EXISTS)
+            //->requireFile(__DIR__ . "/../core/config/catechesis_config.inc.template.php", Checker::CHECK_FILE_EXISTS)
             ->requireDirectory(__DIR__ . "/../", Checker::CHECK_IS_READABLE)
         ;
 
@@ -188,7 +185,7 @@ switch($current_step)
 
     case 8:
         //Update database
-        $recipe_file = $update_package_folder . '/update_recipe.php';
+        $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
         //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
         {
@@ -204,7 +201,7 @@ switch($current_step)
 
     case 10:
         //Update files
-        $recipe_file = $update_package_folder . '/update_recipe.php';
+        $recipe_file = joinPaths($update_package_folder, '/update_recipe.php');
         //$recipe_file = __DIR__ . '/update_recipe.php'; //DEBUG
         if(file_exists($recipe_file))
         {
