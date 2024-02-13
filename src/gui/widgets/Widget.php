@@ -17,12 +17,12 @@ namespace catechesis\gui
     abstract class Widget
     {
         // (Note: typed properties are only allowed in PHP 7.4+, so types are commented in the meanwhile...)
-        protected /*string*/    $_id;                   // Widget ID. Should also be used as HTML id when rendering the widget.
-        protected /*array*/     $_css_includes;         // Array of strings with paths to CSS dependencies
-        protected /*array*/     $_js_includes;          // Array of strings with paths to JS dependencies
-        protected /*array*/     $_additional_classes;   // Add this classes to the generated HTML code
-        protected /*string*/    $_inline_style;         // Add this inline style property to the generated HTML code
-        private /*string*/      $_path_prefix = "";     // Prefix to add to the path of every import resource (e.g. images)
+        protected /*string*/    $_id;                             // Widget ID. Should also be used as HTML id when rendering the widget.
+        protected /*array*/     $_css_includes = array();         // Array of strings with paths to CSS dependencies
+        protected /*array*/     $_js_includes = array();          // Array of strings with paths to JS dependencies
+        protected /*array*/     $_additional_classes = array();   // Add this classes to the generated HTML code
+        protected /*string*/    $_inline_style;                   // Add this inline style property to the generated HTML code
+        private /*string*/      $_path_prefix = "";               // Prefix to add to the path of every import resource (e.g. images)
         protected static /*int*/ $NEXT_AVAILABLE_ID = 0;
 
         /**
