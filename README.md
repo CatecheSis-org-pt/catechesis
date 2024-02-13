@@ -28,7 +28,7 @@ Inclui recursos como:
 - Registo de sacramentos;
 - Ferramenta de apoio à decisão para sacramentos;
 - Análises estatísticas;
-- Catequese virtual, com publicações e video-chamadas;
+- Catequese virtual, onde os catequistas podem fazer publicações;
 
 **Veja todos os recursos em [https://catechesis.org.pt](https://catechesis.org.pt).**
 
@@ -94,7 +94,7 @@ Includes features like:
 - Registration of sacraments;
 - Decision support tool for sacraments;
 - Statistical analysis;
-- Virtual catechesis, with publications and video calls;
+- Virtual catechesis, where catechists can make posts;
 
 **See all resources at [https://catechesis.org.pt](https://catechesis.org.pt).**
 
