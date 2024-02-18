@@ -122,14 +122,13 @@ switch($current_step)
         //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
-        $scan = scandir(posix_getpwuid(posix_getuid())['dir']);
-        foreach($scan as $file)
+        $home_dir = getenv('HOME');
+        $scan = glob($home_dir . '/*', GLOB_ONLYDIR);
+        foreach ($scan as $dir)
         {
-            if (!is_dir("$file"))
-            {
-                $dir_list[] = '/' . $file;
-                echo('<option value="/' . $file . '">');
-            }
+            $file = basename($dir);
+            $dir_list[] = '/' . $file;
+            echo('<option value="/' . $file . '">');
         }
         echo('</datalist>');
 

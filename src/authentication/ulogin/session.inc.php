@@ -61,15 +61,15 @@ class ulSessionManager
 	/**
 	 * Set properties for a PHP session and start it up.
 	 */
-	private static function _sessionStart()
-	{
-		self::EnsureStorage();
-
-		// Set session cookie options
-		session_name('SSESID');
-		session_set_cookie_params(0, '/', (UL_DOMAIN === 'localhost') ? '' : UL_DOMAIN, ulUtils::IsHTTPS(), true);
-		session_start();
-	}
+    private static function _sessionStart()
+    {
+        if (session_status() == PHP_SESSION_NONE)
+        {
+            session_name('SSESID');
+            session_set_cookie_params(0, '/', (UL_DOMAIN === 'localhost') ? '' : UL_DOMAIN, ulUtils::IsHTTPS(), true);
+            session_start();
+        }
+    }
 
   private static function tryFingerprint()
   {
@@ -95,60 +95,25 @@ class ulSessionManager
 	 * @param string $sid_regen_prob Keep the session id changing throughout the session, with this probability (0-100)
 	 */
 	public static function sessionStart($sid_regen_prob)
-	{
-    // Used as a temporary storage to be able to keep some session data
-    // even when the session gets invalidated.
-    static $TmpNonSensitiveData = NULL;
+    {
+        self::_sessionStart();
 
-    // Start a PHP session. After this call session data is available.
-		self::_sessionStart();
+        if (self::isNewSession()) {
+            self::changeSessionId(true, true);
+            $_SESSION = array();
+            $_SESSION['sses'] = self::tryFingerprint();
+        } elseif (!self::validateSession()) {
+            self::$TrustInvalidated = true;
+            self::sessionDestroy();
+            return false;
+        }
 
-		if (self::isNewSession())	// Are we just starting a new session?
-		{
-      ulLog::DebugLog('Starting a new uLogin session.', 0);
+        self::sessionSetExpiry();
+        self::updateTokenCookie();
+        self::$SessionRunning = true;
 
-      // Reset session data and regenerate id
-			self::changeSessionId(true, true);
-			$_SESSION = array();
-			$_SESSION['sses'] = self::tryFingerprint();
-
-      // Play back data we want kept from a previously invalidated session
-      if ($TmpNonSensitiveData != NULL)
-        $_SESSION['nonsensitive'] = $TmpNonSensitiveData;
-		}
-		// Make sure the session hasn't expired or been hijacked, and destroy it if it has
-		else if(self::validateSession())
-		{
-      ulLog::DebugLog('Continuing an existing uLogin session.', 0);
-
-			// Give a chance of the session id changing on any request
-			if(rand(1, 100) <= $sid_regen_prob)
-			{
-        ulLog::DebugLog('Probability for automatic SID change reached.', 0);
-				self::changeSessionId(true, false);
-			}
-		}
-		else
-		{
-      ulLog::DebugLog('Session validation failed.', 4);
-
-      // Keep a small part of the session data even in case the session gets invalidated.
-      if (isset($_SESSION['nonsensitive']))
-        $TmpNonSensitiveData = $_SESSION['nonsensitive'];
-
-      // Destroy previous session
-      self::$TrustInvalidated = true;
-      self::sessionDestroy();
-      return false;
-		}
-
-		self::sessionSetExpiry();
-		self::updateTokenCookie();
-		self::$SessionRunning = true;
-
-		return true;
-	}
-
+        return true;
+    }
 	private static function updateTokenCookie()
 	{
 		if (!UL_PREVENT_REPLAY)
@@ -341,7 +306,7 @@ class ulSessionManager
 	public static function sessionWriteClose()
 	{
 		session_write_close();
-    self::$SessionStore = NULL;
+        self::$SessionStore = NULL;
 		self::$SessionRunning = false;
 	}
 
