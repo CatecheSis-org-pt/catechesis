@@ -122,13 +122,25 @@ switch($current_step)
         //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
-        $home_dir = getenv('HOME');
+        //$home_dir = getenv('HOME');
+        //$home_dir = $_SERVER['HOME'] ?? (/*windows compatibility: */$_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH']);
+        //$home_dir = SetupUtils\drush_server_home();
+        //$home_dir = SetupUtils\homeDir();
+        $home_dir = SetupUtils\getUserHomeDir();
+        //echo("<p>HOME: $home_dir </p>");
+
+        $suggested_path = SetupUtils\joinPaths($home_dir, "catechesis-data"); //Suggested path
+        echo('<option value="' . $suggested_path . '">');
+
         $scan = glob($home_dir . '/*', GLOB_ONLYDIR);
+        //$scan = scandir($home_dir);
         foreach ($scan as $dir)
         {
-            $file = basename($dir);
-            $dir_list[] = '/' . $file;
-            echo('<option value="/' . $file . '">');
+            //$file = basename($dir);
+            //$dir_list[] = '/' . $file;
+            $file = realpath($dir);
+            $dir_list[] = realpath($dir);
+            echo('<option value="' . $file . '">');
         }
         echo('</datalist>');
 
@@ -505,7 +517,7 @@ $_SESSION['setup_step'] = $current_step;
 
                             <div class="form-group">
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="/home/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
+                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="<?= $home_dir ?>/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
                                 </div>
                                 <div class="col-md-4">
                                     <span class="fas fa-question-circle" data-toggle="tooltip" data-placement="top" title="A diretoria será criada. É nesta diretoria que serão guardados os dados produzidos durante a utilização do CatecheSis, tais como fotografias e documentos carregados. Esta é a diretoria relevante para efeitos de backup."></span>

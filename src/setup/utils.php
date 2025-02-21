@@ -8,6 +8,100 @@ use PDOException;
 
 
 /**
+ * Return the user's home directory.
+ */
+function drush_server_home() {
+    // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
+    // getenv('HOME') isn't set on Windows and generates a Notice.
+    $home = getenv('HOME');
+    if (!empty($home)) {
+        // home should never end with a trailing slash.
+        $home = rtrim($home, '/');
+    }
+    elseif (!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) {
+        // home on windows
+        $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        // If HOMEPATH is a root directory the path can end with a slash. Make sure
+        // that doesn't happen.
+        $home = rtrim($home, '\\/');
+    }
+    return empty($home) ? NULL : $home;
+}
+
+function homeDir()
+{
+    if(isset($_SERVER['HOME'])) {
+        $result = $_SERVER['HOME'];
+    } else {
+        $result = getenv("HOME");
+    }
+
+    if(empty($result) && function_exists('exec')) {
+        if(strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+            $result = exec("echo %userprofile%");
+        } else {
+            $result = exec("echo ~");
+        }
+    }
+
+    return $result;
+}
+
+
+function getUserHomeDir()
+{
+    if(PHP_OS_FAMILY == "Windows")
+    {
+        if(isset($_SERVER['HOME']))
+        {
+            return $_SERVER['HOME'];
+        }
+        else if(!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']))
+        {
+            // home on windows
+            $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+            // If HOMEPATH is a root directory the path can end with a slash. Make sure
+            // that doesn't happen.
+            $home = rtrim($home, '\\/');
+            return $home;
+        }
+        else
+        {
+            return getenv("HOME");
+        }
+    }
+    else //Assume Linux / Unix
+    {
+        return posix_getpwuid(posix_getuid())['dir'];
+    }
+}
+
+/**
+ * Join path snippets, without duplicating slashes.
+ * Sample usage:
+ *      joinPaths(array('my/path', 'is', '/an/array'));
+ *      joinPaths('my/paths/', '/are/', 'a/r/g/u/m/e/n/t/s/');
+ * @return string
+ */
+function joinPaths()
+{
+    $args = func_get_args();
+    $paths = array();
+
+    foreach($args as $arg)
+        $paths = array_merge($paths, (array)$arg);
+
+    foreach($paths as &$path)
+        $path = trim($path, '/');
+
+    if (substr($args[0], 0, 1) == '/')
+        $paths[0] = '/' . $paths[0];
+
+    return join('/', $paths);
+}
+
+
+/**
  * Copy a file, or recursively copy a folder and its contents
  * @param       string   $source    Source path
  * @param       string   $dest      Destination path
