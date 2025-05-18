@@ -1,17 +1,48 @@
 body
 {
     height: 100%;
+    min-height: 100vh;
     /*background-color: #008fcf;*/
     background-color: white;
-    background-image: radial-gradient(ellipse 120vw 50% at top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 80%, rgba(255, 255, 255, 1) 100%), url('../img/index_img_filter.png'), url('../resources/parishPublicPicture.php');
-    /*background-size:100% 100%;*/
-    background-size:  contain, cover;
-    /*background-size:  100% 100%, cover;*/
-    /*-o-background-size: 100% 100%;
-    -webkit-background-size: 100% 100%;*/
+    background-image: radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.3) 60%, rgba(255, 255, 255, 0.7) 80%, rgba(255, 255, 255, 1) 100%), url('../img/index_img_filter.png'), url('../resources/parishPublicPicture.php');
+    background-size: 100% 100%, 100% 100%, 100% auto;
+    background-position: center top;
     background-repeat: no-repeat;
-    display:flex;
+    background-attachment: scroll;
+    display: flex;
     font-family: Nexa, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Add a white pseudo-element at the bottom of the page to ensure it's always white */
+body::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60vh; /* Cover the bottom 60% of the viewport height */
+    background: radial-gradient(circle at 50% 100%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.7) 40%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 100%);
+    z-index: -2; /* Place it behind the other pseudo-element */
+    pointer-events: none; /* Allow clicks to pass through */
+    border-top-left-radius: 70% 70%;
+    border-top-right-radius: 70% 70%;
+}
+
+/* Add a white pseudo-element at the bottom of the page to ensure it's always white */
+body::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40vh; /* Cover the bottom 40% of the viewport height */
+    background: radial-gradient(circle at 50% 120%, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 30%, rgba(255,255,255,0.8) 60%, rgba(255,255,255,1) 80%);
+    z-index: -1; /* Place it behind the content */
+    pointer-events: none; /* Allow clicks to pass through */
+    border-top-left-radius: 60% 40%;
+    border-top-right-radius: 60% 40%;
 }
 
 h1
