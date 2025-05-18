@@ -65,6 +65,7 @@ CREATE TABLE catequizando(
 	cid		                    INT AUTO_INCREMENT,
 	nome		                VARCHAR(255) NOT NULL,
 	data_nasc	                DATE NOT NULL,
+    nif                         INT,
 	local_nasc	                VARCHAR(40) NOT NULL,
 	num_irmaos	                INT NOT NULL,
 	escuteiro	                TINYINT NOT NULL,		#inteiro de 1 byte. 0=false, !0=true
@@ -83,6 +84,7 @@ CREATE TABLE catequizando(
 	lastLSN_autorizacoes        INT NULL,
 	
 	PRIMARY KEY (cid),
+    UNIQUE(nif),
 	FOREIGN KEY (pai) REFERENCES familiar(fid),
 	FOREIGN KEY (mae) REFERENCES familiar(fid),
 	FOREIGN KEY (enc_edu) REFERENCES familiar(fid),
@@ -328,6 +330,7 @@ CREATE TABLE pedidoInscricao
     nome		                VARCHAR(255) NOT NULL,
     data_nasc	                DATE NOT NULL,
     local_nasc	                VARCHAR(40) NOT NULL,
+    nif                         INT,
     num_irmaos	                INT NOT NULL,
     escuteiro	                TINYINT NOT NULL,		#inteiro de 1 byte. 0=false, !0=true
     autorizou_fotos	            TINYINT NOT NULL,

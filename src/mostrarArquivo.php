@@ -711,16 +711,22 @@ $menu->renderHTML();
 
                <!--idade-->
                <div class="form-group">
-                   <div class="col-xs-6">
-                       <label for="idade">Idade:</label>
+                   <div class="col-xs-2">
+                       <label for="idade">Idade:</label><br>
                        <span class="input-xlarge uneditable-input">
-                        <?php
-                            echo("" . date_diff(date_create($_SESSION['data_nasc']), date_create('today'))->y . "");
-                        ?>
-                       </span>
+                        <?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
+                        </span>
                    </div>
+               </div>
+
+               <!--NIF-->
+               <div class="col-xs-3">
+                   <label for="nif">NIF:</label>
+                   <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
+                       <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
                    <div class="clearfix"></div>
                </div>
+
            </div>
        </div>
 

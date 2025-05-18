@@ -105,7 +105,8 @@ $menu->renderHTML();
 		$result = NULL;
 		
 		$nome = NULL;
-		$data_nasc = NULL;
+        $data_nasc = NULL;
+        $nif = NULL;
 		$local_nasc = NULL;
 		$num_irmaos = NULL;
 		$escuteiro = NULL;
@@ -147,6 +148,7 @@ $menu->renderHTML();
 
             $nome = Utils::sanitizeOutput($catechumen['nome']);
             $data_nasc = Utils::sanitizeOutput($catechumen['data_nasc']);
+            $nif = intval($catechumen['nif']);
             $local_nasc = Utils::sanitizeOutput($catechumen['local_nasc']);
             $num_irmaos = intval($catechumen['num_irmaos']);
             $escuteiro = Utils::sanitizeOutput($catechumen['escuteiro']);
@@ -284,7 +286,8 @@ $menu->renderHTML();
 			
 			$_SESSION['nome'] = $nome;
 			$_SESSION['data_nasc_row'] = $data_nasc;
-			$_SESSION['data_nasc'] = $data_nasc = date( "d-m-Y", strtotime($data_nasc));
+            $_SESSION['data_nasc'] = $data_nasc = date( "d-m-Y", strtotime($data_nasc));
+            $_SESSION['nif'] = $nif;
 			$_SESSION['local_nasc'] = $local_nasc;
 			$_SESSION['num_irmaos'] = $num_irmaos;
 			$_SESSION['escuteiro'] = $escuteiro;
@@ -454,19 +457,23 @@ $menu->renderHTML();
 	    </div>
 	    
 	    
-	     <!--idade-->
+       <!--idade-->
 	   <div class="form-group">
-	    <div class="col-xs-6">
-	    	<label for="idade">Idade:</label>
+	    <div class="col-xs-2">
+	    	<label for="idade">Idade:</label><br>
 	    	<span class="input-xlarge uneditable-input">
-	    	<?php
-	    		echo("" . date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y . "");
-	    	?>
+	    	<?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
 	    	</span>
 	    </div>
-	    <div class="clearfix"></div>
-	    </div>
-    
+       </div>
+
+       <!--NIF-->
+       <div class="col-xs-3">
+           <label for="nif">NIF:</label>
+           <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
+               <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
+           <div class="clearfix"></div>
+       </div>
     
     </div>
    </div>

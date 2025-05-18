@@ -43,12 +43,12 @@ interface DatabaseManager
                                                          bool $onlyScouts = false);
     public function getCatechumenCurrentCatechesisGroup(int $cid, int $catecheticalYear);                               // Returns the catechesis group where the catechumen is enrolled, in that year
     public function getCatechumenSiblings(int $cid);                                                                    // Returns the IDs of all catechumens whose responsible is the responsible/father/mother of this catechumen
-    public function createCatechumen(string $name, string $birthdate, string $birthplace,                               // Inserts a new catechumen in the database
-                                        $father_fid, $mother_fid, int $responsible_fid,
-                                        string $responsible_relationship, string $photo, int $numSiblings,
-                                        bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
-                                        string $observations, string $createdByUsername);
-    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace,                     // Updates most fields of a catechumen
+    public function createCatechumen(string $name, string $birthdate, string $birthplace, string $nif = null,
+                                     $father_fid, $mother_fid, int $responsible_fid,
+                                     string $responsible_relationship, string $photo, int $numSiblings,
+                                     bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
+                                     string $observations, string $createdByUsername);
+    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, string $nif = null, // Updates most fields of a catechumen
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed);
@@ -102,8 +102,8 @@ interface DatabaseManager
     public function getNumberOfPendingEnrollments(int $catecheticalYear = null);                                        // Counts the number of pending enrollment submissions
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,  // Submits a renewal order to the database and returns its ID
                                      string $ipAddress, string $email = null, string $obs = null);
-    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, int $nSiblings,   // Registers a new enrollment order
-                                        string $address, string $postalCode,
+    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null, // Registers a new enrollment order
+                                        int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,
                                         bool $scout, bool $photosAllowed, bool $exitAllowed, array $exitAuthorizations,
                                         string $photo = null, string $obs = null,

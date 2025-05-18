@@ -118,7 +118,8 @@ $menu->renderHTML();
 	if ($_SERVER["REQUEST_METHOD"] == "POST")
 	{
 	  	$nome = Utils::sanitizeInput($_POST['nome']);
-	  	$data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $nif = Utils::sanitizeInput($_POST['nif']);
 	  	$local_nasc = Utils::sanitizeInput($_POST['localidade']);
 	  	$num_irmaos = Utils::sanitizeInput($_POST['num_irmaos']);
 	  	$morada = Utils::sanitizeInput($_POST['morada']);
@@ -214,7 +215,8 @@ $menu->renderHTML();
 		$_SESSION['email'] = $email;
 		
 		$_SESSION['nome'] = $nome;
-		$_SESSION['data_nasc'] = $data_nasc;
+        $_SESSION['data_nasc'] = $data_nasc;
+        $_SESSION['nif'] = $nif;
 		$_SESSION['local_nasc'] = $local_nasc;
 		$_SESSION['escuteiro'] = $escuteiro;
 		$_SESSION['baptizado'] = $baptizado;
@@ -257,6 +259,13 @@ $menu->renderHTML();
 	  		var_dump($data_nasc);
 	  		$inputs_invalidos = true;
 	  	}
+
+        if($nif != "" && !DataValidationUtils::validateNIF($nif))
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
+            var_dump($nif);
+            $inputs_invalidos = true;
+        }
 	  	
 	  		  	
 	  	if(!DataValidationUtils::validateZipCode($codigo_postal, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
@@ -807,7 +816,7 @@ $menu->renderHTML();
 			if($_REQUEST['modo']=="editar")
             {
                 //Atualizar ficha
-                if($db->updateCatechumen($_SESSION['cid'], $nome, $data_nasc, $local_nasc, $fid_pai, $fid_mae, $fid_ee,
+                if($db->updateCatechumen($_SESSION['cid'], $nome, $data_nasc, $local_nasc, $nif, $fid_pai, $fid_mae, $fid_ee,
                                         $outro_enc_edu_quem, $foto_cam, $num_irmaos, $escuteiro, $autorizacao_fotos))
                 {
                     $cid = $_SESSION['cid'];
@@ -824,7 +833,7 @@ $menu->renderHTML();
 			else if($_REQUEST['modo']=="aprovar")
             {
                 //Aprovar inscricao online
-                $cid = $db->createCatechumen($nome, $data_nasc, $local_nasc, $fid_pai, $fid_mae, $fid_ee, $outro_enc_edu_quem,
+                $cid = $db->createCatechumen($nome, $data_nasc, $local_nasc, $nif, $fid_pai, $fid_mae, $fid_ee, $outro_enc_edu_quem,
                                                 $foto_cam, $num_irmaos, $escuteiro, $autorizacao_fotos,
                                                 $autoriza_saida,$observacoes, Authenticator::getUsername());
 
@@ -835,7 +844,7 @@ $menu->renderHTML();
 			else
             {
                 //Nova inscricao
-                $cid = $db->createCatechumen($nome, $data_nasc, $local_nasc, $fid_pai, $fid_mae, $fid_ee, $outro_enc_edu_quem,
+                $cid = $db->createCatechumen($nome, $data_nasc, $local_nasc, $nif, $fid_pai, $fid_mae, $fid_ee, $outro_enc_edu_quem,
                                                 $foto_cam, $num_irmaos, $escuteiro, $autorizacao_fotos,
                                                 false,"", Authenticator::getUsername());
 

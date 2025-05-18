@@ -133,7 +133,8 @@ $navbar->renderHTML();
         //Dados biograficos do catequizando
         $foto_data = Utils::sanitizeInput($_POST['foto_data']);		// Foto codificada em base64
 	  	$nome = Utils::sanitizeInput($_POST['nome']);
-	  	$data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $nif = Utils::sanitizeInput($_POST['nif']);
 	  	$local_nasc = Utils::sanitizeInput($_POST['localidade']);
 	  	$num_irmaos = intval(Utils::sanitizeInput($_POST['num_irmaos']));
 
@@ -197,6 +198,7 @@ $navbar->renderHTML();
         $_SESSION['foto_data'] = $foto_data;
         $_SESSION['nome'] = $nome;
         $_SESSION['data_nasc'] = $data_nasc;
+        $_SESSION['nif'] = $nif;
         $_SESSION['local_nasc'] = $local_nasc;
         $_SESSION['num_irmaos'] = $num_irmaos;
 
@@ -309,6 +311,13 @@ $navbar->renderHTML();
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
+
+        if($nif != "" && !DataValidationUtils::validateNIF($nif))
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
+            var_dump($nif);
+            $inputs_invalidos = true;
+        }
 	  	
 	  		  	
 	  	if(!DataValidationUtils::validateZipCode($codigo_postal, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
@@ -448,7 +457,7 @@ $navbar->renderHTML();
                 //Processar foto
                 $foto_cam = UserData::saveUploadedCatechumenPhoto($foto_data);			                                // Devolve o nome do ficheiro onde a foto foi guardada (se existir)
 
-                $eid = $db->postEnrollmentOrder($nome, $data_nasc, $local_nasc, $num_irmaos,
+                $eid = $db->postEnrollmentOrder($nome, $data_nasc, $local_nasc, $nif, $num_irmaos,
                     $morada, $codigo_postal,
                     $responsibleIndex, $_SERVER['REMOTE_ADDR'],
                     $escuteiro, $autorizacao_fotos, $autoriza_saida, $autorizacoes_saida_menores,

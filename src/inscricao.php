@@ -173,44 +173,48 @@ $menu->renderHTML();
     
     
     
-    <!--codigo postal-->
+
     <div class="form-group">
-    <div class="col-xs-4">
-    <div id="codigo_postal_div">
-      <label for="codigo_postal">Código postal:</label>
-      <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['cod_postal'] . '');} else {echo('');} ?>" required>
-      <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+
+        <!--codigo postal-->
+        <div class="col-xs-4">
+            <div id="codigo_postal_div">
+                <label for="codigo_postal">Código postal:</label>
+                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['cod_postal'] . '');} else {echo('');} ?>" required>
+                <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+            </div>
+        </div>
+    
+        <!--telefone-->
+        <div class="col-xs-2">
+            <div id="telefone_div">
+              <label for="tel">Telefone:</label>
+              <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone'] . '');} else {echo('');} ?>">
+              <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+            </div>
+        </div>
+
+        <!--telemovel-->
+        <div class="col-xs-2">
+            <div id="telemovel_div">
+              <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+              <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel'] . '');} else {echo('');} ?>">
+              <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+            </div>
+        </div>
+
+        <!--NIF-->
+        <div class="col-xs-2">
+            <div id="nif_div">
+                <label for="nif">NIF:</label>
+                <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>">
+                <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
     </div>
-    </div>
-    
-    
-    
-    <!--telefone-->
-    <div class="col-xs-2">
-    <div id="telefone_div">
-      <label for="tel">Telefone:</label>
-      <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone'] . '');} else {echo('');} ?>">
-      <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-    </div>
-    </div>
-    
-    
-    
-    <!--telemovel-->
-    <div class="col-xs-2">
-    <div id="telemovel_div">
-      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel'] . '');} else {echo('');} ?>">
-      <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-    </div>
-    <div class="clearfix"></div>
-    </div>   
-    </div>
-    
-   
-   
-  
-   
+
    
    
    <!--escuteiro-->
@@ -672,7 +676,8 @@ function validar()
 {
 	
 	var cod_postal = document.getElementById('codigo_postal').value;
-	var data_nasc = document.getElementById('data_nasc').value;
+    var data_nasc = document.getElementById('data_nasc').value;
+    var nif = document.getElementById('nif').value;
 	var telefone = document.getElementById('telefone').value;
     var telemovel = document.getElementById('telemovel').value;
     var pai = document.getElementById('pai').value;
@@ -704,11 +709,17 @@ function validar()
 	<?php endif ?>
 	
 	if(!data_valida(data_nasc))
-        {
-        	alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
-        	return false;
-        }
-        
+    {
+        alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
+        return false;
+    }
+
+    if(nif!="" && nif!=undefined && !nif_valido(nif))
+    {
+        alert("O número de identificação fiscal que introduziu é inválido.");
+        return false;
+    }
+
         
 	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
@@ -718,24 +729,24 @@ function validar()
                 
         
         
-        if( (telefone=="" || telefone==undefined) && (telemovel=="" || telemovel==undefined) ) 
-        {
-		alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
-		return false; 
-        }
-        else if(telefone!="" && telefone!=undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
-        {
-        	alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-		return false; 
-        }
-        else if(telemovel!="" && telemovel!=undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
-        {
-        	alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-		return false; 
-        }
+    if( (telefone=="" || telefone==undefined) && (telemovel=="" || telemovel==undefined) )
+    {
+    alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
+    return false;
+    }
+    else if(telefone!="" && telefone!=undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+    return false;
+    }
+    else if(telemovel!="" && telemovel!=undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+    return false;
+    }
         
         
-        <?php if($_REQUEST['modo']!='editar') :?>
+    <?php if($_REQUEST['modo']!='editar') :?>
         if( baptizado && (paroquia_baptismo=="" || paroquia_baptismo==undefined))
         {
         	alert("Deve especificar a paróquia de baptismo.");
@@ -771,10 +782,10 @@ function validar()
         	alert("A data da primeira comunhão que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
 		return false; 
         }
-        <?php endif ?>
+    <?php endif ?>
         
         
-        if( (enc_edu_pai && (pai=="" || pai==undefined)) || (enc_edu_mae && (mae=="" || mae==undefined)) ) 
+    if( (enc_edu_pai && (pai=="" || pai==undefined)) || (enc_edu_mae && (mae=="" || mae==undefined)) )
 	{
 		alert("Deve especificar o nome e profissão do encarregado de educação.");
 		return false; 
@@ -849,7 +860,33 @@ function data_valida(data)
 	var pattern = /^[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{4}$/;
 	
 	return (pattern.test(data));
+}
 
+function nif_valido(nif)
+{
+    // Remove espaços e caracteres não numéricos
+    nif = nif.replace(/\D/g, '');
+
+    // Verifica se o NIF tem 9 dígitos
+    if (nif.length !== 9) {
+        return false;
+    }
+
+    // Converte o NIF em um array de dígitos
+    const digitos = nif.split('').map(Number);
+
+    // Calcula o dígito de controle
+    const soma = digitos.slice(0, 8).reduce((acc, curr, index) => {
+        return acc + curr * (9 - index);
+    }, 0);
+
+    digitoControle = (soma % 11);
+
+    if(digitoControle == 1)
+        digitoControle = 0;
+
+    // Verifica se o dígito de controle está correto
+    return (11 - digitoControle) === digitos[8];
 }
 </script>
 
@@ -928,6 +965,23 @@ function verifica_data_nasc()
 	}
 }
 
+function verifica_nif()
+{
+    var nif = document.getElementById('nif').value;
+
+    if(!nif_valido(nif) && nif!="" && nif!=undefined)
+    {
+        $('#nif_div').addClass('has-error');
+        $('#nif_div').addClass('has-feedback');
+        $('#erro_nif_icon').show();
+        return false;
+    } else {
+        $('#nif_div').removeClass('has-error');
+        $('#nif_div').removeClass('has-feedback');
+        $('#erro_nif_icon').hide();
+        return true;
+    }
+}
 
 function verifica_data_baptismo()
 {

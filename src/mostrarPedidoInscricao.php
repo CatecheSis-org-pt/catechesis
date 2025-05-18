@@ -134,7 +134,7 @@ $db = new PdoDatabaseManager();
 
           <!--nome-->
             <div class="form-group">
-            <div class="col-lg-6">
+            <div class="col-lg-5">
               <label for="nome">Nome do catequizando:</label>
               <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" value="<?php echo($submission['nome']);?>" readonly required>
               <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
@@ -159,11 +159,19 @@ $db = new PdoDatabaseManager();
 
            <!--local nascimento-->
             <div class="form-group">
-            <div class="col-lg-3">
+            <div class="col-lg-2">
               <label for="localidade">Em:</label>
               <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" value="<?php echo($submission['local_nasc']);?>" readonly required>
             </div>
             </div>
+
+           <!--NIF-->
+           <div class="col-xs-2">
+               <div id="nif_div">
+                   <label for="nif">NIF:</label>
+                   <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" value="<?= $submission['nif'] ?>" readonly>
+               </div>
+           </div>
 
 
              <!--numero irmaos-->

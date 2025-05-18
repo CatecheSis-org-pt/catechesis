@@ -106,7 +106,7 @@ $pageUI->addWidget($footer);
            <div class="panel-body">
 
            <div class="panel panel-default" id="painel_catequizando">
-               <div class="panel-heading">Dados biográficos do catequizando</div>
+               <div class="panel-heading">Dados pessoais do catequizando</div>
                <div class="panel-body">
 
                   <div class="img-thumbnail" id="div_camara">
@@ -130,7 +130,7 @@ $pageUI->addWidget($footer);
 
                   <!--nome-->
                     <div class="form-group">
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                       <label for="nome">Nome do catequizando:</label>
                       <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nome'] . '');} else {echo('');} ?>" required>
                       <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
@@ -155,20 +155,30 @@ $pageUI->addWidget($footer);
 
                    <!--local nascimento-->
                     <div class="form-group">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                       <label for="localidade">Em:</label>
                       <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['local_nasc'] . '');} else {echo('');} ?>" required>
                     </div>
                     </div>
 
+                   <!--NIF-->
+                   <div class="col-xs-2">
+                       <div id="nif_div">
+                           <label for="nif">NIF: <span class="forgot_help_text" data-toggle="tooltip" data-placement="top" title="NIF do catequizando, para efeitos de seguro de acidentes pessoais"><span class="glyphicon glyphicon-question-sign"></span></span></label>
 
-                     <!--numero irmaos-->
+                           <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>">
+                           <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                       </div>
+                   </div>
+
+                    <!--numero irmaos-->
                     <div class="col-lg-1">
                     <div id="num_irmaos_div">
                       <label for="num_irmaos">Irmãos:</label>
                       <input type="number" min=0 class="form-control" id="num_irmaos" name="num_irmaos" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['num_irmaos'] . '');} else {echo('0');} ?>">
                     </div>
                     </div>
+
                     <div class="clearfix"></div>
 
                </div>
@@ -667,7 +677,7 @@ $footer->renderHTML();
 <script src="../js/bootstrap-datepicker-1.9.0-dist/locales/bootstrap-datepicker.pt.min.js"></script>
 <script type="text/javascript" src="../webcamjs-master/webcam.js"></script>
 <script src="../js/form-validation-utils.js"></script>
-
+<script src="../js/tooltips.js"></script>
 <script>
 
 function dispara() 
@@ -744,7 +754,8 @@ function validar()
 {
 	
 	var cod_postal = document.getElementById('codigo_postal').value;
-	var data_nasc = document.getElementById('data_nasc').value;
+    var data_nasc = document.getElementById('data_nasc').value;
+    var nif = document.getElementById('nif').value;
 	var telefone = document.getElementById('telefone').value;
     var telemovel = document.getElementById('telemovel').value;
     var pai = document.getElementById('pai').value;
@@ -768,11 +779,16 @@ function validar()
    	<?php endif ?>
 	
 	if(!data_valida(data_nasc))
-        {
-        	alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
-        	return false;
-        }
-        
+    {
+        alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
+        return false;
+    }
+
+    if(nif!=="" && nif!==undefined && !nif_valido(nif))
+    {
+        alert("O número de identificação fiscal que introduziu é inválido.");
+        return false;
+    }
         
 	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
@@ -879,6 +895,8 @@ function validar()
         return true;
         
 }
+
+
 </script>
 
 
@@ -954,6 +972,24 @@ function verifica_data_nasc()
 		$('#erro_nasc_icon').hide();  
 		return true;
 	}
+}
+
+function verifica_nif()
+{
+    var nif = document.getElementById('nif').value;
+
+    if(!nif_valido(nif) && nif!="" && nif!=undefined)
+    {
+        $('#nif_div').addClass('has-error');
+        $('#nif_div').addClass('has-feedback');
+        $('#erro_nif_icon').show();
+        return false;
+    } else {
+        $('#nif_div').removeClass('has-error');
+        $('#nif_div').removeClass('has-feedback');
+        $('#erro_nif_icon').hide();
+        return true;
+    }
 }
 
 
