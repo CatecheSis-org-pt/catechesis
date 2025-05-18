@@ -84,7 +84,7 @@ $menu->renderHTML();
         }
     }
   	?>
-  
+
   <div class="clearfix" style="margin-bottom: 20px;"></div>
   <div class="container">
 
@@ -100,7 +100,7 @@ $menu->renderHTML();
   	<img src="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo("resources/catechumenPhoto.php?foto_name=" . $_SESSION['foto'] ); else echo("img/default-user-icon-profile.png");?>" class=""  alt="Foto do catequizando" width="240" height="240">
   </div>
   <div class="clearfix" style="margin-bottom: 10px;"></div>
-  
+
   <div class="btn-group pull-right">
   	<button type="button" class="btn btn-default" id="btn_cancelar" onclick="cancela_camara()" style="display:none;"><span class="glyphicon glyphicon-remove-circle"></span> <?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo("Repor"); else echo("Cancelar");?></button>
   	<button type="button" class="btn btn-default" id="btn_limpa" onclick="limpa_foto()" style="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(''); else echo('display:none;')?>"><span class="glyphicon glyphicon-trash"></span> Remover foto</button>
@@ -109,14 +109,14 @@ $menu->renderHTML();
   	<button type="button" class="btn btn-default" id="btn_foto" onclick="prepara_camara()"><span class="glyphicon glyphicon-camera"></span> Tirar foto</button>
   	<button type="button" class="btn btn-default" id="btn_dispara" onclick="dispara()" style="display:none;"><span class="glyphicon glyphicon-camera"></span> Disparar!</button>
   </div>
- 
-    
+
+
   <div class="clearfix" style="margin-bottom: 20px;"></div>
 
   <!--<div class="container">-->
 
-  
-  
+
+
   <!--nome-->
     <div class="form-group">
     <div class="col-xs-6">
@@ -125,8 +125,8 @@ $menu->renderHTML();
       <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
     </div>
     </div>
-    
-    
+
+
    <!--data nascimento-->
     <div class="form-group">
      <div class="col-xs-2">
@@ -140,8 +140,8 @@ $menu->renderHTML();
      </div>
     </div>
     </div>
-    
-    
+
+
    <!--local nascimento-->
     <div class="form-group">
     <div class="col-xs-3">
@@ -149,8 +149,8 @@ $menu->renderHTML();
       <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" list="locais_nascimento" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['local_nasc'] . '');} else {echo('');} ?>" required>
     </div>
     </div>
-    
-    
+
+
      <!--numero irmaos-->
     <div class="col-xs-1">
     <div id="num_irmaos_div">
@@ -159,8 +159,8 @@ $menu->renderHTML();
     </div>
     </div>   
     <div class="clearfix"></div>
-    
-    
+
+
     <div class="row" style="margin-top:20px; "></div>
 
    <!--morada-->
@@ -170,9 +170,9 @@ $menu->renderHTML();
       <input type="text" class="form-control" id="morada" name="morada" placeholder="Morada do encarregado de educação" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['morada'] . '');} else {echo('');} ?>" required>
     </div>
     </div>
-    
-    
-    
+
+
+
 
     <div class="form-group">
 
@@ -184,7 +184,7 @@ $menu->renderHTML();
                 <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
         </div>
-    
+
         <!--telefone-->
         <div class="col-xs-2">
             <div id="telefone_div">
@@ -215,8 +215,8 @@ $menu->renderHTML();
 
     </div>
 
-   
-   
+
+
    <!--escuteiro-->
     <div class="form-group">
     <div class="col-xs-8">
@@ -227,11 +227,11 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     </div>
-    
-    
-    
+
+
+
     <div class="row" style="margin-top:20px; "></div>
-    
+
     <!--baptizado-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
@@ -244,8 +244,8 @@ $menu->renderHTML();
     <div class="clearfix"></div>
     </div>
     <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
-    
+
+
     <!--paroquia de baptismo-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['baptizado']=='Sim'){ echo('in');} ?>" id="paroquia_baptismo_collapse">
@@ -254,8 +254,8 @@ $menu->renderHTML();
       <input type="text" class="form-control" id="paroquia_baptismo" name="paroquia_baptismo" placeholder="Paróquia de baptismo" list="paroquias" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['paroquia_baptismo'] . '');} else {echo('');} ?>">
     </div>
      <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
-    
+
+
     <!--data de baptismo-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
@@ -271,10 +271,10 @@ $menu->renderHTML();
     <div class="clearfix"></div>
     <div class="row" style="margin-bottom:20px; "></div>
     <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
-    
-    
-    
+
+
+
+
     <!--primeira comunhao-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
@@ -286,8 +286,8 @@ $menu->renderHTML();
     <div class="clearfix"></div>
     </div>
     <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
-    
+
+
     <!--paroquia primeira comunhao-->
      <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['comunhao']=='Sim'){ echo('in');} ?>" id="paroquia_comunhao_collapse">
@@ -296,7 +296,7 @@ $menu->renderHTML();
       <input type="text" class="form-control" id="paroquia_comunhao" name="paroquia_comunhao" placeholder="Paróquia 1ª comunhão" list="paroquias" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['paroquia_comunhao'] . '');} else {echo('');} ?>">
     </div>
     <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
+
     <!--data primeira comunhao-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
@@ -311,24 +311,24 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     <?php if($_REQUEST['modo']=='editar'){ echo("-->");} ?>
-    
-    
-    
-    
-    
+
+
+
+
+
      <!--encarregado educacao-->
     <div class="form-group">
     <div class="col-xs-8">
         <div class="row" style="margin-top:20px; "></div>
     	<label for="encarregado educacao">Encarregado de educação:</label>
-    	<label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Pai')){ echo('checked');} ?>>Pai</label>
-	    <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Mae'){ echo('checked');} ?>>Mãe</label>
+    	<label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Pai'){ echo('checked');} ?>>Pai</label>
+	    <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Mae')){ echo('checked');} ?>>Mãe</label>
 	    <label class="radio-inline"><input type="radio" id="enc_edu3" name="enc_edu" value="Outro" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Outro'){ echo('checked');} ?>>Outro</label>
     </div>
     <div class="clearfix"></div>
     </div>
-    
-    
+
+
     <!--outro encarregado educacao quem-->
     <div class="form-group collapse <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Outro'){ echo('in');} ?>" id="encarregado_educacao_collapse">
     <div class="col-xs-2">
@@ -341,13 +341,13 @@ $menu->renderHTML();
     	<option value='Irmão'>
     	<option value='Irmã'>
     </datalist>
-    
+
     <!--outro encarregado educacao nome-->
     <div class="col-xs-6">
       <label for="nome_end_edu"> Nome:</label>
       <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" list="familiares" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nome_enc_edu'] . '');} else {echo('');} ?>">
     </div>
-    
+
    <!--outro encarregado educacao profissao-->
     <div class="col-xs-4">
       <label for="prof_enc_edu"> Profissão:</label>
@@ -355,36 +355,36 @@ $menu->renderHTML();
     </div>
     </div>
     <div class="clearfix"></div>
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     <!--pai-->
     <div class="form-group">
     <div class="col-xs-8">
       <label for="pai">Pai:</label>
       <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai" list="familiares" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['pai'] . '');} else {echo('');} ?>">
     </div>
-    
+
     <!--profissao pai-->
     <div class="col-xs-4">
       <label for="prof_pai">Profissão:</label>
       <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" list="profissoes" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_pai'] . '');} else {echo('');} ?>">
     </div>
     </div>
-    
-    
-    
+
+
+
     <!--mae-->
     <div class="form-group">
     <div class="col-xs-8">
       <label for="mae">Mãe:</label>
       <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" list="familiares" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['mae'] . '');} else {echo('');} ?>">
     </div>
-    
+
     <!--profissao mae-->
     <div class="col-xs-4">
       <label for="prof_mae">Profissão:</label>
@@ -392,9 +392,9 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     </div>
-    
-    
-    
+
+
+
     <!--casados-->
     <div class="form-group">
     <div class="col-xs-8">
@@ -404,8 +404,8 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     </div>
-     
-     
+
+
      <!--casados como-->
     <div class="form-group collapse <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados']=='Sim'){ echo('in');} ?>" id="casados_como">
     <div class="col-xs-8">
@@ -416,9 +416,9 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     </div>
-    
-       
-       
+
+
+
      <!--email-->  
     <div class="form-group">
     <div class="col-xs-12">
@@ -427,9 +427,9 @@ $menu->renderHTML();
     </div>
     <div class="clearfix"></div>
     </div>
-    
-    
-    
+
+
+
     <!--autoriza fotografias-->
     <div class="checkbox">
       <label><input id="autorizacao" name="autorizacao" type="checkbox" <?php 	if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao') && ($_SESSION['autorizacao']=='on' || $_SESSION['autorizacao']==1)){ echo("checked");}?> > Autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das actividades catequéticas.</label>
@@ -441,8 +441,8 @@ $menu->renderHTML();
        <label><input id="consentimento_rgpd" name="consentimento_rgpd" type="checkbox" <?php 	if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao') && ($_SESSION['RGPD_assinado']=='on' || $_SESSION['RGPD_assinado']==1)){ echo("checked");}?> > Assinou e entregou o consentimento de tratamento de dados (RGPD).</label>
    </div>
    <div class="row" style="margin-bottom:60px; "></div>
-    
-    
+
+
     <!-- fotografia tirada com webcam -->
     <input type="hidden" id="foto_data" name="foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $_SESSION['foto'])));?>">
     <input type="hidden" id="original_foto_data" name="original_foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $_SESSION['foto'])));?>">
@@ -474,7 +474,7 @@ $menu->renderHTML();
 
 
               <div class="jumbotron collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['quer_inscrever']=='Sim'){ echo('in');} ?>" id="quer_inscrever_collapse">
-               
+
                   <div class="form-group">
                     <div class="col-xs-4" style="margin-top: 3px;">
                      <label for="ano_catequetico">Ano catequético: </label>          
@@ -482,11 +482,11 @@ $menu->renderHTML();
                           echo("<span>" . Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) . "</span>\n");
                       ?>
                     </div>
-                     
+
                       <div class="col-xs-4">
                         <label for="catecismo">Catecismo:</label>
                       <select name="catecismo">
-                        
+
                     <?php
 
                     //Obter anos de catequese
@@ -514,15 +514,15 @@ $menu->renderHTML();
                         }
                     }
                     $result = null;
-                                
+
                     ?>
                       </select>
                     </div>
-                     
+
                       <div class="col-xs-3">
                         <label for="turma">Grupo:</label>
                       <select name="turma">
-                        
+
                     <?php
 
                     //Obter turmas de catequese
@@ -549,7 +549,7 @@ $menu->renderHTML();
                         }
                     }
                     $result = null;
-                                
+
                     ?>
                       </select>
                     </div>
@@ -576,19 +576,19 @@ $menu->renderHTML();
     <?php 	if($_REQUEST['modo']=='editar')
   			echo('<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="window.location.assign(\'mostrarFicha.php?cid=' . $_SESSION['cid'] . '\');"> Cancelar</button>');
   	?>
-  	
-    
+
+
     <?php 	if($_REQUEST['modo']=='editar')
   			echo("<button type=\"submit\" class=\"btn btn-primary glyphicon glyphicon-floppy-disk\"> Guardar</button>");
   		else
   			echo("<button type=\"submit\" class=\"btn btn-primary glyphicon glyphicon-pencil\"> Inscrever</button>");
   	?>
-    
-    
+
+
     <div style="margin-bottom: 60px;"></div>
-    
+
   </form>
-  
+
 </div>
 
 
@@ -624,7 +624,7 @@ function prepara_camara()
                   jpeg_quality: 90
               });
     Webcam.attach( '#div_camara' );
-    
+
     document.getElementById('btn_configurar').style.display= (!Webcam.userMedia)?"inline":"none";
     document.getElementById('btn_cancelar').style.display="inline";
     document.getElementById('btn_dispara').style.display="inline";
@@ -641,7 +641,7 @@ function cancela_camara()
     document.getElementById('btn_reiniciar').style.display="none";
     document.getElementById('btn_limpa').style.display="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo('inline'); else echo('none')?>";
     document.getElementById('btn_foto').style.display="inline";
-    
+
     document.getElementById('foto_data').value = document.getElementById('original_foto_data').value;
 }
 
@@ -674,7 +674,7 @@ function limpa_foto()
 <script>
 function validar()
 {
-	
+
 	var cod_postal = document.getElementById('codigo_postal').value;
     var data_nasc = document.getElementById('data_nasc').value;
     var nif = document.getElementById('nif').value;
@@ -707,7 +707,7 @@ function validar()
     return false;
 	}
 	<?php endif ?>
-	
+
 	if(!data_valida(data_nasc))
     {
         alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
@@ -720,15 +720,15 @@ function validar()
         return false;
     }
 
-        
+
 	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
 		alert("O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.");
 		return false;
 	}
-                
-        
-        
+
+
+
     if( (telefone=="" || telefone==undefined) && (telemovel=="" || telemovel==undefined) )
     {
     alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
@@ -744,61 +744,61 @@ function validar()
         alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
     return false;
     }
-        
-        
+
+
     <?php if($_REQUEST['modo']!='editar') :?>
         if( baptizado && (paroquia_baptismo=="" || paroquia_baptismo==undefined))
         {
         	alert("Deve especificar a paróquia de baptismo.");
 		return false; 
         }
-        
+
         if( baptizado && (data_baptismo=="" || data_baptismo==undefined))
         {
         	alert("Deve especificar a data de baptismo.");
 		return false; 
         }
-        
+
         if( baptizado && !data_valida(data_baptismo))
         {
         	alert("A data de baptismo que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
 		return false; 
         }
-        
+
         if( comunhao  && (paroquia_comunhao=="" || paroquia_comunhao==undefined))
         {
         	alert("Deve especificar a paróquia onde realizou a primeira comunhão.");
 		return false; 
         }
-        
+
         if( comunhao  && (data_comunhao=="" || data_comunhao==undefined))
         {
         	alert("Deve especificar a data em que realizou a primeira comunhão.");
 		return false; 
         }
-        
+
         if( comunhao && !data_valida(data_comunhao))
         {
         	alert("A data da primeira comunhão que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
 		return false; 
         }
     <?php endif ?>
-        
-        
+
+
     if( (enc_edu_pai && (pai=="" || pai==undefined)) || (enc_edu_mae && (mae=="" || mae==undefined)) )
 	{
 		alert("Deve especificar o nome e profissão do encarregado de educação.");
 		return false; 
 	}
-        
-        
+
+
 	if( enc_edu_outro && ((enc_edu_parentesco=="" || enc_edu_parentesco==undefined) || (enc_edu_nome=="" || enc_edu_nome==undefined) || (enc_edu_prof=="" || enc_edu_prof==undefined)) )
 	{
 		alert("Deve especificar o grau de parentesco, nome e profissão do encarregado de educação.");
 		return false; 
 	}
-        
-        
+
+
     if( (pai!="" && pai!=undefined) && (prof_pai=="" | prof_pai==undefined) )
     {
     alert("Deve especificar a profissão do pai.");
@@ -824,7 +824,7 @@ function validar()
     }
 
     return true;
-        
+
 }
 
 
@@ -849,7 +849,7 @@ function codigo_postal_valido(codigo, locale)
 	    pattern = /^[0-9]{4}\-[0-9]{3}\s\S+/;
     else if(locale==="BR")
         pattern = /^[0-9]{5}\-[0-9]{3}\s\S+/;
-	
+
 	return (pattern.test(codigo));
 
 }
@@ -858,7 +858,7 @@ function codigo_postal_valido(codigo, locale)
 function data_valida(data)
 {
 	var pattern = /^[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{4}$/;
-	
+
 	return (pattern.test(data));
 }
 
@@ -931,7 +931,7 @@ $(function(){
 function verifica_codigo_postal()
 {
 	var cod = document.getElementById('codigo_postal').value;
-	
+
 	if(!codigo_postal_valido(cod, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && cod!="" && cod!=undefined)
 	{ 
 		$('#codigo_postal_div').addClass('has-error');
@@ -950,7 +950,7 @@ function verifica_codigo_postal()
 function verifica_data_nasc()
 {
 	var data_nasc = document.getElementById('data_nasc').value;
-	
+
 	if(!data_valida(data_nasc) && data_nasc!="" && data_nasc!=undefined)
 	{ 
 		$('#data_nasc_div').addClass('has-error');
@@ -986,7 +986,7 @@ function verifica_nif()
 function verifica_data_baptismo()
 {
 	var data_bap = document.getElementById('data_baptismo').value;
-	
+
 	if(!data_valida(data_bap) && data_bap!="" && data_bap!=undefined)
 	{ 
 		$('#data_baptismo_div').addClass('has-error');
@@ -1004,7 +1004,7 @@ function verifica_data_baptismo()
 function verifica_data_comunhao()
 {
 	var data_com = document.getElementById('data_comunhao').value;
-	
+
 	if(!data_valida(data_com) && data_com!="" && data_com!=undefined)
 	{ 
 		$('#data_comunhao_div').addClass('has-error');
@@ -1022,7 +1022,7 @@ function verifica_data_comunhao()
 function verifica_telefone()
 {
 	var telefone = document.getElementById('telefone').value;
-	
+
 	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
 	{ 
 		$('#telefone_div').addClass('has-error');
@@ -1040,7 +1040,7 @@ function verifica_telefone()
 function verifica_telemovel()
 {
 	var telemovel = document.getElementById('telemovel').value;
-	
+
 	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
 	{ 
 		$('#telemovel_div').addClass('has-error');
@@ -1206,9 +1206,9 @@ function mostrar_ocultar_campo_outro_enc_edu()
         //die();
     }
     echo("</datalist>\n");
-	
-	
-	
+
+
+
 	if($_REQUEST['modo']!='editar')
 	{
         //Criar array com nomes de catequizandos e script para verificar inscricoes repetidas
