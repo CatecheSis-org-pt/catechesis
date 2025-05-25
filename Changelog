@@ -15,6 +15,8 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 - A fórmula de cálculo do catecismo recomendado para inscrição na catequese com base na idade foi revista para Portugal, nos casos em que a inscrição se efetua na segunda metade do ano catequético (entre Janeiro e Junho);
 - Corrigida desformatação do fundo personalizado na página inicial pública em ecrãs grandes;
 - O nome do utilizador atualmente autenticado, mostrado na barra de menu, mudava erradamente quando um administrador modificava os dados da conta de outro utilizador;
+- A estatística "Percursos catequéticos completos" foi corrigida para considerar o número de catecismos configurado para a paróquia;
+
 
 
 ## [Versão 2.2.1] - 2024-02-13
