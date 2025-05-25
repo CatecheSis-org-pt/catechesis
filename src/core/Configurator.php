@@ -115,7 +115,9 @@ class Configurator
 
     const KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE = "USE_CUSTOM_PUBLIC_PAGE_IMAGE";                                            //Whether to use a custom image on the public homepage or the default one
 
-    const KEY_ONLINE_ENROLLMENTS_OPEN = "ONLINE_ENROLLMENTS_OPEN";                                                      //Whether online enrollments are open for parents or not
+    const KEY_ONLINE_ENROLLMENTS_OPEN = "ONLINE_ENROLLMENTS_OPEN";                                                      //Whether online enrollments are open for parents or not (DEPRECATED, use KEY_ONLINE_ENROLLMENTS_NEW_OPEN and KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN instead)
+    const KEY_ONLINE_ENROLLMENTS_NEW_OPEN = "ONLINE_ENROLLMENTS_NEW_OPEN";                                              //Whether new online enrollments are open for parents or not
+    const KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN = "ONLINE_ENROLLMENTS_RENEWAL_OPEN";                                      //Whether online enrollment renewals are open for parents or not
     const KEY_ENROLLMENT_CUSTOM_TEXT = "ENROLLMENT_CUSTOM_TEXT";                                                        //Custom information text shown on online enrollment pages
     const KEY_ENROLLMENT_SHOW_PAYMENT_DATA = "ENROLLMENT_SHOW_PAYMENT_DATA";                                            //Whether bank payment data should be shown after an enrollment submission
     const KEY_ENROLLMENT_PAYMENT_ENTITY = "ENROLLMENT_PAYMENT_ENTITY";                                                  //Bank entity (number)
@@ -164,6 +166,8 @@ class Configurator
                 self::KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE => new ConfigurationObject(self::KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE, ConfigurationObject::TYPE_BOOL, false),
 
                 self::KEY_ONLINE_ENROLLMENTS_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_OPEN, ConfigurationObject::TYPE_BOOL, false),
+                self::KEY_ONLINE_ENROLLMENTS_NEW_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, ConfigurationObject::TYPE_BOOL, false),
+                self::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, ConfigurationObject::TYPE_BOOL, false),
                 self::KEY_ENROLLMENT_CUSTOM_TEXT => new ConfigurationObject(self::KEY_ENROLLMENT_CUSTOM_TEXT, ConfigurationObject::TYPE_STRING, "<p>À semelhança dos outros anos, pede-se um contributo, em forma de donativo, para fazer face aos custos dos catecismos, materiais didáticos e outros materiais, utilizados ao longo do ano de catequese. Para este ano definiu-se um valor de <strong>XX euros</strong>.</p>\n"
                                                                                                                                                                    . "<p>O contributo deverá ser efetuado através da referência multibanco indicada <u>na página seguinte</u>, após a submissão do pedido. A validação da inscrição só ficará concluída após receção do respetivo comprovativo de pagamento, porém <strong>que nenhuma criança/adolescente deixe de se inscrever por causa do referido contributo.</strong></p>"),
                 self::KEY_ENROLLMENT_SHOW_PAYMENT_DATA => new ConfigurationObject(self::KEY_ENROLLMENT_SHOW_PAYMENT_DATA, ConfigurationObject::TYPE_BOOL, false),

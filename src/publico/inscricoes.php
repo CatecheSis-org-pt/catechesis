@@ -17,9 +17,23 @@ use catechesis\gui\SimpleFooter;
 
 //Verificar se o periodo de inscricoes esta ativo
 $periodo_activo = false;
+$novas_inscricoes_ativas = false;
+$renovacoes_ativas = false;
 try
 {
-    $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+    // Check if the new configuration keys exist, if not, use the legacy key value
+    if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN))
+        $novas_inscricoes_ativas = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN);
+    else
+        $novas_inscricoes_ativas = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+
+    if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN))
+        $renovacoes_ativas = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN);
+    else
+        $renovacoes_ativas = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+
+    // For backward compatibility
+    $periodo_activo = $novas_inscricoes_ativas || $renovacoes_ativas;
 }
 catch (Exception $e)
 {
@@ -75,7 +89,8 @@ $navbar->renderHTML();
     {
     ?>
         <p>Bem-vindo à plataforma de inscrições da catequese da <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME); ?>!<br>
-        Selecione a opção que melhor se ajusta ao seu caso:</p>
+            Selecione a opção que melhor se ajusta ao seu caso:
+        </p>
 
 
         <div class="row" style="margin-top: 40px"></div>
@@ -84,8 +99,8 @@ $navbar->renderHTML();
             <div class="well well-lg" style="position:relative; z-index:2;">
                 <p>É a primeira vez que estou a inscrever o meu educando na catequese da <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME); ?>.</p>
                 <div class="row" style="margin-top: 20px"></div>
-                <div style="float: none; margin: 0 auto; text-align: center">
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='inscrever.php'"><span class="glyphicon glyphicon-pencil"></span> Inscrever</button>
+                <div style="float: none; margin: 0 auto; text-align: center" <?= !$novas_inscricoes_ativas ? 'data-toggle="tooltip" data-placement="top" title="De momento, as novas inscrições estão fechadas."' : '' ?>>
+                    <button type="button" class="btn btn-primary <?= !$novas_inscricoes_ativas ? 'disabled' : '' ?>" <?= !$novas_inscricoes_ativas ? 'disabled' : '' ?> onclick="<?= $novas_inscricoes_ativas ? "window.location.href='inscrever.php'" : "void(0)" ?>"><span class="glyphicon glyphicon-pencil"></span> Inscrever</button>
                 </div>
             </div>
         </div>
@@ -94,8 +109,8 @@ $navbar->renderHTML();
             <div class="well well-lg" style="position:relative; z-index:2;">
                 <p>O meu educando já frequentou a catequese na <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_NAME); ?>. Pretendo renovar a matrícula.</p>
                 <div class="row" style="margin-top: 20px"></div>
-                <div style="float: none; margin: 0 auto; text-align: center">
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='renovarMatricula.php'"><span class="glyphicon glyphicon-repeat"></span> Renovar matrícula</button>
+                <div style="float: none; margin: 0 auto; text-align: center" <?= !$renovacoes_ativas ? 'data-toggle="tooltip" data-placement="top" title="De momento, as renovações de matrícula estão fechadas."' : '' ?>>
+                    <button type="button" class="btn btn-primary <?= !$renovacoes_ativas ? 'disabled' : '' ?>" <?= !$renovacoes_ativas ? 'disabled' : '' ?> onclick="<?= $renovacoes_ativas ? "window.location.href='renovarMatricula.php'" : "void(0)" ?>"><span class="glyphicon glyphicon-repeat"></span> Renovar matrícula</button>
                 </div>
             </div>
         </div>
@@ -139,11 +154,13 @@ $footer->renderHTML();
 
 
 <?php $pageUI->renderJS(); ?>
+<script src="../js/tooltips.js"></script>
 
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 <script type="text/javascript">
     window.cookieconsent_options = {"message":"Este sítio utiliza cookies para melhorar a sua experiência de navegação. <br>Ao continuar está a consentir essa utilização.","dismiss":"Aceito","learnMore":"Mais info","link":null,"theme":"light-floating"};
 </script>
+
 
 <script type="text/javascript" src="../js/cookieconsent2-1.0.10/cookieconsent.min.js"></script>
 <!-- End Cookie Consent plugin -->

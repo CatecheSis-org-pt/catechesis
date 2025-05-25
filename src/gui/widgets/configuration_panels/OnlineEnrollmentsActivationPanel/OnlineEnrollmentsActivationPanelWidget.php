@@ -23,6 +23,8 @@ use uLogin;
 class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
 {
     public static $ACTION_CHANGE_STATUS = "edit_online_enrollments_status";
+    public static $ACTION_CHANGE_NEW_STATUS = "edit_online_enrollments_new_status";
+    public static $ACTION_CHANGE_RENEWAL_STATUS = "edit_online_enrollments_renewal_status";
     public static $ACTION_CHANGE_DETAILS = "edit_online_enrollments_details";
     private /*bool*/ $showAllSettings = true;
 
@@ -50,6 +52,8 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
     protected function renderBody()
     {
         $enrollmentsOpen = false;
+        $newEnrollmentsOpen = false;
+        $renewalEnrollmentsOpen = false;
         $enrollmentCustomText = null;
         $showPaymentData = false;
         $paymentEntity = null;
@@ -62,6 +66,18 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
         try
         {
             $enrollmentsOpen = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+
+            // Check if the new configuration keys exist, if not, use the legacy key value
+            if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN))
+                $newEnrollmentsOpen = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN);
+            else
+                $newEnrollmentsOpen = $enrollmentsOpen;
+
+            if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN))
+                $renewalEnrollmentsOpen = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN);
+            else
+                $renewalEnrollmentsOpen = $enrollmentsOpen;
+
             $enrollmentCustomText =  Configurator::getConfigurationValueOrDefault(Configurator::KEY_ENROLLMENT_CUSTOM_TEXT);
             $showPaymentData =  Configurator::getConfigurationValueOrDefault(Configurator::KEY_ENROLLMENT_SHOW_PAYMENT_DATA);
             $paymentEntity =  Configurator::getConfigurationValueOrDefault(Configurator::KEY_ENROLLMENT_PAYMENT_ENTITY);
@@ -76,16 +92,25 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
         }
         ?>
         <div class="col-md-12">
-            <p>Utilize o interruptor abaixo para abrir/fechar as inscrições e renovações online para o público.</p>
-            <div><input type="checkbox" class="<?= $this->getID() ?>_checkbox-admin" id="<?= $this->getID() ?>_online_enrollments_switch" name="online_enrollments_switch" <?php if($enrollmentsOpen) echo("checked"); ?>> <span><b> Período de inscrições <?php if($enrollmentsOpen) echo("aberto"); else echo("fechado"); ?></b></span></div>
+            <p>Utilize os interruptores abaixo para abrir/fechar as inscrições e renovações online para o público.</p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div><input type="checkbox" class="<?= $this->getID() ?>_checkbox-admin-new" id="<?= $this->getID() ?>_online_enrollments_new_switch" name="online_enrollments_new_switch" <?php if($newEnrollmentsOpen) echo("checked"); ?>> <span><b> Novas inscrições <?php if($newEnrollmentsOpen) echo("abertas"); else echo("fechadas"); ?></b></span></div>
+                </div>
+                <div class="col-md-6">
+                    <div><input type="checkbox" class="<?= $this->getID() ?>_checkbox-admin-renewal" id="<?= $this->getID() ?>_online_enrollments_renewal_switch" name="online_enrollments_renewal_switch" <?php if($renewalEnrollmentsOpen) echo("checked"); ?>> <span><b> Renovações de matrícula <?php if($renewalEnrollmentsOpen) echo("abertas"); else echo("fechadas"); ?></b></span> <span class="fas fa-question-circle" data-toggle="popover" data-placement="top" data-content='Se este é o primeiro ano em que utiliza o CatecheSis na sua paróquia, desative esta opção e abra apenas novas inscrições. Assim, os encarregados de educação terão de inscrever os seus educandos como se fosse a primeira vez, o que lhe permitirá criar as fichas dos catequizandos na base de dados.'></span></div>
+                </div>
+            </div>
+
             <?php
-            if($enrollmentsOpen)
+            if($newEnrollmentsOpen || $renewalEnrollmentsOpen)
             {
                 $enrollmentURL = Utils::getBaseUrl() . "publico/inscricoes.php";
                 ?>
                 <div class="clearfix" style="margin-bottom: 20px"></div>
                 <ol class="breadcrumb">
-                    <li><p>As inscrições estão disponíveis para o público no endereço <a target="_blank" rel="noopener noreferrer" href="<?php echo($enrollmentURL);?>"><?php echo($enrollmentURL);?></a></p></li>
+                    <li><p>As inscrições/renovações de matrícula estão disponíveis para o público no endereço <a target="_blank" rel="noopener noreferrer" href="<?php echo($enrollmentURL);?>"><?php echo($enrollmentURL);?></a></p></li>
                 </ol>
             <?php
             }?>
@@ -274,14 +299,26 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
         <script>
             //Setup bootstrap-switch
             $(function () {
-                $("[class='<?= $this->getID() ?>_checkbox-admin']").bootstrapSwitch({size: 'small',
+                $("[class='<?= $this->getID() ?>_checkbox-admin-new']").bootstrapSwitch({size: 'small',
+                    onText: 'On',
+                    offText: 'Off'
+                });
+
+                $("[class='<?= $this->getID() ?>_checkbox-admin-renewal']").bootstrapSwitch({size: 'small',
                     onText: 'On',
                     offText: 'Off'
                 });
             });
 
-            $('input[class="<?= $this->getID() ?>_checkbox-admin"]').on('switchChange.bootstrapSwitch', function(event, state) {
+            $('input[class="<?= $this->getID() ?>_checkbox-admin-new"]').on('switchChange.bootstrapSwitch', function(event, state) {
+                // Set the form action to handle new enrollments
+                document.getElementById("<?=$this->getID()?>_form_action").value = "<?= self::$ACTION_CHANGE_NEW_STATUS ?>";
+                $('#form_settings_<?= $this->getID() ?>').submit();
+            });
 
+            $('input[class="<?= $this->getID() ?>_checkbox-admin-renewal"]').on('switchChange.bootstrapSwitch', function(event, state) {
+                // Set the form action to handle renewals
+                document.getElementById("<?=$this->getID()?>_form_action").value = "<?= self::$ACTION_CHANGE_RENEWAL_STATUS ?>";
                 $('#form_settings_<?= $this->getID() ?>').submit();
             });
 
@@ -318,9 +355,76 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
         if($this->requires_admin_privileges && !Authenticator::isAdmin())
             return; //Do not render this widget if the user is not admin and it requires admin priviledges
 
-        if($_POST['action'] == self::$ACTION_CHANGE_STATUS && Authenticator::isAdmin())
+        if($_POST['action'] == self::$ACTION_CHANGE_NEW_STATUS && Authenticator::isAdmin())
         {
-            // Enable/disable online enrollments
+            // Enable/disable new online enrollments
+
+            $setting = Utils::sanitizeInput($_POST['online_enrollments_new_switch']);
+
+            if($setting=="on")
+            {
+                try
+                {
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, true);
+                    writeLogEntry("Abriu o período de novas inscrições online.");
+                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Abriu o período de novas inscrições online.</div>");
+                }
+                catch (\Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                }
+            }
+            else
+            {
+                try
+                {
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, false);
+                    writeLogEntry("Fechou o período de novas inscrições online.");
+                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Fechou o período de novas inscrições online.</div>");
+                }
+                catch (\Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                }
+            }
+        }
+        else if($_POST['action'] == self::$ACTION_CHANGE_RENEWAL_STATUS && Authenticator::isAdmin())
+        {
+            // Enable/disable online enrollment renewals
+
+            $setting = Utils::sanitizeInput($_POST['online_enrollments_renewal_switch']);
+
+            if($setting=="on")
+            {
+                try
+                {
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, true);
+                    writeLogEntry("Abriu o período de renovações de matrícula online.");
+                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Abriu o período de renovações de matrícula online.</div>");
+                }
+                catch (\Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                }
+            }
+            else
+            {
+                try
+                {
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, false);
+                    writeLogEntry("Fechou o período de renovações de matrícula online.");
+                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Fechou o período de renovações de matrícula online.</div>");
+                }
+                catch (\Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                }
+            }
+        }
+        else if($_POST['action'] == self::$ACTION_CHANGE_STATUS && Authenticator::isAdmin())
+        {
+            // Legacy mode: Enable/disable all online enrollments at once
+            // This is kept for backward compatibility
 
             $setting = Utils::sanitizeInput($_POST['online_enrollments_switch']);
 
@@ -329,9 +433,10 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
                 try
                 {
                     Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN, true);
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, true);
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, true);
                     writeLogEntry("Abriu o período de inscrições/renovações de matrícula online.");
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Abriu o período de inscrições/renovações de matrícula online.</div>");
-                    $periodo_activo = true;
                 }
                 catch (\Exception $e)
                 {
@@ -343,9 +448,10 @@ class OnlineEnrollmentsActivationPanelWidget extends AbstractSettingsPanelWidget
                 try
                 {
                     Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN, false);
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, false);
+                    Configurator::setConfigurationValue(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, false);
                     writeLogEntry("Fechou o período de inscrições/renovações de matrícula online.");
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Fechou o período de inscrições/renovações de matrícula online.</div>");
-                    $periodo_activo = false;
                 }
                 catch (\Exception $e)
                 {
