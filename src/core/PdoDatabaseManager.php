@@ -656,9 +656,9 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             //Complete query with filters and exclusions
             $sql = $this->generateQueryWithFilters($sql, $searchCatecheticalYear, $baptism, $communion, $excludedCatechisms);
             $sql = $this->addCatechumenOrderByClause($sql, $orderBy);
-            
+
             $stm = $this->_connection->prepare($sql);
-            
+
             $stm->bindParam(":ano_catequetico_actual", $currentCatecheticalYear, PDO::PARAM_INT);
 
             if (($searchCatecheticalYear && $searchCatecheticalYear != "" && $searchCatecheticalYear != 0))
@@ -716,13 +716,13 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         if($catechist && $catechist!="")
             $sql = $sql . " AND l.username=:catequista";
-        
+
         try
         {
             //Complete query with filters and exclusions
             $sql = $this->generateQueryWithFilters($sql, $searchCatecheticalYear, $baptism, $communion, $excludedCatechisms, $onlyScouts);
             $sql = $this->addCatechumenOrderByClause($sql, $orderBy);
-            
+
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":ano_catequetico_actual", $currentCatecheticalYear, PDO::PARAM_INT);
@@ -770,7 +770,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         //Build query
         $sql = $baseQuery;
-        
+
         if ($searchCatecheticalYear && $searchCatecheticalYear != "" && $searchCatecheticalYear != 0) {
             $sql = $sql . " AND p.ano_lectivo=:ano_catequetico";
         }
@@ -2709,7 +2709,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             case EnrollmentStatus::PENDING:
                 $processed = 0;
                 break;
-                
+
             case EnrollmentStatus::PROCESSED:
                 $processed = 1;
                 break;
@@ -5053,7 +5053,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
     /**
      * Computes and returns the absolute frequency ($inPercentage=false) or relative frequency ($inPercentage=true) of
-     * catechumens completing the catechetical journey (10 catechisms + Chrismation) by catechetical year.
+     * catechumens completing the catechetical journey (all catechisms + Chrismation) by catechetical year.
+     * The number of catechisms is obtained from the configuration.
      * @param int $currentCatecheticalYear
      * @param bool $inPercentage
      * @return mixed
@@ -5061,17 +5062,33 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      */
     public function getCompleteCatecheticalJourneysByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage)
     {
-
         if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
             throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        // Get the number of catechisms from configuration
+        $numCatechisms = intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS));
 
         try
         {
             $sql = "";
             if($inPercentage)
-                $sql = "SELECT p.ano_lectivo, COUNT(p.cid)/(select COUNT(p1.cid) from pertence p1 where (p1.ano_catecismo=1 AND p1.ano_lectivo=(p.ano_lectivo-90009)) OR (p1.ano_catecismo=2 AND p1.ano_lectivo=(p.ano_lectivo-80008)) OR (p1.ano_catecismo=3 AND p1.ano_lectivo=(p.ano_lectivo-70007)) OR (p1.ano_catecismo=4 AND p1.ano_lectivo=(p.ano_lectivo-60006)) OR (p1.ano_catecismo=5 AND p1.ano_lectivo=(p.ano_lectivo-50005)) OR (p1.ano_catecismo=6 AND p1.ano_lectivo=(p.ano_lectivo-40004)) OR (p1.ano_catecismo=7 AND p1.ano_lectivo=(p.ano_lectivo-30003)) OR (p1.ano_catecismo=8 AND p1.ano_lectivo=(p.ano_lectivo-20002)) OR (p1.ano_catecismo=9 AND p1.ano_lectivo=(p.ano_lectivo-10001)) OR (p1.ano_catecismo=10 AND p1.ano_lectivo=(p.ano_lectivo)))*100 AS 'percentagem' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p where p.ano_lectivo<:ano_actual AND p.ano_catecismo<10 AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo=10 AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            {
+                // Build the dynamic part of the SQL query for the denominator
+                $denominatorConditions = [];
+                for($i = 1; $i < $numCatechisms; $i++)
+                {
+                    $offset = ($numCatechisms - $i) * 10001;
+                    $denominatorConditions[] = "(p1.ano_catecismo={$i} AND p1.ano_lectivo=(p.ano_lectivo-{$offset}))";
+                }
+                $denominatorConditions[] = "(p1.ano_catecismo={$numCatechisms} AND p1.ano_lectivo=(p.ano_lectivo))";
+                $denominatorSql = implode(" OR ", $denominatorConditions);
+
+                $sql = "SELECT p.ano_lectivo, COUNT(p.cid)/(select COUNT(p1.cid) from pertence p1 where {$denominatorSql})*100 AS 'percentagem' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p where p.ano_lectivo<:ano_actual AND p.ano_catecismo<{$numCatechisms} AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo={$numCatechisms} AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            }
             else
-                $sql = "SELECT p.ano_lectivo, COUNT(p.cid) as 'completos' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p WHERE p.ano_lectivo<:ano_actual AND p.ano_catecismo<10 AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo=10 AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            {
+                $sql = "SELECT p.ano_lectivo, COUNT(p.cid) as 'completos' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p WHERE p.ano_lectivo<:ano_actual AND p.ano_catecismo<{$numCatechisms} AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo={$numCatechisms} AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            }
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":ano_actual", $currentCatecheticalYear, PDO::PARAM_INT);
@@ -5767,10 +5784,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
 
-    
-    
-    
-    
+
+
+
+
 
     /**
      * =================================================================================================================
