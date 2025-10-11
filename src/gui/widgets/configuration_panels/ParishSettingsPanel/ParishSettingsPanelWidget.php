@@ -335,6 +335,20 @@ class ParishSettingsPanelWidget extends AbstractSettingsPanelWidget
                 Configurator::setConfigurationValue(Configurator::KEY_LOCALIZATION_CODE, $editLocale);
                 Configurator::setConfigurationValue(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER, $editParishCustomFooter);
 
+                // Auto-disable country-specific optional fields when applicable
+                if($editLocale == Locale::BRASIL)
+                {
+                    try
+                    {
+                        Configurator::setConfigurationValue(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED, false);
+                        writeLogEntry("Desativou o campo opcional NIF.");
+                    }
+                    catch(\Exception $ignored)
+                    {
+                        /* fail silently to not block saving other settings */
+                    }
+                }
+
                 writeLogEntry("Modificou os dados da paróquia.");
                 echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados da paróquia foram actualizados.</div>");
             }
