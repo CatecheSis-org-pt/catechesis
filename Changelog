@@ -7,6 +7,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 #### Novidades:
 - Adicionado novo campo NIF nas fichas dos catequizandos, necessário nalgumas paróquias para efeitos de seguro de acidentes pessoais;
 - É agora possível carregar comprovativos de sacramentos em formato JPG e PNG (para além de PDF);
+- Novos interruptores para abrir/fechar inscrições e/ou renovações de matrícula de forma independente;
 
 #### Melhorias de usabilidade:
 - *Mãe* passa a ser o encarregado de educação selecionado por omissão, atendendo às estatísticas reportadas voluntariamente por algumas paróquias;
