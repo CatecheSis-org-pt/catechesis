@@ -16,6 +16,7 @@ require_once(__DIR__ . "/gui/widgets/configuration_panels/ParishSettingsPanel/Pa
 require_once(__DIR__ . "/gui/widgets/configuration_panels/GDPRParishSettingsPanel/GDPRParishSettingsPanelWidget.php");
 require_once(__DIR__ . "/gui/widgets/configuration_panels/NextcloudIntegrationConfigurationPanel/NextcloudIntegrationConfigurationPanelWidget.php");
 require_once(__DIR__ . "/gui/widgets/configuration_panels/FrontPageCustomizationPanel/FrontPageCustomizationPanelWidget.php");
+require_once(__DIR__ . "/gui/widgets/configuration_panels/OptionalFieldsConfigurationPanel/OptionalFieldsConfigurationPanelWidget.php");
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 
 use catechesis\Authenticator;
@@ -33,6 +34,7 @@ use catechesis\gui\GDPRParishSettingsPanelWidget;
 use catechesis\gui\CatechesisSettingsPanelWidget;
 use catechesis\gui\NextcloudIntegrationConfigurationPanelWidget;
 use catechesis\gui\FrontPageCustomizationPanelWidget;
+use catechesis\gui\OptionalFieldsConfigurationPanelWidget;
 
 
 // Create the widgets manager
@@ -47,6 +49,7 @@ $settingsPanels = array(); //Array to store all the panels, to process and rende
 $configurationWidgets = array(
                             new UserAccountConfigurationPanelWidget(),
                             new OnlineEnrollmentsActivationPanelWidget(),
+                            new OptionalFieldsConfigurationPanelWidget(),
                             new CatechumensEvaluationActivationPanelWidget(),
                             new CatechesisSettingsPanelWidget(),
                             new NextcloudIntegrationConfigurationPanelWidget(),

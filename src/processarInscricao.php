@@ -120,6 +120,8 @@ $menu->renderHTML();
 	  	$nome = Utils::sanitizeInput($_POST['nome']);
         $data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
         $nif = Utils::sanitizeInput($_POST['nif']);
+        $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED);
+        if(!$nifEnabled) { $nif = null; }
 	  	$local_nasc = Utils::sanitizeInput($_POST['localidade']);
 	  	$num_irmaos = Utils::sanitizeInput($_POST['num_irmaos']);
 	  	$morada = Utils::sanitizeInput($_POST['morada']);
@@ -260,11 +262,13 @@ $menu->renderHTML();
 	  		$inputs_invalidos = true;
 	  	}
 
-        if($nif != "" && !DataValidationUtils::validateNIF($nif))
+        if($nifEnabled)
         {
-            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
-            var_dump($nif);
-            $inputs_invalidos = true;
+            if(!$nif || $nif==="" || !DataValidationUtils::validateNIF($nif))
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
+                $inputs_invalidos = true;
+            }
         }
 	  	
 	  		  	

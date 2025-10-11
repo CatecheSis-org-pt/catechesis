@@ -467,6 +467,7 @@ $menu->renderHTML();
 	    </div>
        </div>
 
+       <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
        <!--NIF-->
        <div class="col-xs-3">
            <label for="nif">NIF:</label>
@@ -474,6 +475,7 @@ $menu->renderHTML();
                <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
            <div class="clearfix"></div>
        </div>
+       <?php } ?>
     
     </div>
    </div>

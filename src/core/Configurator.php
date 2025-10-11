@@ -131,6 +131,9 @@ class Configurator
 
     const KEY_MAINTENANCE_MODE = "MAINTENANCE_MODE";                                                                    //Enabling the maintenance mode forbids logins and shows the error 500 page on the landing page
 
+    // Optional fields toggles
+    const KEY_OPTIONAL_FIELD_NIF_ENABLED = "OPTIONAL_FIELD_NIF_ENABLED";                                                // Whether the NIF field is enabled (visible and mandatory) in forms and catechumen records
+
     private static $CONFIGURATIONS = null; //Stores the configuration objects
 
 
@@ -180,7 +183,10 @@ class Configurator
                 self::KEY_CATECHESIS_NEXTCLOUD_BASE_URL => new ConfigurationObject(self::KEY_CATECHESIS_NEXTCLOUD_BASE_URL, ConfigurationObject::TYPE_STRING, null),
                 self::KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL => new ConfigurationObject(self::KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL, ConfigurationObject::TYPE_STRING, null),
 
-                self::KEY_MAINTENANCE_MODE => new ConfigurationObject(self::KEY_MAINTENANCE_MODE, ConfigurationObject::TYPE_BOOL, false)
+                self::KEY_MAINTENANCE_MODE => new ConfigurationObject(self::KEY_MAINTENANCE_MODE, ConfigurationObject::TYPE_BOOL, false),
+
+                // Optional fields toggles
+                self::KEY_OPTIONAL_FIELD_NIF_ENABLED => new ConfigurationObject(self::KEY_OPTIONAL_FIELD_NIF_ENABLED, ConfigurationObject::TYPE_BOOL, false)
             );
         }
     }

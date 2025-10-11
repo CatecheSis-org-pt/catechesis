@@ -165,15 +165,17 @@ $pageUI->addWidget($footer);
                     </div>
                     </div>
 
+                   <?php $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED); if($nifEnabled) { ?>
                    <!--NIF-->
                    <div class="col-xs-2">
                        <div id="nif_div">
                            <label for="nif">NIF: <span class="forgot_help_text" data-toggle="tooltip" data-placement="top" title="NIF do catequizando, para efeitos de seguro de acidentes pessoais"><span class="glyphicon glyphicon-question-sign"></span></span></label>
 
-                           <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>">
+                           <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>" required>
                            <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                        </div>
                    </div>
+                   <?php } ?>
 
                     <!--numero irmaos-->
                     <div class="col-lg-1">
@@ -759,7 +761,9 @@ function validar()
 
 	var cod_postal = document.getElementById('codigo_postal').value;
     var data_nasc = document.getElementById('data_nasc').value;
-    var nif = document.getElementById('nif').value;
+    var nifElem = document.getElementById('nif');
+    var nif = (nifElem)? nifElem.value : "";
+    var NIF_ENABLED = <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)?'true':'false' ?>;
 	var telefone = document.getElementById('telefone').value;
     var telemovel = document.getElementById('telemovel').value;
     var pai = document.getElementById('pai').value;
@@ -788,10 +792,18 @@ function validar()
         return false;
     }
 
-    if(nif!=="" && nif!==undefined && !nif_valido(nif))
+    if(NIF_ENABLED)
     {
-        alert("O número de identificação fiscal que introduziu é inválido.");
-        return false;
+        if(nif==="" || nif===undefined)
+        {
+            alert("Deve introduzir o NIF do catequizando.");
+            return false;
+        }
+        if(!nif_valido(nif))
+        {
+            alert("O número de identificação fiscal que introduziu é inválido.");
+            return false;
+        }
     }
 
 	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))

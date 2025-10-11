@@ -165,6 +165,7 @@ $db = new PdoDatabaseManager();
             </div>
             </div>
 
+           <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
            <!--NIF-->
            <div class="col-xs-2">
                <div id="nif_div">
@@ -172,6 +173,7 @@ $db = new PdoDatabaseManager();
                    <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" value="<?= $submission['nif'] ?>" readonly>
                </div>
            </div>
+           <?php } ?>
 
 
              <!--numero irmaos-->
