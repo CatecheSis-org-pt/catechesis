@@ -58,17 +58,21 @@ class FrontPageCustomizationPanelWidget extends AbstractSettingsPanelWidget
             <div class="form-group">
 
                 <div class="col-md-12">
-                    <div class="radio disabled" id="<?=$this->getID()?>_div_use_default_image">
-                        <label for="<?=$this->getID()?>_use_default_image" style="display: contents;">
-                            <input type="radio" class="" id="<?=$this->getID()?>_use_default_image" name="use_custom_image" value="false" style="cursor: auto;" onchange="onCheckUseCustomImage('<?=$this->getID()?>');" <?php if(!$useCustomImage) echo("checked"); ?> disabled>
-                            Utilizar o fundo padrão para a página principal
-                        </label>
-                    </div>
-                    <div class="radio disabled" id="<?=$this->getID()?>_div_use_custom_image">
-                        <label for="<?=$this->getID()?>_use_custom_image" style="display: contents;">
-                            <input type="radio" class="" id="<?=$this->getID()?>_use_custom_image" name="use_custom_image" value="true" style="cursor: auto;" onchange="onCheckUseCustomImage('<?=$this->getID()?>'); prepairCropper(cropper_<?= $this->getID() ?>, '<?= $this->getID() ?>_custom_frontpage_image', 2.3);" <?php if($useCustomImage) echo("checked"); ?> disabled>
-                            Personalizar a imagem de fundo da página principal
-                        </label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="radio disabled" id="<?=$this->getID()?>_div_use_default_image">
+                                <label for="<?=$this->getID()?>_use_default_image" style="display: contents;">
+                                    <input type="radio" class="" id="<?=$this->getID()?>_use_default_image" name="use_custom_image" value="false" style="cursor: auto;" onchange="onCheckUseCustomImage('<?=$this->getID()?>');" <?php if(!$useCustomImage) echo("checked"); ?> disabled>
+                                    Utilizar o fundo padrão para a página principal
+                                </label>
+                            </div>
+                            <div class="radio disabled" id="<?=$this->getID()?>_div_use_custom_image">
+                                <label for="<?=$this->getID()?>_use_custom_image" style="display: contents;">
+                                    <input type="radio" class="" id="<?=$this->getID()?>_use_custom_image" name="use_custom_image" value="true" style="cursor: auto;" onchange="onCheckUseCustomImage('<?=$this->getID()?>'); prepairCropper(cropper_<?= $this->getID() ?>, '<?= $this->getID() ?>_custom_frontpage_image', 2.3);" <?php if($useCustomImage) echo("checked"); ?> disabled>
+                                    Personalizar a imagem de fundo da página principal
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <input type="hidden" class="form-control" id="<?=$this->getID()?>_use_custom_image_backup" value="<?php if($useCustomImage) echo("true"); else echo("false"); ?>" readonly>
                 </div>

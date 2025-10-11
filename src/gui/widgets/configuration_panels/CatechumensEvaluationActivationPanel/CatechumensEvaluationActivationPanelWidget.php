@@ -50,8 +50,17 @@ class CatechumensEvaluationActivationPanelWidget extends AbstractSettingsPanelWi
             echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
         }
         ?>
-        <p>Utilize o interruptor abaixo para activar/desactivar a possibilidade de alterar o aproveitamento dos catequizandos, para todos os catequistas.</p>
-        <div><input type="checkbox" class="<?= $this->getID() ?>_checkbox-admin" id="<?= $this->getID() ?>_evaluation_period_switch" name="evaluation_period_switch" <?php if($periodo_activo) echo("checked"); ?>> <span><b> Período de avaliação <?php if($periodo_activo) echo("aberto"); else echo("fechado"); ?></b></span></div>
+        <div class="col-md-12">
+            <p>Utilize o interruptor abaixo para activar/desactivar a possibilidade de alterar o aproveitamento dos catequizandos, para todos os catequistas.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div>
+                        <input type="checkbox" class="<?= $this->getID() ?>_checkbox-admin" id="<?= $this->getID() ?>_evaluation_period_switch" name="evaluation_period_switch" <?php if($periodo_activo) echo("checked"); ?>>
+                        <span><b> Período de avaliação <?php if($periodo_activo) echo("aberto"); else echo("fechado"); ?></b></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <input type="hidden" name="action" value="<?= self::$ACTION_PARAMETER ?>">
 
