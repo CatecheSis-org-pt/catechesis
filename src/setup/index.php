@@ -122,24 +122,18 @@ switch($current_step)
         //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
-        //$home_dir = getenv('HOME');
-        //$home_dir = $_SERVER['HOME'] ?? (/*windows compatibility: */$_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH']);
-        //$home_dir = SetupUtils\drush_server_home();
-        //$home_dir = SetupUtils\homeDir();
         $home_dir = SetupUtils\getUserHomeDir();
-        //echo("<p>HOME: $home_dir </p>");
 
         $suggested_path = SetupUtils\joinPaths($home_dir, "catechesis-data"); //Suggested path
         echo('<option value="' . $suggested_path . '">');
 
-        $scan = glob($home_dir . '/*', GLOB_ONLYDIR);
-        //$scan = scandir($home_dir);
+        $scan = glob(rtrim($home_dir, "\\/") . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        if ($scan === false) { $scan = []; }
         foreach ($scan as $dir)
         {
-            //$file = basename($dir);
-            //$dir_list[] = '/' . $file;
             $file = realpath($dir);
-            $dir_list[] = realpath($dir);
+            if ($file === false) { continue; }
+            $dir_list[] = $file;
             echo('<option value="' . $file . '">');
         }
         echo('</datalist>');

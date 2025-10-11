@@ -50,30 +50,41 @@ function homeDir()
 
 function getUserHomeDir()
 {
-    if(PHP_OS_FAMILY == "Windows")
-    {
-        if(isset($_SERVER['HOME']))
-        {
-            return $_SERVER['HOME'];
+    // Always return a non-empty, normalized directory path
+    if (PHP_OS_FAMILY === 'Windows') {
+        $candidates = [];
+        // Prefer USERPROFILE on Windows
+        if (!empty($_SERVER['USERPROFILE'])) $candidates[] = $_SERVER['USERPROFILE'];
+        if (!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) $candidates[] = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        if (!empty($_SERVER['HOME'])) $candidates[] = $_SERVER['HOME'];
+        $envUserProfile = getenv('USERPROFILE'); if ($envUserProfile) $candidates[] = $envUserProfile;
+        $envHome = getenv('HOME'); if ($envHome) $candidates[] = $envHome;
+
+        foreach ($candidates as $home) {
+            $home = rtrim($home, "\\/");
+            if ($home !== '' && is_dir($home)) {
+                return $home;
+            }
         }
-        else if(!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']))
-        {
-            // home on windows
-            $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
-            // If HOMEPATH is a root directory the path can end with a slash. Make sure
-            // that doesn't happen.
-            $home = rtrim($home, '\\/');
-            return $home;
-        }
-        else
-        {
-            return getenv("HOME");
+        // Fallback to system temp dir if nothing else works
+        return rtrim(sys_get_temp_dir(), "\\/");
+    }
+    // Unix-like systems
+    $home = getenv('HOME');
+    if (!$home && !empty($_SERVER['HOME'])) {
+        $home = $_SERVER['HOME'];
+    }
+    if ($home && is_dir($home)) {
+        return rtrim($home, '/');
+    }
+    if (function_exists('posix_getuid') && function_exists('posix_getpwuid')) {
+        $info = @posix_getpwuid(@posix_getuid());
+        if (is_array($info) && !empty($info['dir']) && is_dir($info['dir'])) {
+            return rtrim($info['dir'], '/');
         }
     }
-    else //Assume Linux / Unix
-    {
-        return posix_getpwuid(posix_getuid())['dir'];
-    }
+    // Last resort
+    return rtrim(sys_get_temp_dir(), '/');
 }
 
 /**
@@ -88,16 +99,27 @@ function joinPaths()
     $args = func_get_args();
     $paths = array();
 
-    foreach($args as $arg)
+    foreach ($args as $arg) {
         $paths = array_merge($paths, (array)$arg);
+    }
 
-    foreach($paths as &$path)
-        $path = trim($path, '/');
+    foreach ($paths as &$path) {
+        $path = trim($path, "\\/");
+    }
 
-    if (substr($args[0], 0, 1) == '/')
+    // Preserve absolute paths on Unix and Windows (e.g., /, C:\\, or \\network)
+    $first = isset($args[0]) ? (string)$args[0] : '';
+    $isAbsoluteUnix = substr($first, 0, 1) === '/';
+    $isAbsoluteWinDrive = (bool)preg_match('/^[A-Za-z]:\\\\/', $first);
+    $isAbsoluteWinUNC = substr($first, 0, 2) === '\\\\';
+
+    if ($isAbsoluteUnix) {
         $paths[0] = '/' . $paths[0];
+    } elseif ($isAbsoluteWinDrive || $isAbsoluteWinUNC) {
+        // keep as-is
+    }
 
-    return join('/', $paths);
+    return join(DIRECTORY_SEPARATOR, $paths);
 }
 
 
