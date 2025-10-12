@@ -55,6 +55,7 @@ $error_donwload_package = false;
 $error_extract_package = false;
 $https_pass = true;
 $reqs_satisfied = false;
+$custom_errors = [];
 $error_missing_recipe = false;
 $error_update_database = false;
 $error_update_files = false;
@@ -179,6 +180,12 @@ switch($current_step)
         {
             $reqs_satisfied = false;
             $https_pass = false;
+        }
+
+        // Enforce PHP version < 8.0 (update wizard requirement)
+        if (defined('PHP_VERSION_ID') ? PHP_VERSION_ID >= 80000 : version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $reqs_satisfied = false;
+            $custom_errors[] = 'A versão do PHP deve ser inferior a 8.0. Versão detetada: ' . PHP_VERSION;
         }
         break;
 
@@ -483,7 +490,9 @@ $_SESSION['setup_step'] = $current_step;
                             else
                             {
                                 echo "<div class=\"alert alert-danger\"><strong>Ups!</strong> Alguns requisitos não estão a ser cumpridos pelo seu servidor. :( <br>Confira abaixo a lista completa:<br><br>";
-                                echo "<p>" . join('<br>', $checker->getErrors()) . "</p>";
+                                $errors = $checker->getErrors();
+                                if (!empty($custom_errors)) { $errors = array_merge($errors, $custom_errors); }
+                                echo "<p>" . join('<br>', $errors) . "</p>";
                                 if(!$https_pass)
                                     echo "<p>O servidor não está a utilizar HTTPS. Para garantir a segurança dos dados pessoais, o uso de HTTPS é obrigatório no CatecheSis.</p>";
                                 echo "</div>";

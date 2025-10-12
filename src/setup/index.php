@@ -42,6 +42,7 @@ $dir_copy_failed = false;
 $main_config_creation_failed = false;
 $shadow_config_creation_failed = false;
 $htaccess_config_creation_failed = false;
+$custom_errors = [];
 $main_config_file = '';
 $db_connection_failed = false;
 $db_tables_creation_failed = false;
@@ -112,6 +113,12 @@ switch($current_step)
             $reqs_satisfied = false;
             $https_pass = false;
         }
+
+        // Enforce PHP version < 8.0 (installation wizard requirement)
+        if (defined('PHP_VERSION_ID') ? PHP_VERSION_ID >= 80000 : version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $reqs_satisfied = false;
+            $custom_errors[] = 'A versão do PHP deve ser inferior a 8.0. Versão detetada: ' . PHP_VERSION;
+        }
         break;
 
     case 3:
@@ -122,14 +129,19 @@ switch($current_step)
         //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
-        $scan = scandir(posix_getpwuid(posix_getuid())['dir']);
-        foreach($scan as $file)
+        $home_dir = SetupUtils\getUserHomeDir();
+
+        $suggested_path = SetupUtils\joinPaths($home_dir, "catechesis-data"); //Suggested path
+        echo('<option value="' . $suggested_path . '">');
+
+        $scan = glob(rtrim($home_dir, "\\/") . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        if ($scan === false) { $scan = []; }
+        foreach ($scan as $dir)
         {
-            if (!is_dir("$file"))
-            {
-                $dir_list[] = '/' . $file;
-                echo('<option value="/' . $file . '">');
-            }
+            $file = realpath($dir);
+            if ($file === false) { continue; }
+            $dir_list[] = $file;
+            echo('<option value="' . $file . '">');
         }
         echo('</datalist>');
 
@@ -477,7 +489,9 @@ $_SESSION['setup_step'] = $current_step;
                             else
                             {
                                 echo "<div class=\"alert alert-danger\"><strong>Ups!</strong> Alguns requisitos não estão a ser cumpridos pelo seu servidor. :( <br>Confira abaixo a lista completa:<br><br>";
-                                echo "<p>" . join('<br>', $checker->getErrors()) . "</p>";
+                                $errors = $checker->getErrors();
+                                if (!empty($custom_errors)) { $errors = array_merge($errors, $custom_errors); }
+                                echo "<p>" . join('<br>', $errors) . "</p>";
                                 if(!$https_pass)
                                     echo "<p>O servidor não está a utilizar HTTPS. Para garantir a segurança dos dados pessoais, o uso de HTTPS é obrigatório no CatecheSis.</p>";
                                 echo "</div>";
@@ -506,7 +520,7 @@ $_SESSION['setup_step'] = $current_step;
 
                             <div class="form-group">
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="/home/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
+                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="<?= $home_dir ?>/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
                                 </div>
                                 <div class="col-md-4">
                                     <span class="fas fa-question-circle" data-toggle="tooltip" data-placement="top" title="A diretoria será criada. É nesta diretoria que serão guardados os dados produzidos durante a utilização do CatecheSis, tais como fotografias e documentos carregados. Esta é a diretoria relevante para efeitos de backup."></span>
