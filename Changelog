@@ -2,7 +2,7 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
-## [Versão UNRELEASED] - 2025-xx-xx
+## [Versão 2.3.0] - 2025-10-12
 
 #### Novidades:
 - Adicionado novo campo NIF nas fichas dos catequizandos, necessário nalgumas paróquias para efeitos de seguro de acidentes pessoais. Este campo pode ser ativado ou desativado nas configurações;
