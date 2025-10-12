@@ -46,6 +46,14 @@ rm $packageDirectory/core/config/catechesis_config.inc.php
 rm $packageDirectory/setup/catechesis_data/config/catechesis_config.shadow.php
 rm $packageDirectory/setup/catechesis_data/photos/catechumens/*.jpg
 rm $packageDirectory/setup/catechesis_data/documents/*.pdf
+rm $packageDirectory/setup/catechesis_data/documents/*.jpg
+rm $packageDirectory/setup/catechesis_data/documents/*.png
+rm $packageDirectory/setup/catechesis_data/tmp/*.png
+rm $packageDirectory/setup/catechesis_data/tmp/*.jpg
+rm $packageDirectory/setup/catechesis_data/tmp/*.pdf
+rm $packageDirectory/setup/catechesis_data/tmp/*.docx
+rm $packageDirectory/setup/catechesis_data/tmp/*.xlsx
+
 
 
 #Create a tar.gz package
