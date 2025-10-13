@@ -79,17 +79,19 @@ class DataValidationUtils
         // Convert to array of digits
         $digitos = str_split($nif);
 
-        // Compute control digit
+        // Compute control digit according to PT rules:
+        // sum = d1*9 + d2*8 + ... + d8*2; check = 11 - (sum % 11); if check >= 10 then 0
         $soma = 0;
         for ($i = 0; $i < 8; $i++) {
             $soma += intval($digitos[$i]) * (9 - $i);
         }
-        $digitoControle = $soma % 11;
-        if($digitoControle == 1)
-            $digitoControle = 0;
+        $check = 11 - ($soma % 11);
+        if ($check >= 10) {
+            $check = 0;
+        }
 
         // Check control digit
-        return (11 - $digitoControle) == intval($digitos[8]);
+        return intval($digitos[8]) === $check;
     }
 
     /**

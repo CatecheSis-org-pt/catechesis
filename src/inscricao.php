@@ -877,7 +877,7 @@ function data_valida(data)
 function nif_valido(nif)
 {
     // Remove espaços e caracteres não numéricos
-    nif = nif.replace(/\D/g, '');
+    nif = (nif || "").toString().replace(/\D/g, '');
 
     // Verifica se o NIF tem 9 dígitos
     if (nif.length !== 9) {
@@ -887,18 +887,14 @@ function nif_valido(nif)
     // Converte o NIF em um array de dígitos
     const digitos = nif.split('').map(Number);
 
-    // Calcula o dígito de controle
-    const soma = digitos.slice(0, 8).reduce((acc, curr, index) => {
-        return acc + curr * (9 - index);
-    }, 0);
+    // Calcula o dígito de controlo (PT): sum(d1*9 + d2*8 + ... + d8*2)
+    const soma = digitos.slice(0, 8).reduce((acc, curr, index) => acc + curr * (9 - index), 0);
 
-    digitoControle = (soma % 11);
+    let check = 11 - (soma % 11);
+    if (check >= 10) check = 0;
 
-    if(digitoControle == 1)
-        digitoControle = 0;
-
-    // Verifica se o dígito de controle está correto
-    return (11 - digitoControle) === digitos[8];
+    // Verifica se o dígito de controlo está correto
+    return check === digitos[8];
 }
 </script>
 
