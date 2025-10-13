@@ -2,6 +2,12 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
+## [Versão UNRELEASED] - xxxx-xx-xx
+
+#### Correções:
+- Corrigida fórmula de validação do NIF português nos formulários;
+
+
 ## [Versão 2.3.0] - 2025-10-12
 
 #### Novidades:
