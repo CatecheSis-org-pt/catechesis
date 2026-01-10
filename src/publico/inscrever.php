@@ -167,7 +167,7 @@ $pageUI->addWidget($footer);
 
                    <?php $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED); if($nifEnabled) { ?>
                    <!--NIF-->
-                   <div class="col-xs-2">
+                   <div class="col-lg-2">
                        <div id="nif_div">
                            <label for="nif">NIF: <span class="forgot_help_text" data-toggle="tooltip" data-placement="top" title="NIF do catequizando, para efeitos de seguro de acidentes pessoais"><span class="glyphicon glyphicon-question-sign"></span></span></label>
 
