@@ -125,9 +125,15 @@ class MainNavbar extends Widget
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#catechesisNavbar" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
                     <a class="navbar-brand" href="dashboard.php"><img src="img/CatecheSis_Logo_Navbar.svg" class="img-responsive" style="height:200%; margin-top: -7%;"></a>
                 </div>
-                <div>
+                <div class="collapse navbar-collapse" id="catechesisNavbar">
                     <ul class="nav navbar-nav">
                         <!-- Dashboard -->
                         <li<?php if($this->menuOption==MENU_OPTION::HOME) echo(' class="active"'); ?>><a href="dashboard.php"><i class="fas fa-home"></i> </a></li>

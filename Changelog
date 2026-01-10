@@ -4,8 +4,9 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 ## [Versão 2.3.2] - 2026-xx-xx
 
-#### Correções:
+#### Melhorias de usabilidade:
 - Campo NIF era ilegível nalguns telemóveis;
+- A barra de menu é agora colapsada em dispositivos com ecrãs pequenos; 
 
 
 ## [Versão 2.3.1] - 2025-10-13
