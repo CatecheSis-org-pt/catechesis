@@ -61,6 +61,15 @@ $pageUI->addWidget($printDialog);
 	    {
 		display: none !important;
 	    }
+
+        @page {
+            size: landscape;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 	    
 	    /*@page {
 		    size: 297mm 210mm;*/ /* landscape */
@@ -417,7 +426,7 @@ $menu->renderHTML();
     $printDialog->setTitle("Recomendação");
 
     $printDialog->setBodyContents(<<<HTML_CODE
-        <p>É recomendado que configure a impressora para imprimir a página na horizontal e que configure a escala de impressão de tal modo que a tabela caiba, em toda a sua largura, na página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
+        <p>A página foi automaticamente configurada para ser impressa na horizontal. É recomendado que configure a escala de impressão de tal modo que a tabela caiba, em toda a sua largura, na página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
       	<p>Quando clicar em OK abrir-se-á a janela de configuração da impressora.</p>
       	<a style="cursor: pointer;" data-toggle="collapse" data-target="#exemplo">Mostre-me um exemplo <span class="glyphicon glyphicon-chevron-down"></span></a>
       	<div id="exemplo" class="collapse">

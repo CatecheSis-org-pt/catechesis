@@ -59,6 +59,21 @@ $pageUI->addWidget($printDialog);
 	    {
 		display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .panel-heading {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background-color: #f5f5f5 !important;
+        }
 	    
 	    /*@page {
 		    size: 297mm 210mm;*/ /* landscape */
@@ -603,7 +618,7 @@ $menu->renderHTML();
     $printDialog->setTitle("Recomendação");
 
     $printDialog->setBodyContents(<<<HTML_CODE
-        <p>É recomendado que configure a escala de impressão de tal modo que caibam várias fichas em cada página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
+        <p>A página foi automaticamente configurada para ativar as cores de fundo. É recomendado que configure a escala de impressão de tal modo que caibam várias fichas em cada página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
       	<p>Quando clicar em OK abrir-se-á a janela de configuração da impressora.</p>
       	<a style="cursor: pointer;" data-toggle="collapse" data-target="#exemplo">Mostre-me um exemplo <span class="glyphicon glyphicon-chevron-down"></span></a>
       	<div id="exemplo" class="collapse">

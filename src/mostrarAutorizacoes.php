@@ -59,6 +59,15 @@ $pageUI->addWidget($deleteFamilyMemberDialog);
 	    {
 			display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 	    
 	    .btn
 	    {
@@ -833,7 +842,7 @@ function Popup(data)
 {
     var mywindow = window.open('', 'Autorizações', 'height=800,width=600');
     mywindow.document.write('<html><head><title>Autorizações</title><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/custom-navbar-colors.css">');
-    mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } ' +
+    mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } @page { size: portrait; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } ' +
         '.progress {\n' +
         '    position: relative;\n' +
         '}\n' +

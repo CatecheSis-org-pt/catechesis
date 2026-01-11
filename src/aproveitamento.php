@@ -50,6 +50,15 @@ $pageUI->addWidget($evaluationPeriodPanel);
 	    {
 		display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 	    
 	    
 	    a[href]:after {

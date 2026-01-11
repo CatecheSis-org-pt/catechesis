@@ -78,6 +78,25 @@ $pageUI->addWidget($chrismationPanel);
 	    {
 			display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .panel-heading {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background-color: #f5f5f5 !important;
+        }
+
+        .panel-success > .panel-heading {
+            background-color: #dff0d8 !important;
+        }
 	    
 	    .btn
 	    {
@@ -1324,7 +1343,7 @@ function guardar_obs()
     {
         var mywindow = window.open('', 'Arquivo', 'height=800,width=600');
         mywindow.document.write('<html><head><title>Arquivo</title><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/custom-navbar-colors.css">');
-        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; }	}');
+        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } @page { size: portrait; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }	.panel-heading { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #f5f5f5 !important; } .panel-success > .panel-heading { background-color: #dff0d8 !important; } }');
         mywindow.document.write('@media screen { .only-print, .only-print * { display: none !important;	} } textarea { resize: vertical; }</style>');
         mywindow.document.write('</head><body >');
         mywindow.document.write(data);

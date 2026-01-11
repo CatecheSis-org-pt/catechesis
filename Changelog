@@ -6,6 +6,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 #### Melhorias de usabilidade:
 - A barra de menu é agora colapsada em dispositivos com ecrãs pequenos; 
+- Os botões de impressão configuram agora automaticamente algumas definições do navegador (como imprimir a página na horizontal) para otimizar a legibilidade, conforme o tipo de documento a imprimir; 
 
 #### Correções:
 - Campo NIF era ilegível nalguns telemóveis;
