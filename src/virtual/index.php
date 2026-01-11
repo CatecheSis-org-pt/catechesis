@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../core/Configurator.php');
 require_once(__DIR__ . '/../core/Utils.php');
 require_once(__DIR__ . '/../core/DataValidationUtils.php');
 require_once(__DIR__ . "/../core/PdoDatabaseManager.php");
+require_once(__DIR__ . '/../core/domain/Locale.php');
 require_once(__DIR__ . '/../authentication/Authenticator.php');
 require_once(__DIR__ . '/../fonts/quill-fonts.php');
 require_once(__DIR__ . '/../gui/widgets/WidgetManager.php');
@@ -16,6 +17,7 @@ use catechesis\Configurator;
 use catechesis\DataValidationUtils;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
+use core\domain\Locale;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\SimpleFooter;
 
@@ -253,9 +255,7 @@ $pageUI->addWidget($footer);
 
                 <h2><?= $catecismo ?>º Catecismo <?php if(isset($turma) && $turma !== "" && $turma !== "_") echo(" - Grupo $turma");?></h2>
                 <h4><?php
-                    setlocale(LC_TIME, 'pt_PT', 'pt_PT.utf-8', 'pt_PT.utf-8', 'portuguese');
-                    echo(Utils::toUTF8(strftime('%A, %d de %B de %Y', strtotime($data_sessao))));
-                    //echo(strftime('%A, %d de %B de %Y', strtotime($data_sessao))); //Usar este se o de cima der problemas de encoding
+                    echo(Locale::getPortugueseDate($data_sessao));
                     ?></h4>
 
                 <div>
