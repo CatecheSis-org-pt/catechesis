@@ -10,6 +10,8 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 #### Correções:
 - Campo NIF era ilegível nalguns telemóveis;
 - A data é agora exibida por extenso, em português, na página da catequese virtual, independentemente da língua do servidor;
+- Alguns tipos de letra / efeitos de texto do editor de catequese virtual não eram mostrados em alguns navegadores;
+
 
 
 ## [Versão 2.3.1] - 2025-10-13

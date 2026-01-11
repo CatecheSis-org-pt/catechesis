@@ -17,11 +17,11 @@
 function quill_render_css_links($relativePath = "")
 {
 ?>
-<link rel="stylesheet" href="<?=$relativePath?>fonts/quill-fonts.css"/>
-<link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC&display=swap&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet"> <!-- Only to fetch font effects for this browser -->
-    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Boogaloo&family=Bungee+Shade&family=Caveat&family=Fredericka+the+Great&family=League+Script&family=Permanent+Marker&family=Source+Code+Pro&family=Thasadith&display=swap&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet">
-    <!--<link href="https://fonts.googleapis.com/css?family=Amatic+SC&family=Boogaloo&family=Bungee+Shade&family=Caveat&family=Fredericka+the+Great&family=League+Script&family=Permanent+Marker&family=Source+Code+Pro&family=Thasadith&display=swap&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet">-->
+<link rel="stylesheet" href="<?=$relativePath?>fonts/quill-fonts.css" media="all"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC&display=block&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet" media="all"> <!-- Only to fetch font effects for this browser -->
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Boogaloo&family=Bungee+Shade&family=Caveat&family=Fredericka+the+Great&family=League+Script&family=Permanent+Marker&family=Source+Code+Pro&family=Thasadith&display=block&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet" media="all">
+    <!--<link href="https://fonts.googleapis.com/css?family=Amatic+SC&family=Boogaloo&family=Bungee+Shade&family=Caveat&family=Fredericka+the+Great&family=League+Script&family=Permanent+Marker&family=Source+Code+Pro&family=Thasadith&display=block&effect=anaglyph|emboss|fire-animation|neon|outline|shadow-multiple|3d|3d-float" rel="stylesheet">-->
 <?php
 }
 

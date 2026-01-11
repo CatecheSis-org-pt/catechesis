@@ -779,9 +779,11 @@ function validar()
     function Popup(data)
     {
         var mywindow = window.open('', 'Catequese virtual', 'height=800,width=600');
-        mywindow.document.write('<html><head><title>Catequese virtual</title><link rel="stylesheet" href="css/bootstrap.min.css"/>');
-        mywindow.document.write('<link rel="stylesheet" href="css/quill-1.3.6/quill.snow.css" />');
-        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } .ql-hidden { display: none !important; } } ');
+        mywindow.document.write('<html><head><title>Catequese virtual</title><link rel="stylesheet" href="css/bootstrap.min.css" media="all"/>');
+        mywindow.document.write('<link rel="stylesheet" href="css/quill-1.3.6/quill.snow.css" media="all" />');
+        <?php ob_start(); quill_render_css_links(); $quill_css = ob_get_clean(); ?>
+        mywindow.document.write(<?= json_encode($quill_css) ?>);
+        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } .ql-hidden { display: none !important; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } } ');
         mywindow.document.write('@media screen { .only-print, .only-print * { display: none !important;	} } textarea { resize: vertical; }</style>');
         mywindow.document.write('</head><body >');
         mywindow.document.write(data);
@@ -790,10 +792,23 @@ function validar()
         mywindow.document.close(); // necessary for IE >= 10
         mywindow.focus(); // necessary for IE >= 10
 
-        mywindow.addEventListener('load', function () {
-            mywindow.print();
-            mywindow.close();
-        });
+        // Use the FontFaceSet API to wait for fonts to load
+        if (mywindow.document.fonts && mywindow.document.fonts.ready) {
+            mywindow.document.fonts.ready.then(function() {
+                setTimeout(function() {
+                    mywindow.print();
+                    mywindow.close();
+                }, 750); // Increased delay to ensure rendering of complex effects
+            });
+        } else {
+            // Fallback for older browsers
+            mywindow.addEventListener('load', function () {
+                setTimeout(function() {
+                    mywindow.print();
+                    mywindow.close();
+                }, 1000);
+            });
+        }
 
         return true;
     }
