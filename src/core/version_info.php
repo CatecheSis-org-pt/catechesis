@@ -1,6 +1,6 @@
 <?php
 
-const VERSION_STRING = '2.3.1';
-const VERSION_RELEASE_DATE = '13-10-2025';
+const VERSION_STRING = '2.3.2';
+const VERSION_RELEASE_DATE = '11-01-2026';
 
 ?>
