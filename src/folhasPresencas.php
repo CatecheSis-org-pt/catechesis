@@ -223,9 +223,9 @@ $menu->renderHTML();
 <?php
 
 
-	function escreve_dias($ano_i, $ano_f)
+	function escreve_dias($ano_i, $ano_f, $ano_catequetico, $catecismo, $turma)
 	{
-        $weekDay = WeekDay::toString(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY));
+        $weekDay = WeekDay::toString(Utils::getEffectiveWeekDay($ano_catequetico, $catecismo, $turma));
 		$timestamp = strtotime('first ' . $weekDay . ' of ' . Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_i));
 
 		setlocale(LC_TIME, "pt_PT");
@@ -254,9 +254,9 @@ $menu->renderHTML();
 	
 	
 	
-	function computeNumCatechesisDays($ano_i, $ano_f, $mes)
+	function computeNumCatechesisDays($ano_i, $ano_f, $mes, $ano_catequetico, $catecismo, $turma)
 	{
-        $weekDay = WeekDay::toString(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY));
+        $weekDay = WeekDay::toString(Utils::getEffectiveWeekDay($ano_catequetico, $catecismo, $turma));
         $months = array(1 => 'January', 2 =>'February', 3 =>'March', 4 =>'April', 5 =>'May', 6 =>'June', 7 =>'July', 8 =>'August', 9 =>'September', 10 =>'October', 11 =>'November', 12 =>'December' );
 		
 		$ano = $ano_i;
@@ -332,8 +332,13 @@ $menu->renderHTML();
 
 			if (count($result) >= 1)
 			{
+                $effectiveWeekDay = Utils::getEffectiveWeekDay($ano_catequetico, $catecismo, $turma);
+                $start_time = Utils::getEffectiveStartTime($ano_catequetico, $catecismo, $turma);
+                $end_time = Utils::getEffectiveEndTime($ano_catequetico, $catecismo, $turma);
+                $formatted_time = WeekDay::toPortugueseString($effectiveWeekDay) . " " . substr($start_time, 0, 5) . " - " . substr($end_time, 0, 5);
+
 				echo("<h4 class='only-print'>Folha de presenças</h4>\n");
-				echo("<span>Ano catequético: ".  Utils::formatCatecheticalYear($ano_catequetico) ."&nbsp;&nbsp;&nbsp;Catecismo: " . intval($catecismo) . "º" . $turma . "</span>");
+				echo("<span>Ano catequético: ".  Utils::formatCatecheticalYear($ano_catequetico) ."&nbsp;&nbsp;&nbsp;Catecismo: " . intval($catecismo) . "º" . $turma . "&nbsp;&nbsp;&nbsp;Horário: " . $formatted_time . "</span>");
                 $ano_i = Utils::getCatecheticalYearStart($ano_catequetico);
                 $ano_f = Utils::getCatecheticalYearEnd($ano_catequetico);
 				?>
@@ -350,7 +355,7 @@ $menu->renderHTML();
                             for($i = 0; $i < 12; $i++)
                             {
                                 ?>
-                                <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month)  ?>"><?= $months_abrv[$month] ?></th>
+                                <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month, $ano_catequetico, $catecismo, $turma)  ?>"><?= $months_abrv[$month] ?></th>
                                 <?php
 
                                 if($month == $month_f['month'])
@@ -363,7 +368,7 @@ $menu->renderHTML();
 			
 				<?php	
 		
-				escreve_dias(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico)); //Gera linha da tabela com os dias dos sabados
+				escreve_dias(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), $ano_catequetico, $catecismo, $turma); //Gera linha da tabela com os dias dos sabados
 			
 				?>
 			
@@ -383,10 +388,12 @@ $menu->renderHTML();
                     $month = $month_i['month'];
                     for($i = 0; $i < 10; $i++)
                     {
-                        for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), $month); $j++)
+                        for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), $month, $ano_catequetico, $catecismo, $turma); $j++)
                             echo("\t\t<td></td>\n");
 
                         $month = ($month %12 + 1);
+                        if ($month == ($month_f['month'] % 12 + 1))
+                            break;
                     }
 					
 					echo("\t</tr>\n");

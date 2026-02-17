@@ -21,6 +21,7 @@ use catechesis\gui\MainNavbar\MENU_OPTION;
 use catechesis\gui\ModalDialogWidget;
 use catechesis\gui\Button;
 use catechesis\gui\ButtonType;
+use core\domain\WeekDay;
 
 
 
@@ -331,6 +332,38 @@ $menu->renderHTML();
 		}
 	}
 
+
+    //Atualizar horario de grupo de catequese
+    if($_POST['accao_horario']=="atualizar")
+    {
+        $ed_ano_catequetico = intval($_POST['ed_horario_ano_catequetico']);
+        $ed_catecismo = intval($_POST['ed_horario_catecismo']);
+        $ed_turma = Utils::sanitizeInput($_POST['ed_horario_turma']);
+
+        $weekDay = $_POST['week_day'] === "" ? null : intval($_POST['week_day']);
+        $startTime = $_POST['start_time'] === "" ? null : Utils::sanitizeInput($_POST['start_time']) . ":00";
+        $endTime = $_POST['end_time'] === "" ? null : Utils::sanitizeInput($_POST['end_time']) . ":00";
+
+        if(($startTime && !$endTime) || (!$startTime && $endTime))
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Se definir uma hora de início, deve definir também uma hora de fim (e vice-versa).</div>");
+        }
+        else if($startTime && $endTime && $startTime >= $endTime)
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A hora de fim deve ser posterior à hora de início.</div>");
+        }
+        else
+        {
+            try {
+                $db->updateGroupSchedule($ed_ano_catequetico, $ed_catecismo, $ed_turma, $weekDay, $startTime, $endTime);
+                echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Horário do grupo atualizado com sucesso.</div>");
+                writeLogEntry("Atualizou o horário do grupo " . $ed_catecismo . "º" . $ed_turma . " (" . Utils::formatCatecheticalYear($ed_ano_catequetico) . ").");
+            } catch (Exception $e) {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+            }
+        }
+    }
+
 ?>
   
   <div class="no-print">
@@ -411,12 +444,13 @@ $menu->renderHTML();
   <div class="col-xs-12">
     	<table class="table table-hover">
     	  <thead>
-    		<tr>
-    			<th>Catecismo</th>
-    			<th>Grupo</th>
-    			<th>Catequistas</th>
-    			<th></th>
-    		</tr>
+		    		<tr>
+		    			<th>Catecismo</th>
+		    			<th>Grupo</th>
+                        <th>Horário</th>
+		    			<th>Catequistas</th>
+		    			<th></th>
+		    		</tr>
     	  </thead>
     	  <tbody>
     	  <?php
@@ -444,6 +478,13 @@ $menu->renderHTML();
                     echo("<tr>\n");
                     echo("\t<td>" . $catecismo . "º</td>\n");
                     echo("\t<td>" . $turma . "</td>\n");
+
+                    // Horário
+                    $effectiveWeekDay = Utils::getEffectiveWeekDay($ano_catequetico_sel, $catecismo, $turma);
+                    $effectiveStartTime = Utils::getEffectiveStartTime($ano_catequetico_sel, $catecismo, $turma);
+                    $effectiveEndTime = Utils::getEffectiveEndTime($ano_catequetico_sel, $catecismo, $turma);
+                    $formattedSchedule = WeekDay::toPortugueseString($effectiveWeekDay) . " " . substr($effectiveStartTime, 0, 5) . "-" . substr($effectiveEndTime, 0, 5);
+                    echo("\t<td>" . $formattedSchedule . "</td>\n");
 
                     //Obter nomes dos catequistas
                     $result2 = NULL;
@@ -478,6 +519,7 @@ $menu->renderHTML();
 
                     echo("\t<td><div class=\"btn-group-xs pull-right btn-group-hover\" role=\"group\" aria-label=\"...\">");
                     echo("<button type=\"button\" class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#confirmarEliminarGrupo\" onclick=\"preparar_eliminar_grupo(" . $ano_catequetico_sel . ", " . $row['ano_catecismo'] . ", '" . Utils::sanitizeOutput($row['turma']) . "')\"><span class=\"glyphicon glyphicon-trash text-danger\"></span><span class='text-danger'> Eliminar</span></button>");
+                    echo("<button type=\"button\" class=\"btn btn-default\" onclick=\"editar_horario(" . $ano_catequetico_sel . ", " . $row['ano_catecismo'] . ", '" . Utils::sanitizeOutput($row['turma']) . "')\"><span class=\"glyphicon glyphicon-time\"></span><span> Definir dia da semana / horário</span></button>");
                     echo("<button type=\"button\" class=\"btn btn-default\" onclick=\"editar_grupo(" . $ano_catequetico_sel . ", " . $row['ano_catecismo'] . ", '" . Utils::sanitizeOutput($row['turma']) . "')\"><span class=\"glyphicon glyphicon-th-list\"></span><span> Definir catequistas</span></button>
             </div>");
 
@@ -516,6 +558,7 @@ $menu->renderHTML();
                         </select>
                     </div>
                 </td>
+                <td><span class=""><i>A definir depois</i></span></td>
     			<td><span class=""><i>A definir depois</i></span></td>
     			<td><input type="hidden" name="sel_ano_catequetico" value="<?php echo('' . $ano_catequetico_sel . ''); ?>">
     				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus text-success"> Adicionar</span></button></td>
@@ -533,6 +576,73 @@ $menu->renderHTML();
 
 
 <?php
+    if($_REQUEST['op']=="editar_horario" || $_POST['accao_horario']=="atualizar")
+    {
+        $ed_ano_catequetico = intval($_REQUEST['ed_horario_ano_catequetico'] ? $_REQUEST['ed_horario_ano_catequetico'] : $_POST['ed_horario_ano_catequetico']);
+        $ed_catecismo = intval($_REQUEST['ed_horario_catecismo'] ? $_REQUEST['ed_horario_catecismo'] : $_POST['ed_horario_catecismo']);
+        $ed_turma = Utils::sanitizeInput($_REQUEST['ed_horario_turma'] ? $_REQUEST['ed_horario_turma'] : $_POST['ed_horario_turma']);
+
+        $groupDetails = $db->getGroupDetails($ed_ano_catequetico, $ed_catecismo, $ed_turma);
+        $currentWeekDay = $groupDetails['dia_da_semana'];
+        $currentStartTime = $groupDetails['hora_inicio'];
+        $currentEndTime = $groupDetails['hora_fim'];
+
+        ?>
+        <div class="panel panel-default collapse in" id="painel_editar_horario">
+            <div class="panel-heading">Definir dia da semana / horário
+                <div class="btn-group-xs pull-right" role="group" aria-label="...">
+                    <button type="button" id="fechar_horario" class="btn btn-default glyphicon glyphicon-remove" data-toggle="collapse" data-target="#painel_editar_horario"> Cancelar</button>
+                    <button type="submit" form="form_atualizar_horario" class="btn btn-primary glyphicon glyphicon-floppy-disk"> Guardar</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form role="form" action="gerirGrupos.php" method="post" id="form_atualizar_horario">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <span>Catecismo: <b><?php echo("" . $ed_catecismo . ""); ?>º</b></span>
+                        </div>
+                        <div class="col-xs-3">
+                            <span>Grupo: <b><?php echo("" . $ed_turma . ""); ?></b></span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-4">
+                            <label for="week_day">Dia de semana:</label>
+                            <select id="week_day" name="week_day" class="form-control">
+                                <option value="">(Usar predefinição paroquial)</option>
+                                <option value="<?= WeekDay::SUNDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::SUNDAY) echo("selected"); ?>>Domingo</option>
+                                <option value="<?= WeekDay::MONDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::MONDAY) echo("selected"); ?>>Segunda-feira</option>
+                                <option value="<?= WeekDay::TUESDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::TUESDAY) echo("selected"); ?>>Terça-feira</option>
+                                <option value="<?= WeekDay::WEDNESDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::WEDNESDAY) echo("selected"); ?>>Quarta-feira</option>
+                                <option value="<?= WeekDay::THURSDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::THURSDAY) echo("selected"); ?>>Quinta-feira</option>
+                                <option value="<?= WeekDay::FRIDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::FRIDAY) echo("selected"); ?>>Sexta-feira</option>
+                                <option value="<?= WeekDay::SATURDAY ?>" <?php if($currentWeekDay !== null && $currentWeekDay == WeekDay::SATURDAY) echo("selected"); ?>>Sábado</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="start_time">Hora de início:</label>
+                            <input type="time" class="form-control" id="start_time" name="start_time" value="<?= $currentStartTime ? substr($currentStartTime, 0, 5) : "" ?>">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="end_time">Hora de fim:</label>
+                            <input type="time" class="form-control" id="end_time" name="end_time" value="<?= $currentEndTime ? substr($currentEndTime, 0, 5) : "" ?>">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="ed_horario_ano_catequetico" value="<?= $ed_ano_catequetico ?>">
+                    <input type="hidden" name="ed_horario_catecismo" value="<?= $ed_catecismo ?>">
+                    <input type="hidden" name="ed_horario_turma" value="<?= $ed_turma ?>">
+                    <input type="hidden" name="sel_ano_catequetico" value="<?= $ano_catequetico_sel ?>">
+                    <input type="hidden" name="accao_horario" value="atualizar">
+                </form>
+            </div>
+        </div>
+        <?php
+    }
+
 	if($_REQUEST['op']=="editar" || ($_POST['cat_accao'] && ($_POST['cat_accao']=="adicionar" || $_POST['cat_accao']=="remover")))
 	{ 
 		if(($_POST['cat_accao'] && ($_POST['cat_accao']=="adicionar" || $_POST['cat_accao']=="remover")))
@@ -720,6 +830,14 @@ $catechistAvailabilityDialog->renderHTML();
 	<input type="hidden" name="sel_ano_catequetico" value="<?php echo('' . $ano_catequetico_sel . ''); ?>">
 </form>
 
+<!-- form oculto para editar horario -->
+<form role="form" action="gerirGrupos.php?op=editar_horario" method="post" id="form_editar_horario">
+	<input type="hidden" name="ed_horario_ano_catequetico" id="ed_horario_ano_catequetico">
+	<input type="hidden" name="ed_horario_catecismo" id="ed_horario_catecismo">
+	<input type="hidden" name="ed_horario_turma" id="ed_horario_turma">
+	<input type="hidden" name="sel_ano_catequetico" value="<?php echo('' . $ano_catequetico_sel . ''); ?>">
+</form>
+
 
 
 
@@ -786,6 +904,18 @@ function verificar_disponibilidade()
         }
 
 	?>
+}
+
+
+
+function editar_horario(ano, catecismo, turma)
+{
+	document.getElementById("ed_horario_ano_catequetico").value = ano;
+	document.getElementById("ed_horario_catecismo").value = catecismo;
+	document.getElementById("ed_horario_turma").value = turma;
+	
+	document.getElementById("form_editar_horario").submit();
+
 }
 
 
@@ -864,6 +994,12 @@ if($_REQUEST['op']=="editar" || ($_POST['cat_accao'] && ($_POST['cat_accao']=="a
 {
     //Fazer scroll automaticamente ate a caixa para editar os catequistas
     echo("<script> $('html, body').animate({ scrollTop: $('#painel_editar').offset().top }, 1000); </script>");
+}
+
+if($_REQUEST['op']=="editar_horario" || $_POST['accao_horario']=="atualizar")
+{
+    //Fazer scroll automaticamente ate a caixa para editar o horario
+    echo("<script> $('html, body').animate({ scrollTop: $('#painel_editar_horario').offset().top }, 1000); </script>");
 }
 ?>
 

@@ -44,10 +44,14 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
     {
         $numCatechisms = 10;
         $weekDay = null;
+        $startTime = "10:00:00";
+        $endTime = "11:00:00";
         try
         {
             $numCatechisms = Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS);
             $weekDay = Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY);
+            $startTime = Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_START_TIME);
+            $endTime = Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_END_TIME);
         }
         catch(\Exception $e)
         {
@@ -67,6 +71,18 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
                 <option value="<?= WeekDay::SATURDAY ?>" <?php if($weekDay == WeekDay::SATURDAY) echo("selected"); ?>>Sábado</option>
             </select>
             <input type="hidden" class="form-control" id="<?=$this->getID()?>_week_day_backup" value="<?= $weekDay ?>" readonly>
+        </div>
+
+        <div class="col-md-4">
+            <label for="<?=$this->getID()?>_start_time">Hora de início:</label>
+            <input type="time" class="form-control" id="<?=$this->getID()?>_start_time" name="start_time" value="<?= substr($startTime, 0, 5) ?>" readonly>
+            <input type="hidden" class="form-control" id="<?=$this->getID()?>_start_time_backup" value="<?= substr($startTime, 0, 5) ?>" readonly>
+        </div>
+
+        <div class="col-md-4">
+            <label for="<?=$this->getID()?>_end_time">Hora de fim:</label>
+            <input type="time" class="form-control" id="<?=$this->getID()?>_end_time" name="end_time" value="<?= substr($endTime, 0, 5) ?>" readonly>
+            <input type="hidden" class="form-control" id="<?=$this->getID()?>_end_time_backup" value="<?= substr($endTime, 0, 5) ?>" readonly>
         </div>
 
         <div class="row clearfix" style="margin-bottom: 20px"></div>
@@ -90,6 +106,8 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
     protected function onEdit()
     {?>
         document.getElementById("<?=$this->getID()?>_week_day").disabled = false;
+        document.getElementById("<?=$this->getID()?>_start_time").readOnly = false;
+        document.getElementById("<?=$this->getID()?>_end_time").readOnly = false;
         document.getElementById("<?=$this->getID()?>_num_catechisms").readOnly = false;
 
         <?php
@@ -103,8 +121,12 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
     {
         ?>
         document.getElementById("<?=$this->getID()?>_week_day").disabled = true;
+        document.getElementById("<?=$this->getID()?>_start_time").readOnly = true;
+        document.getElementById("<?=$this->getID()?>_end_time").readOnly = true;
         document.getElementById("<?=$this->getID()?>_num_catechisms").readOnly = true;
         document.getElementById("<?=$this->getID()?>_week_day").value = document.getElementById("<?=$this->getID()?>_week_day_backup").value;
+        document.getElementById("<?=$this->getID()?>_start_time").value = document.getElementById("<?=$this->getID()?>_start_time_backup").value;
+        document.getElementById("<?=$this->getID()?>_end_time").value = document.getElementById("<?=$this->getID()?>_end_time_backup").value;
         document.getElementById("<?=$this->getID()?>_num_catechisms").value = document.getElementById("<?=$this->getID()?>_num_catechisms_backup").value;
         <?php
     }
@@ -129,6 +151,8 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
         {
             $numCatechisms = intval($_POST['num_catechisms']);
             $weekDay = intval($_POST['week_day']);
+            $startTime = Utils::sanitizeInput($_POST['start_time']);
+            $endTime = Utils::sanitizeInput($_POST['end_time']);
 
             if($numCatechisms < 0)
             {
@@ -138,15 +162,21 @@ class CatechesisSettingsPanelWidget extends AbstractSettingsPanelWidget
             {
                 echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O dia de semana que introduziu não é válido. </div>");
             }
+            else if($startTime >= $endTime)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A hora de fim deve ser posterior à hora de início. </div>");
+            }
             else
             {
                 try
                 {
                     Configurator::setConfigurationValue(Configurator::KEY_NUM_CATECHISMS, $numCatechisms);
                     Configurator::setConfigurationValue(Configurator::KEY_CATECHESIS_WEEK_DAY, $weekDay);
+                    Configurator::setConfigurationValue(Configurator::KEY_CATECHESIS_START_TIME, $startTime . ":00");
+                    Configurator::setConfigurationValue(Configurator::KEY_CATECHESIS_END_TIME, $endTime . ":00");
 
-                    writeLogEntry("Modificou o número de anos do percurso catequético (catecismos) e/ou o dia da semana em que é ministrada a catequese.");
-                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Modificou o número de anos do percurso catequético (catecismos) e/ou o dia da semana em que é ministrada a catequese.</div>");
+                    writeLogEntry("Modificou o número de anos do percurso catequético (catecismos) e/ou o horário padrão da catequese.");
+                    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Modificou o número de anos do percurso catequético (catecismos) e/ou o horário padrão da catequese.</div>");
                 }
                 catch (\Exception $e)
                 {

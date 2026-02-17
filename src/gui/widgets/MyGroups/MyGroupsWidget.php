@@ -6,12 +6,14 @@ namespace catechesis\gui;
 require_once(__DIR__ . '/../../../authentication/Authenticator.php');
 require_once(__DIR__ . '/../../../core/Configurator.php');
 require_once(__DIR__ . '/../../../core/PdoDatabaseManager.php');
+require_once(__DIR__ . '/../../../core/domain/WeekDay.php');
 
 
 use catechesis\Authenticator;
 use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
 use catechesis\Utils;
+use core\domain\WeekDay;
 
 
 /**
@@ -77,7 +79,7 @@ class MyGroupsWidget extends Widget
             foreach($groups as $row)
             {
                 ?>
-                        <div class="col-sm-4">
+                        <div class="col-sm-5">
                             <?php //Form to easily redirect the user to the group listing on clicking the card ?>
                             <form role="form" action="pesquisarAno.php" method="post" id="<?= $this->getID() ?>_form_<?= $row['ano_lectivo'] ?>_<?= $row['ano_catecismo'] ?>_<?= $row['turma'] ?>">
                                 <input type="hidden" name="ano_catequetico" value="<?= $row['ano_lectivo'] ?>">
@@ -91,6 +93,15 @@ class MyGroupsWidget extends Widget
                                     <div class="row clearfix"></div>
                                     <label for="catecismo">Grupo: </label>
                                     <span><?= $row['ano_catecismo'] ?>º<?= Utils::sanitizeOutput($row['turma']) ?></span>
+                                    <div class="row clearfix"></div>
+                                    <?php
+                                    $effWeekDay = Utils::getEffectiveWeekDay($row['ano_lectivo'], $row['ano_catecismo'], $row['turma']);
+                                    $effStartTime = Utils::getEffectiveStartTime($row['ano_lectivo'], $row['ano_catecismo'], $row['turma']);
+                                    $effEndTime = Utils::getEffectiveEndTime($row['ano_lectivo'], $row['ano_catecismo'], $row['turma']);
+                                    $formattedSchedule = WeekDay::toPortugueseString($effWeekDay) . " " . substr($effStartTime, 0, 5) . " - " . substr($effEndTime, 0, 5);
+                                    ?>
+                                    <label for="horario" class="fas fa-clock"></label>
+                                    <span><?= $formattedSchedule ?></span>
                                     <?php
                                     // Load this group's catechumens birthdays
                                     try

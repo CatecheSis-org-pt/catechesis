@@ -184,6 +184,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function getCatechismsAndGroupsFromLatestYear();
     public function hasCatechism(int $catecheticalYear, int $catechism);
     public function getGroupLetters(int $catecheticalYear = null);
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group);
     public function createCatechismGroup(int $catecheticalYear, int $catechism, string $group);
     public function deleteCatechismGroup(int $catecheticalYear, int $catechism, string $group);
     public function enrollCatechumenInGroup(int $cid, int $catecheticalYear, int $catechism, string $group,
@@ -3742,6 +3743,44 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
     /**
+     * Returns the details of a particular catechism group.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return array|null
+     * @throws Exception
+     */
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT dia_da_semana, hora_inicio, hora_fim FROM grupo WHERE ano_lectivo=:ano_lectivo AND ano_catecismo=:catecismo AND turma=:turma;";
+
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":ano_lectivo", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group, PDO::PARAM_STR);
+
+            if($stm->execute())
+            {
+                $res = $stm->fetch();
+                return $res ? $res : null;
+            }
+            else
+                throw new Exception("Falha ao obter os detalhes do grupo de catequese.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
      * Inserts a new catechism group.
      * Returns true in case of success, and false (or an exception) if something goes wrong.
      * @param int $catecheticalYear
@@ -3832,6 +3871,44 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (Exception $e)
         {
             throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
+     * Updates the schedule for a particular catechism group.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @param int|null $weekDay
+     * @param string|null $startTime
+     * @param string|null $endTime
+     * @return bool
+     * @throws Exception
+     */
+    public function updateGroupSchedule(int $catecheticalYear, int $catechism, string $group, ?int $weekDay, ?string $startTime, ?string $endTime)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "UPDATE grupo SET dia_da_semana=:weekDay, hora_inicio=:startTime, hora_fim=:endTime WHERE ano_lectivo=:ano_lectivo AND ano_catecismo=:catecismo AND turma=:turma;";
+
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":weekDay", $weekDay, is_null($weekDay) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stm->bindParam(":startTime", $startTime, is_null($startTime) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stm->bindParam(":endTime", $endTime, is_null($endTime) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stm->bindParam(":ano_lectivo", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group, PDO::PARAM_STR);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados ao atualizar o horário do grupo.");
         }
     }
 

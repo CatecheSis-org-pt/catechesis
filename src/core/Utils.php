@@ -828,4 +828,74 @@ class Utils
 
         imagepng($destination_image, $outputImageFile);
     }
+
+
+    /**
+     * Returns the effective week day for a given catechism group.
+     * If the group has a specific week day defined, it is returned.
+     * Otherwise, the global default week day is returned.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return int
+     * @throws Exception
+     */
+    public static function getEffectiveWeekDay(int $catecheticalYear, int $catechism, string $group)
+    {
+        $db = new PdoDatabaseManager();
+        $details = $db->getGroupDetails($catecheticalYear, $catechism, $group);
+        $db = null;
+
+        if ($details && isset($details['dia_da_semana'])) {
+            return intval($details['dia_da_semana']);
+        }
+
+        return Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY);
+    }
+
+    /**
+     * Returns the effective start time for a given catechism group.
+     * If the group has a specific start time defined, it is returned.
+     * Otherwise, the global default start time is returned.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return string
+     * @throws Exception
+     */
+    public static function getEffectiveStartTime(int $catecheticalYear, int $catechism, string $group)
+    {
+        $db = new PdoDatabaseManager();
+        $details = $db->getGroupDetails($catecheticalYear, $catechism, $group);
+        $db = null;
+
+        if ($details && isset($details['hora_inicio'])) {
+            return $details['hora_inicio'];
+        }
+
+        return Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_START_TIME);
+    }
+
+    /**
+     * Returns the effective end time for a given catechism group.
+     * If the group has a specific end time defined, it is returned.
+     * Otherwise, the global default end time is returned.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return string
+     * @throws Exception
+     */
+    public static function getEffectiveEndTime(int $catecheticalYear, int $catechism, string $group)
+    {
+        $db = new PdoDatabaseManager();
+        $details = $db->getGroupDetails($catecheticalYear, $catechism, $group);
+        $db = null;
+
+        if ($details && isset($details['hora_fim'])) {
+            return $details['hora_fim'];
+        }
+
+        return Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_END_TIME);
+    }
 }

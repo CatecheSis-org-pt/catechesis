@@ -97,6 +97,8 @@ class Configurator
     //Definition of keys to store key-value configurations in the database
     const KEY_NUM_CATECHISMS = "NUM_CATECHISMS";                                                                        //The highest catechism in this parish (in some parishes may be higher than the default 10)
     const KEY_CATECHESIS_WEEK_DAY = "CATECHESIS_WEEK_DAY";                                                              //The day of the week on which catechesis is ministered
+    const KEY_CATECHESIS_START_TIME = "CATECHESIS_START_TIME";                                                          //The default start time for all classes
+    const KEY_CATECHESIS_END_TIME = "CATECHESIS_END_TIME";                                                              //The default end time for all classes
     const KEY_CATECHUMENS_EVALUATION = "CATECHUMENS_EVALUTATIONS_OPEN";                                                 //Whether catechumens evaluations are open for catechists or not
 
     const KEY_PARISH_NAME = "PARISH_NAME";                                                                              //Name of this parish (shown in page footers and several places)
@@ -150,6 +152,8 @@ class Configurator
             self::$CONFIGURATIONS = array(
                 self::KEY_NUM_CATECHISMS => new ConfigurationObject(self::KEY_NUM_CATECHISMS, ConfigurationObject::TYPE_INT, 10),
                 self::KEY_CATECHESIS_WEEK_DAY => new ConfigurationObject(self::KEY_CATECHESIS_WEEK_DAY, ConfigurationObject::TYPE_INT, WeekDay::SUNDAY),
+                self::KEY_CATECHESIS_START_TIME => new ConfigurationObject(self::KEY_CATECHESIS_START_TIME, ConfigurationObject::TYPE_STRING, "10:00:00"),
+                self::KEY_CATECHESIS_END_TIME => new ConfigurationObject(self::KEY_CATECHESIS_END_TIME, ConfigurationObject::TYPE_STRING, "11:00:00"),
                 self::KEY_CATECHUMENS_EVALUATION => new ConfigurationObject(self::KEY_CATECHUMENS_EVALUATION, ConfigurationObject::TYPE_BOOL, true),
 
                 self::KEY_PARISH_NAME => new ConfigurationObject(self::KEY_PARISH_NAME, ConfigurationObject::TYPE_STRING, null),
@@ -294,4 +298,6 @@ class Configurator
             throw new Exception("Falha ao definir valor de configuração.");
         }
     }
+
+
 }

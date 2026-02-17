@@ -155,12 +155,15 @@ interface DatabaseManager
     public function getCatechismsAndGroupsFromLatestYear();                                                             // Returns the pairs of (catechism, group) from the latest registered year in the database
     public function hasCatechism(int $catecheticalYear, int $catechism);                                                // Returns true if a particular catechism exists in the database
     public function getGroupLetters(int $catecheticalYear = null);                                                      // Returns all the distinct group (class) letters in the database
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group);                              // Returns the details of a particular catechism group
     public function createCatechismGroup(int $catecheticalYear, int $catechism, string $group);                         // Inserts a new catechism group
     public function deleteCatechismGroup(int $catecheticalYear, int $catechism, string $group);                         // Deletes a group from the database
     public function enrollCatechumenInGroup(int $cid, int $catecheticalYear, int $catechism, string $group,             // Enrolls a catechumen in a catechesis group
                                             bool $pass, bool $paid, string $username);
     public function unenrollCatechumenFromGroup(int $cid, int $catecheticalYear, int $catechism, string $group);        // Unenrolls a catechumen from a catechesis group
     public function unenrollCatechumenFromAllGroups(int $cid, bool $useTransaction=true);                               // Unenrolls a catechumen from all the groups where he/she is enrolled
+    public function updateGroupSchedule(int $catecheticalYear, int $catechism, string $group,                           // Updates the schedule for a particular catechism group
+                                         ?int $weekDay, ?string $startTime, ?string $endTime);
     public function updateCatechumenEnrollmentPayment(int $cid, int $catecheticalYear, int $catechism, string $group,   // Updates the payment status of a catechumen enrollment
                                                        bool $paid);
     public function getCatecheticalYearsWhereCatechumenIsNotEnrolled(int $cid);                                         // Returns all the catechetical years where the catechumen is NOT enrolled

@@ -180,12 +180,27 @@ DROP TABLE IF EXISTS grupo;
 CREATE TABLE grupo(
 	ano_catecismo		TINYINT,
 	turma			VARCHAR(1),
-	ano_lectivo		INT,		#guardado como uma um inteiro '20142015' por exemplo
-	#atributos catecismo, missa, catequese...?
+	ano_lectivo		INT,		# guardado como uma um inteiro '20142015' por exemplo
+	dia_da_semana   TINYINT NULL,
+    hora_inicio     TIME NULL,
+    hora_fim        TIME NULL
+	# outros atributos: catecismo, missa, catequese...?
 	
 	PRIMARY KEY (ano_catecismo, turma, ano_lectivo)
 )
 CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+ALTER TABLE grupo
+    ADD CONSTRAINT chk_grupo_catechesis_times
+        CHECK (
+            (hora_inicio IS NULL AND hora_fim IS NULL)
+                OR
+            (hora_inicio IS NOT NULL AND hora_fim IS NOT NULL AND hora_fim > hora_inicio)
+            );
+
+ALTER TABLE grupo
+    ADD CONSTRAINT chk_grupo_catechesis_week_day
+        CHECK (dia_da_semana IS NULL OR (dia_da_semana >= 0 AND dia_da_semana <= 6));
 	
 
 DROP TABLE IF EXISTS pertence;
