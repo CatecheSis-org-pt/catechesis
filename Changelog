@@ -1,6 +1,11 @@
 # Changelog
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
+## [Versão UNRELEASED] - 2026-xx-xx
+
+#### Novidades:
+- É agora possível definir um dia da semana e um horário específico para cada grupo de catequese;
+
 
 ## [Versão 2.3.2] - 2026-01-11
 
