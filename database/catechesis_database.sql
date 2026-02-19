@@ -249,7 +249,7 @@ CHARACTER SET utf8 COLLATE utf8_general_ci;
 DROP TABLE IF EXISTS inscreve;
 CREATE TABLE inscreve(
 	username	VARCHAR(20) NOT NULL,
-	cid		INT,
+	cid		    INT,
 	ano_catecismo	TINYINT,
 	turma		VARCHAR(1),
 	ano_lectivo	INT,
@@ -258,6 +258,38 @@ CREATE TABLE inscreve(
 	PRIMARY KEY (cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (cid, ano_catecismo, turma, ano_lectivo) REFERENCES pertence(cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
+
+DROP TABLE IF EXISTS sessao_catequese;
+CREATE TABLE sessao_catequese(
+    data            DATE NOT NULL,
+    ano_catecismo	TINYINT,
+    turma		    VARCHAR(1),
+    ano_lectivo	    INT,
+
+    PRIMARY KEY (data, ano_catecismo, turma, ano_lectivo),
+    FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo)
+)
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
+DROP TABLE IF EXISTS presenca;
+CREATE TABLE presenca(
+    data            DATE NOT NULL,
+    ano_catecismo	TINYINT,
+    turma		    VARCHAR(1),
+    ano_lectivo	    INT,
+    cid             INT,
+    presenca        TINYINT,   # 0=falta; 1=presente
+    marcada_por     VARCHAR(20) NOT NULL,
+
+    PRIMARY KEY (data, ano_catecismo, turma, ano_lectivo, cid),
+    FOREIGN KEY (data, ano_catecismo, turma, ano_lectivo) REFERENCES sessao_catequese(data, ano_catecismo, turma, ano_lectivo),
+    FOREIGN KEY (cid) REFERENCES catequizando(cid),
+    FOREIGN KEY (marcada_por) REFERENCES utilizador(username)
 )
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 

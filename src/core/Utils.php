@@ -599,6 +599,8 @@ class Utils
             return "Boa tarde, $username!";
         else if($hour >= 20 || $hour < 2)
             return "Boa noite, $username!";
+
+        return "Olá, $username!";
     }
 
 

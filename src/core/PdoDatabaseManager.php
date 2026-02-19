@@ -4178,6 +4178,193 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
     /**
+     * Creates a new catechesis session for a group and catechetical year.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return bool
+     * @throws Exception
+     */
+    public function createCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "INSERT INTO sessao_catequese(data, ano_catecismo, turma, ano_lectivo) VALUES(:data, :catecismo, :turma, :ano);";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha ao criar sessão de catequese.");
+        }
+    }
+
+    /**
+     * Returns all catechesis sessions (dates) for a given group and catechetical year.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCatechesisSessions(int $catecheticalYear, int $catechism, string $group)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT data FROM sessao_catequese WHERE ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano ORDER BY data ASC;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter sessões de catequese.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+    /**
+     * Registers attendance for a catechumen in a given session.
+     * If the session does not exist, it will be created.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @param int $cid
+     * @param int $attendance 0=falta; 1=presente
+     * @param string $markedByUsername
+     * @return bool
+     * @throws Exception
+     */
+    public function setCatechumenAttendance(string $date, int $catechism, string $group, int $catecheticalYear,
+                                            int $cid, int $attendance, string $markedByUsername)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        $attendance = $attendance?1:0;
+
+        try
+        {
+            // Upsert attendance
+            $sql = "INSERT INTO presenca(data, ano_catecismo, turma, ano_lectivo, cid, presenca, marcada_por) 
+                    VALUES(:data, :catecismo, :turma, :ano, :cid, :presenca, :marcada_por)
+                    ON DUPLICATE KEY UPDATE presenca=VALUES(presenca), marcada_por=VALUES(marcada_por);";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":cid", $cid, PDO::PARAM_INT);
+            $stm->bindParam(":presenca", $attendance, PDO::PARAM_INT);
+            $stm->bindParam(":marcada_por", $markedByUsername);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha ao registar presença.");
+        }
+    }
+
+    /**
+     * Returns catechumens that attended a given session (presenca=1).
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return mixed
+     * @throws Exception
+     */
+    public function getLessonAttendees(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT c.cid, c.nome FROM presenca p JOIN catequizando c ON c.cid=p.cid 
+                    WHERE p.data=:data AND p.ano_catecismo=:catecismo AND p.turma=:turma AND p.ano_lectivo=:ano AND p.presenca=1 
+                    ORDER BY c.nome;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter presenças.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+    /**
+     * Returns attendance (0/1 or NULL) for all sessions of a group/year for a given catechumen.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @param int $cid
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCatechumenAttendanceForGroup(int $catecheticalYear, int $catechism, string $group, int $cid)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT s.data, p.presenca 
+                    FROM sessao_catequese s 
+                    LEFT JOIN presenca p ON p.data=s.data AND p.ano_catecismo=s.ano_catecismo AND p.turma=s.turma AND p.ano_lectivo=s.ano_lectivo AND p.cid=:cid
+                    WHERE s.ano_catecismo=:catecismo AND s.turma=:turma AND s.ano_lectivo=:ano
+                    ORDER BY s.data ASC;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":cid", $cid, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter presenças do catequizando.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
      * Returns all the civil years in the database for which there are records of the sacrament type provided.
      * @param int $sacrament  - one of the core::domain::Sacraments class constants
      * @return mixed

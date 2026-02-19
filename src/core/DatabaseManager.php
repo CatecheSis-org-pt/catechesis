@@ -204,6 +204,14 @@ interface DatabaseManager
     public function getCompleteCatecheticalJourneysByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage);// Returns the number of catechumens completing the catechetical journey by catechetical year
     public function getCatechumensByCatechistAndYear(bool $accumulated);                                                // Returns the number of catechumens by catechist and catechetical year
 
+    // Attendance and sessions
+    public function createCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);         // Creates a new session entry for a group/year
+    public function getCatechesisSessions(int $catecheticalYear, int $catechism, string $group);                         // Lists all session dates for a group in a year
+    public function setCatechumenAttendance(string $date, int $catechism, string $group, int $catecheticalYear,          // Registers attendance for a catechumen in a session
+                                            int $cid, int $attendance, string $markedByUsername);
+    public function getLessonAttendees(string $date, int $catechism, string $group, int $catecheticalYear);              // Returns catechumens that attended a given session
+    public function getCatechumenAttendanceForGroup(int $catecheticalYear, int $catechism, string $group, int $cid);     // Returns attendance status for all sessions of a group/year for a catechumen
+
     // Virtual catechesis
     public function getVirtualCatechesisSessionDates(int $catechism = null, string $group = null,                       // Returns the calendar dates for which a virtual catechesis session exists
                                                      bool $recursive = true, int $limit = 0,
