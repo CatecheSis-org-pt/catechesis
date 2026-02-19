@@ -6,6 +6,7 @@ require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
+require_once(__DIR__ . '/core/log_functions.php');
 
 use catechesis\Authenticator;
 use catechesis\Configurator;
@@ -72,7 +73,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
         $db = new PdoDatabaseManager();
         if($db->postVirtualCatechesisContent($conteudo, Authenticator::getUsername(), $data, $catecismo, $turma))
+        {
+            writeLogEntry("Conteúdo da catequese virtual de $data guardado para o " . ($catecismo == -1 ? "todos os catecismos" : $catecismo . "º") . ($turma == null ? " todos os grupos" : " " . $turma) . ".");
             echo("OK");
+        }
         else
         {
             echo("<strong>Erro!</strong> Falha ao guardar o conteudo da sessão.");

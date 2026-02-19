@@ -242,6 +242,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
                                                   int $catechism = null, string $group = null);
     public function getListOfVirtualCatechesisObservers(string $sessionDate, int $timeThreshold, int $catechism = null,
                                                         string $group = null, string $excludeUsername = null);
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);
 
 
     // Settings
@@ -935,7 +936,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param string $observations
      * @param string $createdByUsername
      */
-    public function createCatechumen(string $name, string $birthdate, string $birthplace, $nif,
+    public function createCatechumen(string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
@@ -1026,7 +1027,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param bool $photosAllowed
      * @param string $createdByUsername
      */
-    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, $nif,
+    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed)
@@ -4321,6 +4322,52 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (PDOException $e)
         {
             throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+    /**
+     * Deletes a catechesis session and all associated attendance records.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $this->beginTransaction(DatabaseAccessMode::DEFAULT_EDIT);
+
+            // Delete attendance records first
+            $sql1 = "DELETE FROM presenca WHERE data=:data AND ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano;";
+            $stm1 = $this->_connection->prepare($sql1);
+            $stm1->bindParam(":data", $date);
+            $stm1->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm1->bindParam(":turma", $group);
+            $stm1->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm1->execute();
+
+            // Delete the session
+            $sql2 = "DELETE FROM sessao_catequese WHERE data=:data AND ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano;";
+            $stm2 = $this->_connection->prepare($sql2);
+            $stm2->bindParam(":data", $date);
+            $stm2->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm2->bindParam(":turma", $group);
+            $stm2->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm2->execute();
+
+            $this->commit();
+            return true;
+        }
+        catch (PDOException $e)
+        {
+            $this->rollBack();
+            throw new Exception("Falha ao eliminar a sessão de catequese.");
         }
     }
 

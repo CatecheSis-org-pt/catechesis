@@ -211,6 +211,7 @@ interface DatabaseManager
                                             int $cid, int $attendance, string $markedByUsername);
     public function getLessonAttendees(string $date, int $catechism, string $group, int $catecheticalYear);              // Returns catechumens that attended a given session
     public function getCatechumenAttendanceForGroup(int $catecheticalYear, int $catechism, string $group, int $cid);     // Returns attendance status for all sessions of a group/year for a catechumen
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);         // Deletes a session and its attendance records
 
     // Virtual catechesis
     public function getVirtualCatechesisSessionDates(int $catechism = null, string $group = null,                       // Returns the calendar dates for which a virtual catechesis session exists
