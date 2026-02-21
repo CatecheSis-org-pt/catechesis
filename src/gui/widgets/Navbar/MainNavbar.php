@@ -176,9 +176,9 @@ class MainNavbar extends Widget
                         <li class="dropdown<?php if($this->menuOption==MENU_OPTION::CATECHESIS) echo(', active'); ?>"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-bible"></i> Catequese<span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li role="presentation" class="dropdown-header"><i class="fas fa-user-graduate"></i> Tarefas do catequista</li>
+                                <li><a href="marcarPresencas.php">Marcar presenças</a></li>
                                 <li><a href="gerarFolhasPresencas.php">Área de Impressão</a></li>
                                 <li><a href="aproveitamento.php">Aproveitamento dos catequizandos</a></li>
-                                <li><a href="marcarPresencas.php">Marcar presenças</a></li>
                                 <li class="divider"></li>
                                 <?php
                                 if(Authenticator::isAdmin())
