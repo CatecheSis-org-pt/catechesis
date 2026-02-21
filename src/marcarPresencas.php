@@ -347,9 +347,18 @@ $menu->renderHTML();
         <input type="hidden" name="ano_catequetico" value="<?= $ano_lectivo ?>">
         <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
         <input type="hidden" name="turma" value="<?= $turma ?>">
-        <button type="button" onclick="mostrar_folha_presencas()" class="btn btn-default no-print"><span class="fas fa-calendar-check"></span> Ver folha de presenças</button>
-        <div style="margin-bottom: 40px"></div>
     </form>
+
+    <div class="no-print">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default no-print" onclick="mostrar_folha_presencas()"><span class="fas fa-calendar-check"></span> Ver folha de presenças</button>
+            <?php if ($currentSessionExists): ?>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirmarEliminarSessao"><span class="text-danger"><i class="glyphicon glyphicon-trash"></i> Eliminar sessão de catequese</span></button>
+            <?php endif; ?>
+        </div>
+        <div style="margin-bottom: 40px"></div>
+    </div>
+
 
 
     <form role="form" action="marcarPresencas.php" method="post" id="form_presencas">
@@ -408,11 +417,6 @@ $menu->renderHTML();
         <div class="no-print">
             <div class="btn-group" role="group">
                 <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> Guardar</button>
-                <?php if ($currentSessionExists): ?>
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmarEliminarSessao">
-                        <i class="glyphicon glyphicon-trash"></i> Eliminar sessão de catequese
-                    </button>
-                <?php endif; ?>
             </div>
         </div>
         <input type="hidden" name="op" id="op_eliminar" value="guardar">
