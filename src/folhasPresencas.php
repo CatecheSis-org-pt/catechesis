@@ -84,16 +84,30 @@ $pageUI->addWidget($printDialog);
 			page-break-inside: avoid;
 		}
 
+        tr:nth-child(odd) td{
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
+        tr:nth-child(even) td.success {
+            background-color: #d0e9c6 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
-	    tr:nth-child(even) td{
-		    background-color: #f9f9f9 !important;
-		    -webkit-print-color-adjust: exact; 
-		}
-		
+        tr:nth-child(odd) td.success {
+            background-color: #c1e2b3 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
-		
-		
+        tr:nth-child(even) td.danger {
+            background-color: #ebcccc !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.danger {
+            background-color: #e4b9b9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 	}
 	
 	@media screen
@@ -102,6 +116,31 @@ $pageUI->addWidget($printDialog);
 		{
 			display: none !important;
 		}
+
+        tr:nth-child(odd) td{
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(even) td.success {
+            background-color: #d0e9c6 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.success {
+            background-color: #c1e2b3 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(even) td.danger {
+            background-color: #ebcccc !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.danger {
+            background-color: #e4b9b9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 	}
 	
 	

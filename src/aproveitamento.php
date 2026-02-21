@@ -64,6 +64,26 @@ $pageUI->addWidget($evaluationPeriodPanel);
 	    a[href]:after {
 		    content: none;
 		  }
+
+        tr.success:nth-child(odd) td {
+            background-color: #d0e9c6 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr.success:nth-child(even) td {
+            background-color: #c1e2b3 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr.danger:nth-child(odd) td {
+            background-color: #ebcccc !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr.danger:nth-child(even) td {
+            background-color: #e4b9b9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 		  
 	    /*@page {
 		    size: 297mm 210mm;*/ /* landscape */
