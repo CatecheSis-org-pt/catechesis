@@ -8,6 +8,7 @@ require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
+require_once(__DIR__ . '/core/statistics.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
@@ -108,6 +109,21 @@ $pageUI->addWidget($chrismationPanel);
 		    /*margin: 35mm;*/
 		    /*margin-right: 45mm;*/ /* for compatibility with both A4 and Letter */
 		  /*}*/
+
+        .progress {
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar {
+            background-color: #337ab7 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar-danger {
+            background-color: #d9534f !important;
+            -webkit-print-color-adjust: exact;
+        }
 		  
 	}
 	
@@ -802,6 +818,7 @@ $menu->renderHTML();
     			<th>Catecismo</th>
     			<th>Catequistas</th>
     			<th>Inscrito por</th>
+    			<th>Presenças</th>
     			<th>Aproveitamento</th>
     			<th>Pago</th>
     		</tr>
@@ -863,11 +880,26 @@ $menu->renderHTML();
 
 					echo("<td>" . Utils::firstAndLastName(Utils::sanitizeOutput($row['nome'])) . "</td>");	//Nome do catequista que fez a inscricao
 
+					//Presenças
+					$stats = getCatechumenAttendanceStats($cid, $row['ano_lectivo'], $row['ano_catecismo'], Utils::sanitizeOutput($row['turma']));
+					$percentage = $stats['percentage'];
+					$attended = $stats['attended'];
+					$totalSessions = $stats['total'];
+
+					echo("\t<td style=\"width: 15%; min-width: 120px; vertical-align: middle;\">\n");
+					$progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
+					echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
+					echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
+					echo("\t\t\t</div>\n");
+					echo("\t\t</div>\n");
+					echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
+					echo("\t</td>\n");
+
 					//Passou ou nao de ano
 					if(isset($row['passa']) && $row['passa']==-1)
-						echo('<td><span class="label label-danger">Reprovado</span></td>');
+						echo('<td><span class="label label-danger">Reprovou</span></td>');
 					else
-						echo('<td><span class="label label-success">Transita</span></td>');
+						echo('<td><span class="label label-success">Transitou</span></td>');
 
 
 					
@@ -957,6 +989,7 @@ $menu->renderHTML();
 									</select> </div></td>
     			<td><span class=""><i>Preenchido automaticamente</i></span></td>
     			<td class=""><span class="glyphicon glyphicon-user"></span> <?= Utils::firstAndLastName(Authenticator::getUserFullName()); ?></td>
+                <td><i></i></td>
     			<td><div class="input-group input-group-sm"> <select class="" name="transita" required>
     									<option value="transita" selected></option>
     									<option value="transita">Transitou</option>
