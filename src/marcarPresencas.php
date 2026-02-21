@@ -225,28 +225,17 @@ $menu->renderHTML();
                     $allCatechumens = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma);
                     
                     $changedCatechumens = 0;
-                    foreach($allCatechumens as $cat) {
+                    foreach($allCatechumens as $cat)
+                    {
                         $cid = intval($cat['cid']);
                         $isPresent = in_array($cid, $presencas_marcadas) ? 1 : 0;
-                        
-                        // Check if there is an actual change in presence before logging
-                        $isCurrentlyPresent = false;
-                        if($attendees) {
-                            foreach($attendees as $a) {
-                                if(intval($a['cid']) == $cid) {
-                                    $isCurrentlyPresent = true;
-                                    break;
-                                }
-                            }
-                        }
 
-                        if($isPresent != ($isCurrentlyPresent ? 1 : 0)) {
-                            $db->setCatechumenAttendance($data_sql, $catecismo, $turma, $ano_lectivo, $cid, $isPresent, Authenticator::getUsername());
-                            
-                            $log_string = "Presença do catequizando " . Utils::sanitizeOutput($cat['nome']) . " (cid=" . $cid . ") alterada para " . ($isPresent ? "Presente" : "Falta") . " na sessão de " . $data_sessao . ".";
-                            catechumenArchiveLog($cid, $log_string);
-                            $changedCatechumens++;
-                        }
+                        $db->setCatechumenAttendance($data_sql, $catecismo, $turma, $ano_lectivo, $cid, $isPresent, Authenticator::getUsername());
+
+                        $log_string = "Catequizando " . Utils::sanitizeOutput($cat['nome']) . " (cid=" . $cid . ") marcado como " . ($isPresent ? "Presente" : "Ausente") . " na sessão de " . $data_sessao . ".";
+                        catechumenArchiveLog($cid, $log_string);
+
+                        $changedCatechumens++;
                     }
 
                     if($changedCatechumens > 0) {
