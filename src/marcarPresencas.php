@@ -342,6 +342,16 @@ $menu->renderHTML();
         </form>
     </div>
 
+
+    <form id="form_imprime_presencas" action="folhasPresencas.php" method="post" target="_blank">
+        <input type="hidden" name="ano_catequetico" value="<?= $ano_lectivo ?>">
+        <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
+        <input type="hidden" name="turma" value="<?= $turma ?>">
+        <button type="button" onclick="mostrar_folha_presencas()" class="btn btn-default no-print"><span class="fas fa-calendar-check"></span> Ver folha de presenças</button>
+        <div style="margin-bottom: 40px"></div>
+    </form>
+
+
     <form role="form" action="marcarPresencas.php" method="post" id="form_presencas">
         <input type="hidden" name="op" value="guardar">
         <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
@@ -500,6 +510,13 @@ $confirmDeleteDialog->renderHTML();
     function eliminarSessao() {
         document.getElementById('op_eliminar').value = 'eliminar';
         document.getElementById('form_presencas').submit();
+    }
+</script>
+
+<script>
+    function mostrar_folha_presencas()
+    {
+        document.getElementById("form_imprime_presencas").submit();
     }
 </script>
 

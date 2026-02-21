@@ -220,7 +220,7 @@ $menu->renderHTML();
                 <div class="clearfix"></div>
             </div>
 
-            <form id="form_imprime_presencas<?= $contador ?>" action="folhasPresencas.php" method="post">
+            <form id="form_imprime_presencas<?= $contador ?>" action="folhasPresencas.php" method="post" target="_blank">
                 <input type="hidden" name="ano_catequetico" value="<?= $row['ano_lectivo'] ?>">
                 <input type="hidden" name="catecismo" value="<?= $row['ano_catecismo'] ?>">
                 <input type="hidden" name="turma" value="<?= Utils::sanitizeOutput($row['turma']) ?>">
