@@ -45,19 +45,26 @@ class QuickAccessWidget extends Widget
 
         <!-- Catechumens issues summary widget -->
         <div id="<?=$this->getID()?>" class="my_groups_widget<?= $this->getCustomClassesString()?>" style="<?=$this->getCustomInlineStyle()?>">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-9">
                 <div class="panel panel-default" id="<?=$this->getID()?>_quick_access_panel">
                     <div class="panel-heading text-center">Acessos rápidos</div>
                     <div class="panel-body">
                         <div class="col-sm-12" style="display: flex; justify-content: center;">
                             <div class="center-block">
-                                <a class="btn btn-default" href="meusCatequizandos.php" role="button">
+                                <a class="btn btn-default" href="meusCatequizandos.php" role="button"">
                                     <div class="text-center" style="font-size: xx-large; height: 95px;">
                                         <div style="margin-bottom: 55px"></div>
                                         <i class="fas fa-users"></i>
                                     </div>
                                     Os meus catequizandos
+                                </a>
+                                <a class="btn btn-default" href="marcarPresencas.php" role="button">
+                                    <div class="text-center" style="font-size: xx-large; height: 95px; width: 150px;">
+                                        <div style="margin-bottom: 55px"></div>
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                    Marcar presenças
                                 </a>
                                 <a class="btn btn-default" href="criarCatequeseVirtual.php" role="button">
                                     <img src="img/Catequese_Virtual.svg" class="img-responsive" style="height: 150px">
@@ -80,7 +87,7 @@ class QuickAccessWidget extends Widget
                     <div class="clearfix"></div>
                 </div>
             </div>
-            <div class="col-sm-2"></div>
+            <div class="col-sm-1"></div>
         </div>
 
         <?php
