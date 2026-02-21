@@ -16,51 +16,73 @@ use catechesis\Utils;
 
 
 /**
+ * Computes the attendance percentage of a catechumen in a given catechetical year and group.
+ * Percentage is (sessions attended / total sessions of their group in the year) * 100.
+ * Returns 100.0 if there are no sessions, and 0.0 if the catechumen is not enrolled or an error occurs.
+ * @param int $cid
+ * @param int $catecheticalYear
+ * @param int|null $catechism If null, it will be looked up in the database.
+ * @param string|null $group If null, it will be looked up in the database.
+ * @return array ['percentage' => float, 'attended' => int, 'total' => int]
+ */
+function getCatechumenAttendanceStats(int $cid, int $catecheticalYear, int $catechism = null, string $group = null)
+{
+    try
+    {
+        $db = new PdoDatabaseManager();
+
+        if ($catechism === null || $group === null) {
+            $groupInfo = $db->getCatechumenCurrentCatechesisGroup($cid, $catecheticalYear);
+            if (!$groupInfo) {
+                return ['percentage' => 0.0, 'attended' => 0, 'total' => 0];
+            }
+            $catechism = intval($groupInfo['ano_catecismo']);
+            $group = $groupInfo['turma'];
+        }
+
+        $attendance = $db->getCatechumenAttendanceForGroup($catecheticalYear, $catechism, $group, $cid);
+        $attended = 0;
+        $totalSessions = 0;
+        if(is_array($attendance))
+        {
+            foreach($attendance as $row)
+            {
+                if(isset($row['presenca']) && $row['presenca'] !== null)
+                {
+                    $totalSessions++;
+                    if(intval($row['presenca']) === 1)
+                        $attended++;
+                }
+            }
+        }
+
+        if($totalSessions == 0)
+            return ['percentage' => 100.0, 'attended' => 0, 'total' => 0];
+
+        return [
+            'percentage' => round(($attended / $totalSessions) * 100.0, 1),
+            'attended' => $attended,
+            'total' => $totalSessions
+        ];
+    }
+    catch (Exception $e)
+    {
+        return ['percentage' => 0.0, 'attended' => 0, 'total' => 0];
+    }
+}
+
+
+/**
  * Computes the attendance percentage of a catechumen in the current catechetical year.
  * Percentage is (sessions attended / total sessions of their group in the current year) * 100.
  * Returns 0 if the catechumen is not enrolled or there are no sessions.
  * @param int $cid
  * @return float
  */
-function getCurrentYearAttendancePercentage(int $cid)
+function getCurrentYearCatechumenAttendancePercentage(int $cid)
 {
-    try
-    {
-        if(!class_exists('\\catechesis\\PdoDatabaseManager'))
-            require_once(__DIR__ . '/PdoDatabaseManager.php');
-
-        $db = new PdoDatabaseManager();
-        $currentYear = intval(self::currentCatecheticalYear());
-
-        $groupInfo = $db->getCatechumenCurrentCatechesisGroup($cid, $currentYear);
-        if(!$groupInfo)
-            return 0.0;
-
-        $catechism = intval($groupInfo['ano_catecismo']);
-        $group = $groupInfo['turma'];
-
-        $sessions = $db->getCatechesisSessions($currentYear, $catechism, $group);
-        $totalSessions = is_array($sessions) ? count($sessions) : 0;
-        if($totalSessions == 0)
-            return 100.0;
-
-        $attendance = $db->getCatechumenAttendanceForGroup($currentYear, $catechism, $group, $cid);
-        $attended = 0;
-        if(is_array($attendance))
-        {
-            foreach($attendance as $row)
-            {
-                if(isset($row['presenca']) && intval($row['presenca']) === 1)
-                    $attended++;
-            }
-        }
-
-        return round(($attended / $totalSessions) * 100.0, 2);
-    }
-    catch (Exception $e)
-    {
-        return 0.0;
-    }
+    $stats = getCatechumenAttendanceStats($cid, intval(Utils::currentCatecheticalYear()));
+    return $stats['percentage'];
 }
 
 ?>

@@ -10,6 +10,7 @@ require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . "/gui/widgets/configuration_panels/CatechumensEvaluationActivationPanel/CatechumensEvaluationActivationPanelWidget.php");
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Configurator.php');
+require_once(__DIR__ . '/core/statistics.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 
 use catechesis\Authenticator;
@@ -58,6 +59,21 @@ $pageUI->addWidget($evaluationPeriodPanel);
         body {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+        }
+
+        .progress {
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar {
+            background-color: #337ab7 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar-danger {
+            background-color: #d9534f !important;
+            -webkit-print-color-adjust: exact;
         }
 	    
 	    
@@ -369,6 +385,7 @@ if(Authenticator::isAdmin())
 							Aproveitamento</th>
 								<th>Nome</th>
 				    			<th>Data nascimento</th>
+								<th>Presenças</th>
 				    		</tr>
 				    	  </thead>
 				    	  <tfoot class="only-print">
@@ -379,12 +396,16 @@ if(Authenticator::isAdmin())
 				    	  <tbody data-link="row" class="rowlink">
 
                 <?php
-
                     foreach($result2 as $row2)
                     {
                         $foto = Utils::sanitizeOutput($row2['foto']);
                         $passa = intval($row2['passa']);
                         $cid = intval($row2['cid']);
+
+                        $stats = getCatechumenAttendanceStats($cid, $row['ano_lectivo'], $row['ano_catecismo'], $row['turma']);
+                        $percentage = $stats['percentage'];
+                        $attended = $stats['attended'];
+                        $totalSessions = $stats['total'];
 
                         echo("<tr class='"); if($passa==-1) echo("danger"); else echo("success"); echo("'>\n");
                             if($periodo_activo)
@@ -401,7 +422,18 @@ if(Authenticator::isAdmin())
                                         echo("img/default-user-icon-profile.png");
                                 echo("' style='height:133px; widht:100px;'>\"");
                                 echo("><a href=\"mostrarFicha.php?cid=" . $row2['cid'] . "\" target=\"_blank\"></a>" . Utils::sanitizeOutput($row2['nome']) . "</td>\n");
+                            
                             echo("\t<td>" . date( "d-m-Y", strtotime($row2['data_nasc'])) . "</td>\n");
+
+                            echo("\t<td style=\"width: 20%; min-width: 150px; vertical-align: middle;\">\n");
+                            $progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
+                            echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
+                            echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
+                            echo("\t\t\t</div>\n");
+                            echo("\t\t</div>\n");
+                            echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
+                            echo("\t</td>\n");
+
                         echo("</tr>\n");
                     }
                     ?>
