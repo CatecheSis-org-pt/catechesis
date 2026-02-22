@@ -305,6 +305,10 @@ $menu->renderHTML();
                 try {
                     $db->deleteCatechesisSession($data_sql, $catecismo, $turma, $currentCatecheticalYear);
                     writeLogEntry("Sessão de catequese de " . $data_sessao . " eliminada para o " . $catecismo . "º" . $turma . ".");
+                    
+                    // Refresh attendees list after deletion
+                    $attendees = array();
+                    
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Sessão de catequese eliminada com sucesso.</div>");
                 } catch (Exception $e) {
                     echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
