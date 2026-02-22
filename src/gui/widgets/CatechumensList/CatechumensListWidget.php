@@ -25,11 +25,18 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     private /*PDO result array*/ $catechumens_list;         // Stores the list of catechumens to show in the list widget
     private /*string*/ $entities_name = "resultado";        // Name to use in the results header to refer to the entities in the list (e.g. "results" or "catechumens")
     private /*bool*/ $is_selector = false;                  // Whether the widget works as a simple list or as a selector (with selectable 3D cards)
+    private /*string*/ $selector_column_name = "Selecionar";  // Name for the column that holds the switch buttons
+    private /*string*/ $selector_on_text = "&nbsp;&nbsp;&nbsp;&nbsp;";      // String displayed in the "on" state of the switch
+    private /*string*/ $selector_off_text = "&nbsp;&nbsp;&nbsp;&nbsp;";        // String displayed in the "off" state of the switch
 
     public function __construct(string $id = null)
     {
         parent::__construct($id);
         // This widget's dependencies are inherited from AbstractCatechumensListingWidget
+
+        // Additional dependencies for the selector mode (switches)
+        $this->addCSSDependency('css/bootstrap-switch.css');
+        $this->addJSDependency('js/bootstrap-switch.js');
 
         // Static CSS styles of this widget that are common to all instances (only imported once)
         $this->addCSSDependency('gui/widgets/CatechumensList/CatechumensListWidget.css');
@@ -41,9 +48,37 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
      * @param bool $isSelector
      * @return $this
      */
-    public function setIsSelector(bool $isSelector)
+    public function setupSelector(string $categoryName, string $positiveClass, string $negativeClass)
     {
-        $this->is_selector = $isSelector;
+        $this->is_selector = true;
+        $this->setSelectorColumnName($categoryName);
+        $this->setSelectorSwitchTexts($positiveClass, $negativeClass);
+        return $this;
+    }
+
+
+    /**
+     * Sets the name for the column that holds the switch buttons when is_selector is true.
+     * @param string $name
+     * @return $this
+     */
+    public function setSelectorColumnName(string $name)
+    {
+        $this->selector_column_name = $name;
+        return $this;
+    }
+
+
+    /**
+     * Sets the strings displayed in the "on" and "off" states of the switch when is_selector is true.
+     * @param string $onText
+     * @param string $offText
+     * @return $this
+     */
+    public function setSelectorSwitchTexts(string $onText, string $offText)
+    {
+        $this->selector_on_text = $onText;
+        $this->selector_off_text = $offText;
         return $this;
     }
 
@@ -130,6 +165,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 foreach($this->catechumens_list as $row)
                 {
                     $foto = Utils::sanitizeOutput($row['foto']);
+                    $cid = intval($row['cid']);
 
                     if($cardCounter % 4 == 0)
                     {
@@ -144,7 +180,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 ?>
 
                 <div class="col-sm-3">
-                    <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $row['cid'] . '\');') ?>" >
+                    <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?>" data-cid="<?= $cid ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $cid . '\');') ?>" >
                         <div class="catechumen-card-inner">
                             <div class="catechumen-card-front">
                                 <img src="<?php
@@ -241,6 +277,21 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 <div class="only-print" style="margin-top: -150px; position:relative; z-index:1;"></div>
                 <table class="table table-hover" id="<?=$this->getID()?>_resultados">
                     <thead>
+                    <?php if($this->is_selector && count($this->catechumens_list) >= 1): ?>
+                    <tr class="no-print">
+                        <th style="background-color: transparent;">
+                            <input type="checkbox" id="<?=$this->getID()?>_checkbox_geral" class="selector-switch-geral">
+                            <span style="margin-left: 10px; vertical-align: middle;">Todos</span>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                            <th></th>
+                        <?php } ?>
+                    </tr>
+                    <?php endif; ?>
                     <tr>
                         <th style="background-color: transparent;">
                             <div class="only-print" style="opacity:0.0;">
@@ -248,7 +299,15 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                                 <h3>Pesquisa de catequizandos</h3>
                                 <div class="row" style="margin-bottom:50px; "></div>
                             </div>
-                            Nome</th>
+                            <?php if($this->is_selector): ?>
+                                <?= $this->selector_column_name ?>
+                            <?php else: ?>
+                                Nome
+                            <?php endif; ?>
+                        </th>
+                        <?php if($this->is_selector): ?>
+                            <th>Nome</th>
+                        <?php endif; ?>
                         <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
                         <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
                                 <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0">NIF</th>
@@ -260,13 +319,14 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     </thead>
                     <tfoot class="only-print">
                     <tr>
-                        <td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                        <td colspan="<?= ($this->is_selector ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 6 : 5) : (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 5 : 4)) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
                     </tr>
                     </tfoot>
                     <tbody data-link="row" class="rowlink">
                     <?php
                     foreach($this->catechumens_list as $row)
                     {
+                        $cid = intval($row['cid']);
                         $foto = Utils::sanitizeOutput($row['foto']);
                         $paroquia_batismo = Utils::sanitizeOutput($row['paroquia_batismo']);
                         $comprovativo_batismo = Utils::sanitizeOutput($row['comprovativo_batismo']);
@@ -284,15 +344,25 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
 
                         ?>
-                        <tr>
+                        <tr id="<?=$this->getID()?>_row_<?=$cid?>" data-cid="<?=$cid?>">
                             <td data-container="body" data-toggle="popover" data-placement="top" data-content="<img src='<?php
                         if($foto && $foto!="")
                             echo("resources/catechumenPhoto.php?foto_name=$foto");
                         else
                             echo("img/default-user-icon-profile.png");
                         ?>' style='height:133px;'>">
-                                <a href="mostrarFicha.php?cid=<?=$row['cid']?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
+                                <?php if($this->is_selector): ?>
+                                    <input type="checkbox" class="selector-switch" name="presenca[]" value="<?= $cid ?>">
+                                <?php else: ?>
+                                    <a href="mostrarFicha.php?cid=<?=$cid?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
+                                <?php endif; ?>
                             </td>
+
+                        <?php if($this->is_selector): ?>
+                            <td>
+                                <a href="mostrarFicha.php?cid=<?=$cid?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
+                            </td>
+                        <?php endif; ?>
 
                         <?php
                         // Atributos
@@ -420,7 +490,28 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             function toggle_catechumen_selection(element)
             {
                 $(element).toggleClass('selected');
+                <?php if($this->is_selector): ?>
+                // Synchronize with list view switch
+                var cid = $(element).data('cid');
+                var state = $(element).hasClass('selected');
+                var switchElement = $('#<?=$this->getID()?>_row_' + cid + ' .selector-switch');
+                if (switchElement.bootstrapSwitch('state') !== state) {
+                    switchElement.bootstrapSwitch('state', state, true);
+                    update_row_class(cid, state);
+                }
+                <?php endif; ?>
             }
+
+            <?php if($this->is_selector): ?>
+            function update_row_class(cid, state) {
+                var row = $('#<?=$this->getID()?>_row_' + cid);
+                if (state) {
+                    row.removeClass('danger').addClass('success');
+                } else {
+                    row.removeClass('success').addClass('danger');
+                }
+            }
+            <?php endif; ?>
 
             // Initialize variables defined in the common JS code for this widget instance
             set_attributes_visibility('<?=$this->getID();?>', false);
@@ -435,11 +526,20 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     },
                     "aaSorting": [], //Do not sort anything at start, to keep the provided order (only when the user clicks on a column),
                     "columnDefs": [
+                        <?php if($this->is_selector): ?>
+                        { "width": "10%", "targets": 0 },
+                        { "width": "25%", "targets": 1 },
+                        { "width": "35%", "targets": 2 },
+                        { "width": "10%", "targets": 3 },
+                        { "width": "10%", "targets": 4 },
+                        { "width": "10%", "targets": 5 }
+                        <?php else: ?>
                         { "width": "30%", "targets": 0 },
                         { "width": "40%", "targets": 1 },
                         { "width": "10%", "targets": 2 },
                         { "width": "10%", "targets": 3 },
                         { "width": "10%", "targets": 4 }
+                        <?php endif; ?>
                     ]
                 });
 
@@ -450,6 +550,50 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 window.addEventListener('resize', function(){
                     redraw_datatable('#<?=$this->getID()?>_resultados', table_<?= $this->getID(); ?>);
                 });
+
+                <?php if($this->is_selector): ?>
+                // Initialize bootstrap-switch for the selector switches
+                $("#<?=$this->getID()?> .selector-switch").bootstrapSwitch({
+                    size: 'mini',
+                    onText: '<?= $this->selector_on_text ?>',
+                    offText: '<?= $this->selector_off_text ?>',
+                    onColor: 'success',
+                    offColor: 'danger'
+                });
+
+                $("#<?=$this->getID()?> .selector-switch-geral").bootstrapSwitch({
+                    size: 'mini',
+                    onText: '<?= $this->selector_on_text ?>',
+                    offText: '<?= $this->selector_off_text ?>',
+                    onColor: 'success',
+                    offColor: 'danger'
+                });
+
+                // Handle switch change events (synchronize with Grid view)
+                $('#<?=$this->getID()?> .selector-switch').on('switchChange.bootstrapSwitch', function(event, state) {
+                    var cid = $(this).closest('tr').data('cid');
+                    update_row_class(cid, state);
+                    
+                    // Synchronize with Grid view card
+                    var card = $('#<?=$this->getID()?> .catechumen-card[data-cid="' + cid + '"]');
+                    if (state) {
+                        card.addClass('selected');
+                    } else {
+                        card.removeClass('selected');
+                    }
+                });
+
+                // Handle global switch change
+                $('#<?=$this->getID()?> .selector-switch-geral').on('switchChange.bootstrapSwitch', function(event, state) {
+                    $('#<?=$this->getID()?> .selector-switch').bootstrapSwitch('state', state);
+                });
+
+                // Initialize initial row colors
+                $('#<?=$this->getID()?> .selector-switch').each(function() {
+                    var cid = $(this).closest('tr').data('cid');
+                    update_row_class(cid, $(this).bootstrapSwitch('state'));
+                });
+                <?php endif; ?>
             } );
 
             $('#<?=$this->getID()?>_tabList').parent().tooltip();
