@@ -931,7 +931,7 @@ $menu->renderHTML();
     		
     		<tr class="active no-print">
     			
-    			<td><div class="input-group input-group-sm"><select class="" name="ano_catequetico" required>
+    			<td><div class="input-group input-group-sm"><select class="form-control" name="ano_catequetico" required>
     									<option disabled selected></option>
     				<?php
 					
@@ -961,7 +961,7 @@ $menu->renderHTML();
 					$result = null;  				
     				?>
 									</select> </div></td>
-    			<td><div class="input-group input-group-sm"> <select class="" name="catecismo" required>
+    			<td><div class="input-group input-group-sm"> <select class="form-control" name="catecismo" required>
     									<option disabled selected></option>
     				<?php
 
@@ -990,7 +990,7 @@ $menu->renderHTML();
     			<td><span class=""><i>Preenchido automaticamente</i></span></td>
     			<td class=""><span class="glyphicon glyphicon-user"></span> <?= Utils::firstAndLastName(Authenticator::getUserFullName()); ?></td>
                 <td><i></i></td>
-    			<td><div class="input-group input-group-sm"> <select class="" name="transita" required>
+    			<td><div class="input-group input-group-sm"> <select class="form-control" name="transita" required>
     									<option value="transita" selected></option>
     									<option value="transita">Transitou</option>
     									<option value="reprovado">Reprovou</option></div></td>

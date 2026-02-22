@@ -269,7 +269,6 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-2">
       <label for="catecismo">Catecismo:</label>
-        <div class="input-group catecismo">
         <select class="form-control" id="catecismo" name="catecismo" onchange="muda_catecismo()">
             <?php
 
@@ -298,11 +297,9 @@ $menu->renderHTML();
             <!--<option value="1" <?php if($catecismo==1) echo("selected");?>>Infância</option>
             <option value="7" <?php if($catecismo==7) echo("selected");?>>Adolescência</option>-->
         </select>
-        </div>
     </div>
     <div class="col-xs-2">
         <label for="turma">Grupo:</label>
-        <div class="input-group turma">
             <select class="form-control" id="turma" name="turma" onchange="this.form.submit()">
                 <?php
 
@@ -333,7 +330,6 @@ $menu->renderHTML();
                 ?>
                 <option value="_" <?php if($turma=="_") echo("selected");?>>Todas</option>
             </select>
-        </div>
     </div>
    </div>
     
