@@ -203,12 +203,7 @@ $menu->renderHTML();
             $turma = 'A';
     }
 
-    // Check permissions
-    if (!Authenticator::isAdmin() && !group_belongs_to_catechist($ano_lectivo, $catecismo, $turma, Authenticator::getUsername())) {
-        echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder ao grupo selecionado.</div>");
-        echo("</div></body></html>");
-        die();
-    }
+    $has_permission = Authenticator::isAdmin() || group_belongs_to_catechist($ano_lectivo, $catecismo, $turma, Authenticator::getUsername());
 
 	//Verificar se o periodo de avaliacao esta activo
     $periodo_activo = false;
@@ -221,10 +216,8 @@ $menu->renderHTML();
         echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
     }
 
-
-
     //Guardar alteracoes
-    if(isset($_REQUEST['op']) && $_REQUEST['op']=="guardar" && $periodo_activo)
+    if(isset($_REQUEST['op']) && $_REQUEST['op']=="guardar" && $periodo_activo && $has_permission)
     {
         $catequizandos_passam = isset($_POST['catequizando']) ? $_POST['catequizando'] : array();	//Lista de cid de catequizandos que passam
 
@@ -339,10 +332,16 @@ $menu->renderHTML();
                     </select>
                 </div>
             </div>
+            <div class="clearfix"></div>
         </form>
     </div>
-
 </div>
+
+  <?php
+    if (!$has_permission) {
+        echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder ao grupo selecionado.</div>");
+    }
+  ?>
 
   <div class="row" style="margin-top:0px; "></div>
   
@@ -354,8 +353,9 @@ $menu->renderHTML();
         <input type="hidden" name="turma" value="<?= $turma ?>">
   <?php
 
-    try
-    {
+    if ($has_permission) {
+        try
+        {
 
         //Listagem dos catequizandos
         $result2 = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma, true);
@@ -487,6 +487,11 @@ $menu->renderHTML();
 
 	//Libertar recursos
 	$result2 = null;
+    }
+    else
+    {
+        $periodo_activo = false;
+    }
 ?>
 
       </form>
@@ -495,8 +500,10 @@ $menu->renderHTML();
 
       <div class="no-print">
           <div class="btn-group" role="group" aria-label="...">
+              <?php if ($has_permission): ?>
               <button type="button" class="btn btn-primary" onclick="document.getElementById('form_aproveitamento').submit();" <?php if(!$periodo_activo) echo("disabled"); ?>><span class="glyphicon glyphicon-floppy-disk"></span> Guardar</button>
               <button type="button" class="btn btn-default" onclick="window.print()"><span class="glyphicon glyphicon-print"></span> Imprimir</button>
+              <?php endif; ?>
           </div>
       </div>
 
