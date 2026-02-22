@@ -704,6 +704,8 @@ $(function(){
        daysOfWeekHighlighted: "6",*/
        todayHighlight: true,
        autoclose: true,
+       orientation: "bottom auto",
+       container: '#data_sessao_group .input-group.date',
        beforeShowDay: function(date) {
            dateFormat = ("0" + date.getDate()).slice(-2) + '-' + ("0" + (date.getMonth()+1)).slice(-2) + '-' + date.getFullYear(); //We have to sum 1 to the month to make it right xD
            if (highlighted_dates.indexOf(dateFormat) >= 0) {

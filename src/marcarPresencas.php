@@ -535,6 +535,8 @@ $confirmDeleteDialog->renderHTML();
             language: "pt",
             autoclose: true,
             todayHighlight: true,
+            orientation: "bottom auto",
+            container: '#data_sessao_div',
             startDate: "<?= $startDateRange ?>",
             endDate: "<?= $endDateRange ?>",
             beforeShowDay: function(date) {

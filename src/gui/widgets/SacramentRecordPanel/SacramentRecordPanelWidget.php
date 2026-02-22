@@ -252,7 +252,9 @@ class SacramentRecordPanelWidget extends AbstractSettingsPanelWidget
             defaultViewDate: { year: <?= date("Y") ?>, month: 1, day: 1 },
             startView: 2,
             language: "pt",
-            autoclose: true
+            autoclose: true,
+            orientation: "bottom auto",
+            container: '#<?= $this->getID() ?>_sacrament_date_div'
         });
 
         $('#<?= $this->getID() ?>_sacrament_date_input').datepicker().on('show', function(ev){ });

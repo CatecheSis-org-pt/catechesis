@@ -254,7 +254,9 @@ $(function(){
        defaultViewDate: { year: 2010, month: 1, day: 1 },
        startView: 2,
        language: "pt",
-       autoclose: true
+       autoclose: true,
+       orientation: "bottom auto",
+       container: '#data_nasc_div'
     });
 });
 </script>
