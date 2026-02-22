@@ -140,7 +140,13 @@ $menu->renderHTML();
         $data_sessao = $_POST['data_sessao'];
     }
 
-    $catechistGroups = $db->getCatechistGroups(Authenticator::getUsername(), Utils::currentCatecheticalYear());
+    if(isset($_POST['ano_catequetico']))
+    {
+        $ano_catequetico_forced = intval($_POST['ano_catequetico']);
+    }
+
+    $currentCatecheticalYear = isset($ano_catequetico_forced) ? $ano_catequetico_forced : Utils::currentCatecheticalYear();
+    $catechistGroups = $db->getCatechistGroups(Authenticator::getUsername(), $currentCatecheticalYear);
 
     // Set defaults if not provided
     if(!isset($catecismo) || !($catecismo >= 1 && $catecismo <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))))
@@ -159,19 +165,33 @@ $menu->renderHTML();
     }
     if(!$data_sessao || !DataValidationUtils::validateDate($data_sessao))
     {
-        $currentCatecheticalYear = Utils::currentCatecheticalYear();
+        $currentCatecheticalYear = isset($ano_catequetico_forced) ? $ano_catequetico_forced : Utils::currentCatecheticalYear();
         $effectiveWeekDay = Utils::getEffectiveWeekDay($currentCatecheticalYear, $catecismo, $turma);
         $todayWeekDay = intval(date('w')); // 0 (Sunday) to 6 (Saturday)
 
-        if($todayWeekDay == $effectiveWeekDay)
+        if($todayWeekDay == $effectiveWeekDay && (!isset($ano_catequetico_forced) || $ano_catequetico_forced == Utils::currentCatecheticalYear()))
             $data_sessao = date('d-m-Y');
         else
         {
-            // Find the last date that was coincident with the week day in which that group usually has lessons
-            $daysToSubtract = ($todayWeekDay - $effectiveWeekDay + 7) % 7;
-            if ($daysToSubtract == 0) $daysToSubtract = 7;
-            
-            $data_sessao = date('d-m-Y', strtotime("-$daysToSubtract days"));
+            if (isset($ano_catequetico_forced) && $ano_catequetico_forced != Utils::currentCatecheticalYear())
+            {
+                // If a past year was forced, we should pick a date in that year.
+                // Let's pick the last day of that catechetical year that matches the week day.
+                $yearEnd = Utils::getCatecheticalYearEnd($ano_catequetico_forced);
+                $referenceDate = "31-08-$yearEnd"; // Usually catechetical year ends in August
+                $referenceWeekDay = intval(date('w', strtotime($referenceDate)));
+
+                $daysToSubtract = ($referenceWeekDay - $effectiveWeekDay + 7) % 7;
+                $data_sessao = date('d-m-Y', strtotime("$referenceDate -$daysToSubtract days"));
+            }
+            else
+            {
+                // Find the last date that was coincident with the week day in which that group usually has lessons
+                $daysToSubtract = ($todayWeekDay - $effectiveWeekDay + 7) % 7;
+                if ($daysToSubtract == 0) $daysToSubtract = 7;
+
+                $data_sessao = date('d-m-Y', strtotime("-$daysToSubtract days"));
+            }
         }
     }
     // Prevent future dates server-side as well
@@ -180,11 +200,10 @@ $menu->renderHTML();
         $data_sessao = $today_pt;
     }
 
-    $ano_lectivo = Utils::computeCatecheticalYear(date("d-m-Y", strtotime($data_sessao)));
     $data_sql = date("Y-m-d", strtotime($data_sessao));
 
     // Check permissions
-    if (!Authenticator::isAdmin() && !group_belongs_to_catechist($ano_lectivo, $catecismo, $turma, Authenticator::getUsername())) {
+    if (!Authenticator::isAdmin() && !group_belongs_to_catechist($currentCatecheticalYear, $catecismo, $turma, Authenticator::getUsername())) {
         echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder ao grupo selecionado.</div>");
         echo("</div></body></html>");
         die();
@@ -192,10 +211,10 @@ $menu->renderHTML();
 
     // Load catechumens and their attendance for the selected session
     try {
-        $catechumens = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma);
+        $catechumens = $db->getCatechumensByCatechismWithFilters($currentCatecheticalYear, $currentCatecheticalYear, $catecismo, $turma);
         
         // Fetch current attendance for this session (needed for comparison during save and for the table display)
-        $attendees = $db->getLessonAttendees($data_sql, $catecismo, $turma, $ano_lectivo);
+        $attendees = $db->getLessonAttendees($data_sql, $catecismo, $turma, $currentCatecheticalYear);
 
         // Handle saving attendance
         if(isset($_POST['op']) && $_POST['op'] == "guardar")
@@ -208,7 +227,7 @@ $menu->renderHTML();
             } else {
                 try {
                     // Ensure session exists (create only on save)
-                    $sessions = $db->getCatechesisSessions($ano_lectivo, $catecismo, $turma);
+                    $sessions = $db->getCatechesisSessions($currentCatecheticalYear, $catecismo, $turma);
                     $sessionExists = false;
                     foreach($sessions as $s) {
                         if($s['data'] == $data_sql) {
@@ -217,12 +236,12 @@ $menu->renderHTML();
                         }
                     }
                     if(!$sessionExists) {
-                        $db->createCatechesisSession($data_sql, $catecismo, $turma, $ano_lectivo);
+                        $db->createCatechesisSession($data_sql, $catecismo, $turma, $currentCatecheticalYear);
                         writeLogEntry("Sessão de catequese criada para o " . $catecismo . "º" . $turma . " em " . $data_sessao . ".");
                     }
 
                     // Get all catechumens in this group to mark those not in $presencas_marcadas as absent
-                    $allCatechumens = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma);
+                    $allCatechumens = $db->getCatechumensByCatechismWithFilters($currentCatecheticalYear, $currentCatecheticalYear, $catecismo, $turma);
                     
                     $changedCatechumens = 0;
                     foreach($allCatechumens as $cat)
@@ -230,7 +249,7 @@ $menu->renderHTML();
                         $cid = intval($cat['cid']);
                         $isPresent = in_array($cid, $presencas_marcadas) ? 1 : 0;
 
-                        $db->setCatechumenAttendance($data_sql, $catecismo, $turma, $ano_lectivo, $cid, $isPresent, Authenticator::getUsername());
+                        $db->setCatechumenAttendance($data_sql, $catecismo, $turma, $currentCatecheticalYear, $cid, $isPresent, Authenticator::getUsername());
 
                         $log_string = "Catequizando " . Utils::sanitizeOutput($cat['nome']) . " (cid=" . $cid . ") marcado como " . ($isPresent ? "Presente" : "Ausente") . " na sessão de " . $data_sessao . ".";
                         catechumenArchiveLog($cid, $log_string);
@@ -243,7 +262,7 @@ $menu->renderHTML();
                     }
 
                     // Refresh attendees list after update
-                    $attendees = $db->getLessonAttendees($data_sql, $catecismo, $turma, $ano_lectivo);
+                    $attendees = $db->getLessonAttendees($data_sql, $catecismo, $turma, $currentCatecheticalYear);
 
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Presenças atualizadas com sucesso.</div>");
                 } catch (Exception $e) {
@@ -256,7 +275,7 @@ $menu->renderHTML();
         if(isset($_POST['op']) && $_POST['op'] == "eliminar")
         {
             try {
-                $db->deleteCatechesisSession($data_sql, $catecismo, $turma, $ano_lectivo);
+                $db->deleteCatechesisSession($data_sql, $catecismo, $turma, $currentCatecheticalYear);
                 writeLogEntry("Sessão de catequese de " . $data_sessao . " eliminada para o " . $catecismo . "º" . $turma . ".");
                 echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Sessão de catequese eliminada com sucesso.</div>");
             } catch (Exception $e) {
@@ -272,7 +291,7 @@ $menu->renderHTML();
         }
 
         // Fetch all sessions to highlight in calendar
-        $sessions = $db->getCatechesisSessions($ano_lectivo, $catecismo, $turma);
+        $sessions = $db->getCatechesisSessions($currentCatecheticalYear, $catecismo, $turma);
         $sessionDates = array();
         $currentSessionExists = false;
         if($sessions) {
@@ -288,7 +307,7 @@ $menu->renderHTML();
         $catechumens = array();
     }
 
-    $effectiveWeekDay = Utils::getEffectiveWeekDay($ano_lectivo, $catecismo, $turma);
+    $effectiveWeekDay = Utils::getEffectiveWeekDay($currentCatecheticalYear, $catecismo, $turma);
 
     ?>
 
@@ -297,12 +316,28 @@ $menu->renderHTML();
     <div class="well well-lg" style="position:relative; z-index:2;">
         <form role="form" action="marcarPresencas.php" method="post" id="form_filtros">
             <div class="row">
+                <!--ano_catequetico-->
+                <div class="form-group col-xs-4 col-sm-2">
+                    <label for="ano_catequetico">Ano catequético:</label>
+                    <select id="ano_catequetico" name="ano_catequetico" class="form-control" onchange="this.form.submit()">
+                        <?php
+                        $years = $db->getCatecheticalYears();
+                        if (isset($years)) {
+                            foreach($years as $row) {
+                                echo("<option value='" . intval($row['ano_lectivo']) . "'");
+                                if ($currentCatecheticalYear == $row['ano_lectivo']) echo(" selected");
+                                echo(">" . Utils::formatCatecheticalYear($row['ano_lectivo']) . "</option>\n");
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
                 <!--catecismo-->
                 <div class="form-group col-xs-4 col-sm-2">
                     <label for="catecismo">Catecismo:</label>
                     <select id="catecismo" name="catecismo" class="form-control" onchange="this.form.submit()">
                         <?php
-                        $catechisms = $db->getCatechisms(Utils::currentCatecheticalYear());
+                        $catechisms = $db->getCatechisms($currentCatecheticalYear);
                         if (isset($catechisms)) {
                             foreach($catechisms as $row) {
                                 echo("<option value='" . intval($row['ano_catecismo']) . "'");
@@ -318,7 +353,7 @@ $menu->renderHTML();
                     <label for="turma">Grupo:</label>
                     <select id="turma" name="turma" class="form-control" onchange="this.form.submit()">
                         <?php
-                        $groups = $db->getCatechismGroups($ano_lectivo, $catecismo);
+                        $groups = $db->getCatechismGroups($currentCatecheticalYear, $catecismo);
                         if (isset($groups)) {
                             foreach($groups as $row) {
                                 echo("<option value='" . Utils::sanitizeOutput($row['turma']) . "'");
@@ -344,7 +379,7 @@ $menu->renderHTML();
 
 
     <form id="form_imprime_presencas" action="folhasPresencas.php" method="post" target="_blank">
-        <input type="hidden" name="ano_catequetico" value="<?= $ano_lectivo ?>">
+        <input type="hidden" name="ano_catequetico" value="<?= $currentCatecheticalYear ?>">
         <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
         <input type="hidden" name="turma" value="<?= $turma ?>">
     </form>

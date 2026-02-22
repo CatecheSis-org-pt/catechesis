@@ -326,9 +326,12 @@ $menu->renderHTML();
 		
 		if($ano_catequetico > 1000000 && $catecismo > 0 && $catecismo <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) && $turma!="")
 		{
-			echo("<div class=\"col-xs-4\">\n");
-			echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>\n");
-			echo("</div>\n");
+			echo("<div class=\"col-xs-8\">\n");
+            echo("<div class=\"btn-group\" role=\"group\">\n");
+            echo("<button type=\"button\" onclick=\"marcar_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-check\"></span> Marcar presenças </button>\n");
+            echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>\n");
+            echo("</div>\n");
+            echo("</div>\n");
 		}
 		
 	}
@@ -454,6 +457,12 @@ $menu->renderHTML();
 				<input type="hidden" name="catecismo" value="<?php echo('' . $catecismo . '');?>" >
 				<input type="hidden" name="turma" value="<?php echo('' . $turma . '');?>" >
 			</form>
+			
+			<form id="form_marcar_presencas" action="marcarPresencas.php" method="post" target="_blank">
+				<input type="hidden" name="ano_catequetico" value="<?php echo('' . $ano_catequetico . '');?>" >
+				<input type="hidden" name="catecismo" value="<?php echo('' . $catecismo . '');?>" >
+				<input type="hidden" name="turma" value="<?php echo('' . $turma . '');?>" >
+			</form>
 		
 		
 		<?php
@@ -477,6 +486,8 @@ if($_POST['ano_catequetico'] && $_POST['catecismo'] && $_POST['turma'])
         echo("<script>\n");
         echo("function imprime_presencas(){\n");
         echo("\tdocument.getElementById(\"form_imprime_presencas\").submit();}\n");
+        echo("function marcar_presencas(){\n");
+        echo("\tdocument.getElementById(\"form_marcar_presencas\").submit();}\n");
         echo("</script>\n");
     }
 }
