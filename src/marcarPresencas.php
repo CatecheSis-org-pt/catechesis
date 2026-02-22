@@ -46,7 +46,7 @@ $pageUI->addWidget($confirmDeleteDialog);
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <title>Marcar Presenças</title>
+  <title>Marcar presenças</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <?php $pageUI->renderCSS(); ?>
@@ -292,7 +292,7 @@ $menu->renderHTML();
 
     ?>
 
-    <h2 class="no-print"> Marcar Presenças</h2>
+    <h2 class="no-print"> Marcar presenças</h2>
 
     <div class="well well-lg" style="position:relative; z-index:2;">
         <form role="form" action="marcarPresencas.php" method="post" id="form_filtros">
@@ -366,6 +366,12 @@ $menu->renderHTML();
         <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
         <input type="hidden" name="turma" value="<?= $turma ?>">
         <input type="hidden" name="data_sessao" value="<?= $data_sessao ?>">
+
+        <div class="row" style="margin-top:20px; "></div>
+        <div class="page-header" style="position:relative; z-index:2;">
+            <h1><small><span id="numero_resultados"></span> catequizandos</small></h1>
+        </div>
+        <div class="row" style="margin-top:20px; "></div>
 
         <div class="table-responsive">
             <table class="table table-hover">
@@ -522,6 +528,25 @@ $confirmDeleteDialog->renderHTML();
     {
         document.getElementById("form_imprime_presencas").submit();
     }
+</script>
+
+<script>
+    (function() {
+        var table = document.querySelector(".table-hover");
+        var span = document.getElementById("numero_resultados");
+        if (table && span) {
+            var rows = table.querySelectorAll("tbody tr");
+            var count = rows.length;
+            // Check for the "No catechumens" empty state row
+            if (count === 1) {
+                var firstCell = rows[0].querySelector("td");
+                if (firstCell && firstCell.getAttribute("colspan") === "3") {
+                    count = 0;
+                }
+            }
+            span.innerHTML = count;
+        }
+    })();
 </script>
 
 </body>

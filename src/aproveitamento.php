@@ -8,11 +8,14 @@ require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . "/gui/widgets/configuration_panels/CatechumensEvaluationActivationPanel/CatechumensEvaluationActivationPanelWidget.php");
+require_once(__DIR__ . '/core/catechist_belongings.php');
+require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Configurator.php');
 require_once(__DIR__ . '/core/statistics.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 
+use catechesis\DataValidationUtils;
 use catechesis\Authenticator;
 use catechesis\Configurator;
 use catechesis\PdoDatabaseManager;
@@ -30,8 +33,6 @@ $pageUI = new WidgetManager();
 // Instantiate the widgets used in this page and register them in the manager
 $menu = new MainNavbar(null, MENU_OPTION::CATECHESIS);
 $pageUI->addWidget($menu);
-$evaluationPeriodPanel = new CatechumensEvaluationActivationPanelWidget();
-$pageUI->addWidget($evaluationPeriodPanel);
 
 ?>
 <!DOCTYPE html>
@@ -140,14 +141,13 @@ $pageUI->addWidget($evaluationPeriodPanel);
 	
 		}
   </style>
+  <link rel="stylesheet" href="css/bootstrap-switch.css">
+  <link rel="stylesheet" href="font-awesome/fontawesome-free-5.15.1-web/css/all.min.css">
 </head>
 <body>
 
 <?php
 $menu->renderHTML();
-
-// Handle the POST request to open/close catechumens evaluation period
-$evaluationPeriodPanel->handlePost();
 ?>
 
 <div class="only-print" style="position: fixed; top: 0;">
@@ -156,23 +156,59 @@ $evaluationPeriodPanel->handlePost();
 	<div class="row" style="margin-bottom:20px; "></div>
 </div>
 
-<div class="row only-print" style="margin-bottom:170px; "></div>
-
 
 <div class="container" id="contentor">
-
- <div class="no-print">
-  <h2> Aproveitamento dos catequizandos</h2>
-  
-  <div class="row" style="margin-bottom:40px; "></div>
-
-
-
 
 <?php
 
 	$db = new PdoDatabaseManager();
 
+    // Get input parameters
+    $ano_lectivo = NULL;
+    $catecismo = NULL;
+    $turma = NULL;
+
+    if(isset($_POST['ano_lectivo']))
+    {
+        $ano_lectivo = intval($_POST['ano_lectivo']);
+    }
+    if(isset($_POST['catecismo']))
+    {
+        $catecismo = intval($_POST['catecismo']);
+    }
+    if(isset($_POST['turma']))
+    {
+        $turma = Utils::sanitizeInput($_POST['turma']);
+    }
+
+    $catechistGroups = $db->getCatechistGroups(Authenticator::getUsername(), Utils::currentCatecheticalYear());
+
+    // Set defaults if not provided
+    if(!isset($ano_lectivo))
+    {
+        $ano_lectivo = Utils::currentCatecheticalYear();
+    }
+    if(!isset($catecismo) || !($catecismo >= 1 && $catecismo <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))))
+    {
+        if(isset($catechistGroups) && count($catechistGroups) >= 1)
+            $catecismo = $catechistGroups[0]["ano_catecismo"];
+        else
+            $catecismo = 1;
+    }
+    if(!isset($turma))
+    {
+        if(isset($catechistGroups) && count($catechistGroups) >= 1)
+            $turma = $catechistGroups[0]["turma"];
+        else
+            $turma = 'A';
+    }
+
+    // Check permissions
+    if (!Authenticator::isAdmin() && !group_belongs_to_catechist($ano_lectivo, $catecismo, $turma, Authenticator::getUsername())) {
+        echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder ao grupo selecionado.</div>");
+        echo("</div></body></html>");
+        die();
+    }
 
 	//Verificar se o periodo de avaliacao esta activo
     $periodo_activo = false;
@@ -188,66 +224,49 @@ $evaluationPeriodPanel->handlePost();
 
 
     //Guardar alteracoes
-    if($_REQUEST['op']=="guardar" && $periodo_activo)
+    if(isset($_REQUEST['op']) && $_REQUEST['op']=="guardar" && $periodo_activo)
     {
-        $catequizandos_passam = $_POST['catequizando'];	//Lista de cid de catequizandos que passam
+        $catequizandos_passam = isset($_POST['catequizando']) ? $_POST['catequizando'] : array();	//Lista de cid de catequizandos que passam
 
-        //Obter turma onde actualmente da catequese
-        $result = null;
         try
         {
-            $result = $db->getCatechistGroups(Authenticator::getUsername(), Utils::currentCatecheticalYear());
+            //Listagem dos catequizandos
+            $result2 = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma, true);
 
-            if($result && count($result) > 0)
+            if(count($result2) >= 1)
             {
-                foreach($result as $row)
+                foreach($result2 as $row2)
                 {
-                    //Listagem dos catequizandos
-                    $result2 = $db->getCatechumensByCatechismWithFilters($row['ano_lectivo'], $row['ano_lectivo'], $row['ano_catecismo'], Utils::sanitizeOutput($row['turma']), true);
+                    $passa = intval($row2['passa']);
+                    $cid = intval($row2['cid']);
+                    $nome = Utils::sanitizeOutput($row2['nome']);
 
-                    if(count($result2) >= 1)
-                    {
-                        foreach($result2 as $row2)
-                        {
-                            $passa = intval($row2['passa']);
-                            $cid = intval($row2['cid']);
-                            $nome = Utils::sanitizeOutput($row2['nome']);
+                    $decisao = NULL;
+                    if($passa==NULL || $passa=="")
+                        $passa = 1;
 
-                            $decisao = NULL;
-                            if($passa==NULL || $passa=="")
-                                $passa = 1;
-
-                            if(in_array($cid, $catequizandos_passam))
-                                $decisao = 1;								//Passa
-                            else
-                                $decisao = -1;								//Reprova
-
-
-                            //Ha alteracoes a guardar para este catequizando
-                            if($passa!=$decisao)
-                            {
-                                $db->updateCatechumenAchievement($cid, $row['ano_lectivo'], $row['ano_catecismo'], Utils::sanitizeOutput($row['turma']), $decisao);
-
-                                $log_string = "Catequizando $nome (cid=" . $cid . ")";
-                                if($decisao==-1)
-                                    $log_string .= " reprovado ";
-                                else
-                                    $log_string .= " transita ";
-                                $log_string .= " no catecismo " . $row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma']) . " do ano catequético de " . Utils::formatCatecheticalYear($row['ano_lectivo']). ".";
-
-                                catechumenArchiveLog($cid, $log_string);
-                            }
-                        }
-                    }
+                    if(in_array($cid, $catequizandos_passam))
+                        $decisao = 1;								//Passa
                     else
+                        $decisao = -1;								//Reprova
+
+
+                    //Ha alteracoes a guardar para este catequizando
+                    if($passa!=$decisao)
                     {
-                        //Sem catequizandos
+                        $db->updateCatechumenAchievement($cid, $ano_lectivo, $catecismo, $turma, $decisao);
+
+                        $log_string = "Catequizando $nome (cid=" . $cid . ")";
+                        if($decisao==-1)
+                            $log_string .= " reprovado ";
+                        else
+                            $log_string .= " transita ";
+                        $log_string .= " no catecismo " . $catecismo . "º" . $turma . " do ano catequético de " . Utils::formatCatecheticalYear($ano_lectivo). ".";
+
+                        catechumenArchiveLog($cid, $log_string);
                     }
                 }
-            }
-            else
-            {
-                //Nao tem catequizandos neste ano catequetico
+                echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Dados actualizados com sucesso.</div>");
             }
         }
         catch(Exception $e)
@@ -256,210 +275,207 @@ $evaluationPeriodPanel->handlePost();
             die();
         }
 
-        echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Dados actualizados com sucesso.</div>");
-
-
         //Libertar recursos
-        $result = null;
+        $result2 = null;
     }
 
-
-
-//Apresentar painel de administracao, caso o utilizador seja administrador
-if(Authenticator::isAdmin())
-{
-    $evaluationPeriodPanel->renderHTML();
 ?>
-  	<div class="row" style="margin-bottom:20px; "></div>
-<?php
-}
-?>
- 
-  <div class="no-print">  
-  <div class="btn-group" role="group" aria-label="...">
-  	<button type="button" class="btn btn-primary glyphicon glyphicon-floppy-disk" onclick="document.getElementById('form_aproveitamento').submit();" <?php if(!$periodo_activo) echo("disabled"); ?>> Guardar</button>
-  	<button type="button" class="btn btn-default glyphicon glyphicon-print" onclick="window.print()"> Imprimir</button>
-  </div>
-  </div>  
+
+ <div class="no-print">
+  <h2> Aproveitamento dos catequizandos</h2>
+  
+  <div class="row" style="margin-bottom:40px; "></div>
+
+    <!-- Group Selector -->
+    <div class="well no-print">
+        <form class="form-inline" role="form" action="aproveitamento.php" method="post">
+            <div class="row">
+                <!--ano lectivo-->
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label for="ano_lectivo">Ano catequético:</label>
+                    <select id="ano_lectivo" name="ano_lectivo" class="form-control" onchange="this.form.submit()">
+                        <?php
+                        $years = $db->getCatecheticalYears();
+                        if (isset($years)) {
+                            foreach($years as $row) {
+                                echo("<option value='" . intval($row['ano_lectivo']) . "'");
+                                if ($ano_lectivo == $row['ano_lectivo']) echo(" selected");
+                                echo(">" . Utils::formatCatecheticalYear($row['ano_lectivo']) . "</option>\n");
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+                <!--catecismo-->
+                <div class="form-group col-xs-4 col-sm-2">
+                    <label for="catecismo">Catecismo:</label>
+                    <select id="catecismo" name="catecismo" class="form-control" onchange="this.form.submit()">
+                        <?php
+                        $catechisms = $db->getCatechisms($ano_lectivo);
+                        if (isset($catechisms)) {
+                            foreach($catechisms as $row) {
+                                echo("<option value='" . intval($row['ano_catecismo']) . "'");
+                                if ($catecismo == $row['ano_catecismo']) echo(" selected");
+                                echo(">" . intval($row['ano_catecismo']) . "º</option>\n");
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+                <!--turma-->
+                <div class="form-group col-xs-4 col-sm-2">
+                    <label for="turma">Grupo:</label>
+                    <select id="turma" name="turma" class="form-control" onchange="this.form.submit()">
+                        <?php
+                        $groups = $db->getCatechismGroups($ano_lectivo, $catecismo);
+                        if (isset($groups)) {
+                            foreach($groups as $row) {
+                                echo("<option value='" . Utils::sanitizeOutput($row['turma']) . "'");
+                                if ($turma == $row['turma']) echo(" selected");
+                                echo(">" . Utils::sanitizeOutput($row['turma']) . "</option>\n");
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
 </div>
 
-  <div class="row" style="margin-top:60px; "></div>
+  <div class="row" style="margin-top:0px; "></div>
   
   <div>
 
       <form role="form" id="form_aproveitamento" name="form_aproveitamento" onsubmit="" action="aproveitamento.php?op=guardar" method="post">
-
+        <input type="hidden" name="ano_lectivo" value="<?= $ano_lectivo ?>">
+        <input type="hidden" name="catecismo" value="<?= $catecismo ?>">
+        <input type="hidden" name="turma" value="<?= $turma ?>">
   <?php
 
-  $contadorGrupos = 0; //Conta o numero de grupos deste catequista
-
-  $result = null;
     try
     {
-        //Obter turma onde actualmente da catequese
-        $result = $db->getCatechistGroups(Authenticator::getUsername(), Utils::currentCatecheticalYear());
 
-        if($result && count($result) > 0)
+        //Listagem dos catequizandos
+        $result2 = $db->getCatechumensByCatechismWithFilters($ano_lectivo, $ano_lectivo, $catecismo, $turma, true);
+
+        if(count($result2) >= 1)
         {
-            foreach($result as $row)
-            {
-                $contadorGrupos++;
-                if($contadorGrupos>1)
-                    echo('<div class="row" style="margin-bottom:150px;"></div>');
+        ?>
+            <div class="row" style="margin-top:20px; "></div>
+              <div class="page-header" style="position:relative; z-index:2;">
+                <h1><small><span class="numero_resultados"></span> catequizandos</small></h1>
+              </div>
+              <div class="row" style="margin-top:20px; "></div>
 
-                //Cabecalho com ano catequetico, catecismo e turma
-                echo("<div class=\"well well-lg\" style=\"position:relative; z-index:2;\">\n");
-
-                  echo("\t<div class=\"form-group\">\n");
-                   echo("\t <div class=\"col-xs-6\">\n");
-                    echo("\t <label for=\"ano_catequetico\">Ano catequético: </label>\n");
-                    echo("\t\t<span>" . Utils::formatCatecheticalYear($row['ano_lectivo']) . "</span>\n");
-                    echo("\t</div>\n\n");
-
-                    echo("\t <div class=\"col-xs-3\">\n");
-                    echo("\t <label for=\"catecismo\">Catecismo: </label>\n");
-                    echo("\t\t<span>" . $row['ano_catecismo'] . "º</span>\n");
-                    echo("\t</div>\n\n");
-
-                    echo("\t<div class=\"col-xs-3\">\n");
-                    echo("\t <label for=\"turma\">Grupo: </label>\n");
-                    echo("\t\t<span>" . Utils::sanitizeOutput($row['turma']) . "</span>\n");
-                   echo("\t </div>\n");
-                   echo("</div>\n\n");
-
-
-                  echo("<div class=\"clearfix\"></div>\n");
-                  echo("</div>\n");
-
-
-
-                //Listagem dos catequizandos
-                $result2 = $db->getCatechumensByCatechismWithFilters($row['ano_lectivo'], $row['ano_lectivo'], $row['ano_catecismo'], Utils::sanitizeOutput($row['turma']), true);
-
-                if(count($result2) >= 1)
+              <?php
+                if($periodo_activo)
                 {
                 ?>
-                    <div class="row" style="margin-top:20px; "></div>
-                      <div class="page-header" style="position:relative; z-index:2;">
-                        <h1><small><span class="numero_resultados"></span> catequizandos</small></h1>
-                      </div>
-                      <div class="row" style="margin-top:20px; "></div>
-
-                      <?php
-                        if($periodo_activo)
-                        {
-                        ?>
-                              <div class="no-print">
-                              <div class="col-xs-12">
-                              <table class="table table-hover">
-                              <thead>
-                                <tr>
-                                    <th><input type="checkbox" class="checkbox-geral-<?=$contadorGrupos?>" checked> <span> Todos </span></th>
-                                </tr>
-                              </thead>
-                             </table>
-                            </div>
-                            </div>
-                    <?php
-                        }
-                        else
-                        {
-                            echo("<div class=\"no-print alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a> O período de avaliação encontra-se encerrado. </div>");
-                        }
-                    ?>
-
-                      <div class="row" style="margin-top:20px; "></div>
-
-				  <!-- Resultados -->
-				  <div class="only-print" style="margin-top: -100px; position:relative; z-index:1;"></div>
-				  <div class="col-xs-12" style="page-break-after: always;">
-				    	<table class="table table-hover resultados">
-				    	  <thead>
-				    		<tr>
-				    			<th style="background-color: transparent;">
-					    			<div class="only-print" style="opacity:0;">
-                                    <img src="<?= UserData::getParishLogoQueryURL() ?>" style="height: 50px;">
-                                    <h3>Aproveitamento dos catequizandos</h3>
-                                    <div class="row" style="margin-bottom:0px; "></div>
-								</div>
-							Aproveitamento</th>
-								<th>Nome</th>
-				    			<th>Data nascimento</th>
-								<th>Presenças</th>
-				    		</tr>
-				    	  </thead>
-				    	  <tfoot class="only-print">
-				    	  	<tr>
-				    	  		<td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
-				    	  	</tr>
-				    	  </tfoot>
-				    	  <tbody data-link="row" class="rowlink">
-
-                <?php
-                    foreach($result2 as $row2)
-                    {
-                        $foto = Utils::sanitizeOutput($row2['foto']);
-                        $passa = intval($row2['passa']);
-                        $cid = intval($row2['cid']);
-
-                        $stats = getCatechumenAttendanceStats($cid, $row['ano_lectivo'], $row['ano_catecismo'], $row['turma']);
-                        $percentage = $stats['percentage'];
-                        $attended = $stats['attended'];
-                        $totalSessions = $stats['total'];
-
-                        echo("<tr class='"); if($passa==-1) echo("danger"); else echo("success"); echo("'>\n");
-                            if($periodo_activo)
-                            {	echo("<td><input type=\"checkbox\" class=\"my-checkbox-$contadorGrupos\" name=\"catequizando[]\" value='$cid' "); if($passa!=-1) echo("checked"); echo("></td>"); }
-                            else if($passa!=-1)
-                                echo('<td><span class="label label-success">Transita</span></td>');
-                            else
-                                echo('<td><span class="label label-danger">Reprovado</span></td>');
-                            echo("\t<td ");
-                                echo("data-container=\"body\" data-toggle=\"popover\" data-placement=\"top\" data-content=\"<img src='");
-                                    if($foto && $foto!="")
-                                        echo("resources/catechumenPhoto.php?foto_name=$foto");
-                                    else
-                                        echo("img/default-user-icon-profile.png");
-                                echo("' style='height:133px; widht:100px;'>\"");
-                                echo("><a href=\"mostrarFicha.php?cid=" . $row2['cid'] . "\" target=\"_blank\"></a>" . Utils::sanitizeOutput($row2['nome']) . "</td>\n");
-                            
-                            echo("\t<td>" . date( "d-m-Y", strtotime($row2['data_nasc'])) . "</td>\n");
-
-                            echo("\t<td style=\"width: 20%; min-width: 150px; vertical-align: middle;\">\n");
-                            $progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
-                            echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
-                            echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
-                            echo("\t\t\t</div>\n");
-                            echo("\t\t</div>\n");
-                            echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
-                            echo("\t</td>\n");
-
-                        echo("</tr>\n");
-                    }
-                    ?>
-                    </tbody>
-                    </table>
-                  </div>
-                <?php
+                      <div class="no-print">
+                      <div class="col-xs-12">
+                      <table class="table table-hover">
+                      <thead>
+                        <tr>
+                            <th><input type="checkbox" class="checkbox-geral" checked> <span> Todos </span></th>
+                        </tr>
+                      </thead>
+                     </table>
+                    </div>
+                    </div>
+            <?php
                 }
                 else
                 {
-                ?>
-                    <div class="row" style="margin-top:20px; "></div>
-                      <div class="page-header">
-                        <h1><small><span id="numero_resultados"></span>Sem catequizandos</small></h1>
-                      </div>
-
-                      <div class="row" style="margin-top:20px;"></div>
-                <?php
+                    echo("<div class=\"no-print alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a> O período de avaliação encontra-se encerrado. </div>");
                 }
+            ?>
+
+              <div class="row" style="margin-top:20px; "></div>
+
+          <!-- Resultados -->
+          <div class="only-print" style="margin-top: -100px; position:relative; z-index:1;"></div>
+          <div class="col-xs-12" style="page-break-after: always;">
+                <table class="table table-hover resultados">
+                  <thead>
+                    <tr>
+                        <th style="background-color: transparent;">
+                            <div class="only-print" style="opacity:0;">
+                            <img src="<?= UserData::getParishLogoQueryURL() ?>" style="height: 50px;">
+                            <h3>Aproveitamento dos catequizandos</h3>
+                            <div class="row" style="margin-bottom:0px; "></div>
+                        </div>
+                    Aproveitamento</th>
+                        <th>Nome</th>
+                        <th>Data nascimento</th>
+                        <th>Presenças</th>
+                    </tr>
+                  </thead>
+                  <tfoot class="only-print">
+                    <tr>
+                        <td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                    </tr>
+                  </tfoot>
+                  <tbody data-link="row" class="rowlink">
+
+        <?php
+            foreach($result2 as $row2)
+            {
+                $foto = Utils::sanitizeOutput($row2['foto']);
+                $passa = intval($row2['passa']);
+                $cid = intval($row2['cid']);
+
+                $stats = getCatechumenAttendanceStats($cid, $ano_lectivo, $catecismo, $turma);
+                $percentage = $stats['percentage'];
+                $attended = $stats['attended'];
+                $totalSessions = $stats['total'];
+
+                echo("<tr class='"); if($passa==-1) echo("danger"); else echo("success"); echo("'>\n");
+                    if($periodo_activo)
+                    {	echo("<td><input type=\"checkbox\" class=\"my-checkbox\" name=\"catequizando[]\" value='$cid' "); if($passa!=-1) echo("checked"); echo("></td>"); }
+                    else if($passa!=-1)
+                        echo('<td><span class="label label-success">Transita</span></td>');
+                    else
+                        echo('<td><span class="label label-danger">Reprovado</span></td>');
+                    echo("\t<td ");
+                        echo("data-container=\"body\" data-toggle=\"popover\" data-placement=\"top\" data-content=\"<img src='");
+                            if($foto && $foto!="")
+                                echo("resources/catechumenPhoto.php?foto_name=$foto");
+                            else
+                                echo("img/default-user-icon-profile.png");
+                        echo("' style='height:133px; widht:100px;'>\"");
+                        echo("><a href=\"mostrarFicha.php?cid=" . $row2['cid'] . "\" target=\"_blank\"></a>" . Utils::sanitizeOutput($row2['nome']) . "</td>\n");
+                    
+                    echo("\t<td>" . date( "d-m-Y", strtotime($row2['data_nasc'])) . "</td>\n");
+
+                    echo("\t<td style=\"width: 20%; min-width: 150px; vertical-align: middle;\">\n");
+                    $progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
+                    echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
+                    echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
+                    echo("\t\t\t</div>\n");
+                    echo("\t\t</div>\n");
+                    echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
+                    echo("\t</td>\n");
+
+                echo("</tr>\n");
             }
+            ?>
+            </tbody>
+            </table>
+          </div>
+        <?php
         }
         else
         {
-            echo("<div class=\"well well-lg\">\n");
-            echo("<p>Não tem catequizandos neste ano catequético.</p>\n");
-            //die();
+        ?>
+            <div class="row" style="margin-top:20px; "></div>
+              <div class="page-header">
+                <h1><small><span id="numero_resultados"></span>Sem catequizandos</small></h1>
+              </div>
+
+              <div class="row" style="margin-top:20px;"></div>
+        <?php
         }
     }
 	catch(Exception $e)
@@ -470,7 +486,7 @@ if(Authenticator::isAdmin())
 
 
 	//Libertar recursos
-	$result = null;
+	$result2 = null;
 ?>
 
       </form>
@@ -479,8 +495,8 @@ if(Authenticator::isAdmin())
 
       <div class="no-print">
           <div class="btn-group" role="group" aria-label="...">
-              <button type="button" class="btn btn-primary glyphicon glyphicon-floppy-disk" onclick="document.getElementById('form_aproveitamento').submit();" <?php if(!$periodo_activo) echo("disabled"); ?>> Guardar</button>
-              <button type="button" class="btn btn-default glyphicon glyphicon-print" onclick="window.print()"> Imprimir</button>
+              <button type="button" class="btn btn-primary" onclick="document.getElementById('form_aproveitamento').submit();" <?php if(!$periodo_activo) echo("disabled"); ?>><span class="glyphicon glyphicon-floppy-disk"></span> Guardar</button>
+              <button type="button" class="btn btn-default" onclick="window.print()"><span class="glyphicon glyphicon-print"></span> Imprimir</button>
           </div>
       </div>
 
@@ -492,6 +508,7 @@ if(Authenticator::isAdmin())
 
 <?php $pageUI->renderJS(); ?>
 <script src="js/rowlink.js"></script>
+<script src="js/bootstrap-switch.js"></script>
 
 <script>
 	
@@ -553,15 +570,8 @@ if($periodo_activo)
 ?>
 
     <script>
-    <?php
-
-    // Checkbox geral individual, para cada grupo
-    for($i = 1; $i <= $contadorGrupos; $i = $i+1)
-    {
-       ?>
-
         $(function () {
-            $("[class='my-checkbox-<?= $i ?>']").bootstrapSwitch({size: 'mini',
+            $("[class='my-checkbox']").bootstrapSwitch({size: 'mini',
                 onText: 'Transita',
                 offText: 'Reprova',
                 onColor: 'success',
@@ -569,13 +579,12 @@ if($periodo_activo)
             });
         });
 
-        $('input[class="my-checkbox-<?= $i ?>"]').on('switchChange.bootstrapSwitch', function(event, state) {
-
+        $('input[class="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
             mudaSwitch(this.closest('tr'), state);
         });
 
         $(function () {
-            $("[class='checkbox-geral-<?= $i ?>']").bootstrapSwitch({size: 'mini',
+            $("[class='checkbox-geral']").bootstrapSwitch({size: 'mini',
                                                         onText: 'Transita',
                                                         offText: 'Reprova',
                                                         onColor: 'success',
@@ -583,39 +592,13 @@ if($periodo_activo)
                                                         });
         });
 
-        $('input[class="checkbox-geral-<?= $i ?>"]').on('switchChange.bootstrapSwitch', function(event, state) {
-            $('input[class="my-checkbox-<?= $i ?>"]').bootstrapSwitch('state', state, false);
+        $('input[class="checkbox-geral"]').on('switchChange.bootstrapSwitch', function(event, state) {
+            $('input[class="my-checkbox"]').bootstrapSwitch('state', state, false);
         });
-
-    <?php
-    }
-    ?>
     </script>
 
 <?php
 }
-?>
-
-<?php 
-	if(Authenticator::isAdmin())
-	{
-?>
-<script>
-$(function () {
-	$("[class='checkbox-admin']").bootstrapSwitch({size: 'small',
-												onText: 'On',
-												offText: 'Off'
-												});
-});
-
-$('input[class="checkbox-admin"]').on('switchChange.bootstrapSwitch', function(event, state) {
-  	
-  	$('#form_admin').submit();
-});
-
-</script>
-<?php
-	}
 ?>
 
 </body>
