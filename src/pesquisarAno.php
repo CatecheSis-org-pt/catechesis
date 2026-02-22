@@ -145,7 +145,7 @@ $menu->renderHTML();
   <div class="form-group">
     <div class="col-xs-5">
  	 <label for="ano_catequetico">Ano catequético: </label> 
- 	 <select name="ano_catequetico" >
+   <select class="form-control" name="ano_catequetico" >
     		<option value="" <?php if (!$_POST['ano_catequetico'] || $_POST['ano_catequetico']=="") echo("selected"); ?>>Todos</option>
 	<?php
 
@@ -186,7 +186,7 @@ $menu->renderHTML();
    	<div class="form-group">
    	<div class="col-xs-4">
    		<label for="catecismo">Catecismo:</label>
-		<select name="catecismo">
+  <select class="form-control" name="catecismo">
 			<option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todos</option>
 	<?php
 
@@ -224,7 +224,7 @@ $menu->renderHTML();
    <div class="form-group">
    	<div class="col-xs-3">
    		<label for="turma">Grupo:</label>
-		<select name="turma">
+  <select class="form-control" name="turma">
 			<option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todas</option>
 	<?php
 
@@ -270,7 +270,7 @@ $menu->renderHTML();
   	<div class="form-group">
    	<div class="col-xs-6">
    		<label for="filtro_bap">Baptismo:</label>
-		<select name="filtro_bap">
+  <select class="form-control" name="filtro_bap">
 			<option value="0" <?php if (!$_POST['filtro_bap'] || $_POST['filtro_bap']=="" || $_POST['filtro_bap']==0) echo("selected"); ?>>Indiferente</option>
 			<option value="1" <?php if ($_POST['filtro_bap']==1) echo("selected"); ?>>Fez</option>
 			<option value="2" <?php if ($_POST['filtro_bap']==2) echo("selected"); ?>>Não fez</option>
@@ -278,7 +278,7 @@ $menu->renderHTML();
 	</div>
 	<div class="col-xs-6">
    		<label for="filtro_com">Primeira comunhão:</label>
-		<select name="filtro_com">
+  <select class="form-control" name="filtro_com">
 			<option value="0" <?php if (!$_POST['filtro_com'] || $_POST['filtro_com']=="" || $_POST['filtro_com']==0) echo("selected"); ?>>Indiferente</option>
 			<option value="1" <?php if ($_POST['filtro_com']==1) echo("selected"); ?>>Fez</option>
 			<option value="2" <?php if ($_POST['filtro_com']==2) echo("selected"); ?>>Não fez</option>

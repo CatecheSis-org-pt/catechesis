@@ -384,9 +384,9 @@ $menu->renderHTML();
   
   <form role="form" action="gerirGrupos.php" method="post" id="form_ano">
     <div class="form-group">
-    <div class="col-xs-6">
+    <div class="col-xs-3">
       <label for="nome">Ano catequético:</label>
-       <select name="sel_ano_catequetico" onchange="this.form.submit()">
+       <select class="form-control" name="sel_ano_catequetico" onchange="this.form.submit()">
        <?php
        		
 
@@ -532,7 +532,7 @@ $menu->renderHTML();
     		<tr class="active no-print">
     			<td>
                     <div class="input-group input-group-sm">
-                        <select class="" name="catecismo" required>
+                        <select class="form-control" name="catecismo" required>
                             <option disabled selected></option>
                             <?php
                             for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)); $i++)
@@ -547,7 +547,7 @@ $menu->renderHTML();
                 </td>
     			<td>
                     <div class="input-group input-group-sm">
-                        <select class="" name="turma" required>
+                        <select class="form-control" name="turma" required>
                             <option disabled selected></option>
                                 <option value="A">A</option>
                                 <option value="B">B</option>
@@ -731,7 +731,7 @@ $menu->renderHTML();
 
 		    	  ?>
 		    		<tr class="active no-print">
-		    			<td><div class="input-group input-group-sm"><select class="" id="catequista" name="catequista" required>
+         <td><div class="input-group input-group-sm"><select class="form-control" id="catequista" name="catequista" required>
 		    									  <option disabled selected></option>
 		    	<?php
 

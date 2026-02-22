@@ -147,7 +147,7 @@ $menu->renderHTML();
             <div class="form-group">
                 <div class="col-xs-5">
                     <label for="ano_catequetico">Ano catequético: </label>
-                    <select name="ano_catequetico" >
+                    <select class="form-control" name="ano_catequetico" >
                         <option value="" <?php if (!$_POST['ano_catequetico'] || $_POST['ano_catequetico']=="") echo("selected"); ?>>Todos</option>
                         <?php
 
@@ -181,7 +181,7 @@ $menu->renderHTML();
             <div class="form-group">
                 <div class="col-xs-4">
                     <label for="catecismo">Catecismo:</label>
-                    <select name="catecismo">
+                    <select class="form-control" name="catecismo">
                         <option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todos</option>
                         <?php
 
@@ -220,8 +220,8 @@ $menu->renderHTML();
             <div class="form-group">
                 <div class="col-xs-3">
                 <label for="turma">Grupo:</label>
-                <select name="turma">
-                    <option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todas</option>
+                <select class="form-control" name="turma">
+                    <option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todos</option>
                     <?php
 
                     //Obter turmas de catequese

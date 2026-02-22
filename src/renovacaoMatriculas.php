@@ -295,7 +295,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
       <div class="form-group">
         <div class="col-xs-5">
          <label for="ano_catequetico">Ano catequético precedente: </label>
-         <select name="ano_catequetico_prec" onchange="this.form.submit()">
+         <select class="form-control" name="ano_catequetico_prec" onchange="this.form.submit()">
         <?php
 
             //Obter anos lectivos
@@ -329,7 +329,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
       <div class="form-group">
         <div class="col-xs-4">
             <label for="catecismo">Catecismo:</label>
-            <select name="catecismo_prec" onchange="this.form.submit()">
+            <select class="form-control" name="catecismo_prec" onchange="this.form.submit()">
         <?php
 
             //Obter anos de catequese
@@ -361,7 +361,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
       <div class="form-group">
         <div class="col-xs-3">
             <label for="turma">Grupo:</label>
-            <select name="turma_prec" onchange="this.form.submit()">
+            <select class="form-control" name="turma_prec" onchange="this.form.submit()">
         <?php
 
             //Obter turmas de catequese
@@ -464,7 +464,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
                         echo("-");
                 ?>
                 </span>
-                <select style="visibility:hidden"></select>
+                <select class="form-control" style="visibility:hidden"></select>
                 <input type="hidden" name="cat_mat_ap" value="<?php if($catecismo_matricula_ap <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))) echo($catecismo_matricula_ap); else echo(intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))); ?>" />
             </div>
 
@@ -473,11 +473,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
             <?php
             if($catecismo_matricula_ap > intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
             {
-                echo("<span> - </span><select style=\"visibility:hidden\"></select>");
+                echo("<span> - </span><select class=\"form-control\" style=\"visibility:hidden\"></select>");
             }
             else
             {
-                echo("<select name=\"turma_mat_ap\">");
+                echo("<select class=\"form-control\" name=\"turma_mat_ap\">");
 
                 //Obter turmas de catequese
                 try
@@ -525,13 +525,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="eliminarPedido" )
 			echo($catecismo_matricula_rp . "º");
 		?>		
 		</span>
-		<select style="visibility:hidden"></select>
+		<select class="form-control" style="visibility:hidden"></select>
 		<input type="hidden" name="cat_mat_rp" value=<?php echo('"' . $catecismo_matricula_rp . '"');  ?> />
 	</div>
 
 	<div class="col-xs-6">
 	 <label for="turma">Grupo: </label>
-		<select name="turma_mat_rp">
+  <select class="form-control" name="turma_mat_rp">
 		<?php
 
 		//Obter turmas de catequese

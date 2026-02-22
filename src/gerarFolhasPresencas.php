@@ -94,7 +94,7 @@ catch(Exception $e)
   <div class="form-group">
     <div class="col-xs-3">
  	 <label for="ano_catequetico">Ano catequético: </label> 
- 	 <select name="ano_catequetico" required>
+   <select class="form-control" name="ano_catequetico" required>
     		<option value="" disabled <?php if ((!$_POST['ano_catequetico'] || $_POST['ano_catequetico']=="") && !(isset($catechistGroups) && count($catechistGroups) >= 1)) echo("selected"); ?>></option>
 	<?php
 
@@ -133,7 +133,7 @@ catch(Exception $e)
    	<div class="form-group">
    	<div class="col-xs-3">
    		<label for="catecismo">Catecismo:</label>
-		<select name="catecismo" required>
+  <select class="form-control" name="catecismo" required>
 			<option value="" disabled <?php if((!$_POST['catecismo'] || $_POST['catecismo']=="") && !(isset($catechistGroups) && count($catechistGroups) >= 1)) echo("selected"); ?>></option>
 	<?php
 
@@ -176,7 +176,7 @@ catch(Exception $e)
    <div class="form-group">
    	<div class="col-xs-2">
    		<label for="turma">Grupo:</label>
-		<select name="turma" required>
+  <select class="form-control" name="turma" required>
 			<option value="" disabled <?php if((!$_POST['catecismo'] || $_POST['catecismo']=="") && !(isset($catechistGroups) && count($catechistGroups) >= 1)) echo("selected"); ?>></option>
 	<?php
 

@@ -270,7 +270,7 @@ $menu->renderHTML();
     <div class="col-xs-2">
       <label for="catecismo">Catecismo:</label>
         <div class="input-group catecismo">
-        <select id="catecismo" name="catecismo" onchange="muda_catecismo()">
+        <select class="form-control" id="catecismo" name="catecismo" onchange="muda_catecismo()">
             <?php
 
             //Obter catecismos
@@ -303,7 +303,7 @@ $menu->renderHTML();
     <div class="col-xs-2">
         <label for="turma">Grupo:</label>
         <div class="input-group turma">
-            <select id="turma" name="turma" onchange="this.form.submit()">
+            <select class="form-control" id="turma" name="turma" onchange="this.form.submit()">
                 <?php
 
                 //Obter turmas de catequese

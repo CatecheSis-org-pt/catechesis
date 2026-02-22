@@ -141,7 +141,7 @@ $pageUI->addWidget($orderDetailsDialog);
         <div class="form-group">
             <div class="col-xs-4">
                 <label for="nome">Ano catequético:</label>
-                <select name="sel_ano_catequetico" onchange="this.form.submit()">
+                <select class="form-control" name="sel_ano_catequetico" onchange="this.form.submit()">
                     <?php
 
                     //Get catechetical years
@@ -171,6 +171,8 @@ $pageUI->addWidget($orderDetailsDialog);
             </div>
         </div>
     </form>
+
+    <div style="margin-bottom: 40px;"></div>
 
 
     <?php
