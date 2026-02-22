@@ -5,6 +5,7 @@ src/core/config/catechesis_config.inc.php
 !catechesis_data/photos/parish/.gitkeep
 !catechesis_data/config/catechesis_config.shadow.docker.php
 !catechesis_data/config/catechesis_config.shadow.template.php
+!catechesis_data/tmp/.gitkeep
 catechesis_data/**
 src/vendor
 src/help/user_manual

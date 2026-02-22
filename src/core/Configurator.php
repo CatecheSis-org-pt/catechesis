@@ -97,6 +97,8 @@ class Configurator
     //Definition of keys to store key-value configurations in the database
     const KEY_NUM_CATECHISMS = "NUM_CATECHISMS";                                                                        //The highest catechism in this parish (in some parishes may be higher than the default 10)
     const KEY_CATECHESIS_WEEK_DAY = "CATECHESIS_WEEK_DAY";                                                              //The day of the week on which catechesis is ministered
+    const KEY_CATECHESIS_START_TIME = "CATECHESIS_START_TIME";                                                          //The default start time for all classes
+    const KEY_CATECHESIS_END_TIME = "CATECHESIS_END_TIME";                                                              //The default end time for all classes
     const KEY_CATECHUMENS_EVALUATION = "CATECHUMENS_EVALUTATIONS_OPEN";                                                 //Whether catechumens evaluations are open for catechists or not
 
     const KEY_PARISH_NAME = "PARISH_NAME";                                                                              //Name of this parish (shown in page footers and several places)
@@ -115,7 +117,9 @@ class Configurator
 
     const KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE = "USE_CUSTOM_PUBLIC_PAGE_IMAGE";                                            //Whether to use a custom image on the public homepage or the default one
 
-    const KEY_ONLINE_ENROLLMENTS_OPEN = "ONLINE_ENROLLMENTS_OPEN";                                                      //Whether online enrollments are open for parents or not
+    const KEY_ONLINE_ENROLLMENTS_OPEN = "ONLINE_ENROLLMENTS_OPEN";                                                      //Whether online enrollments are open for parents or not (DEPRECATED, use KEY_ONLINE_ENROLLMENTS_NEW_OPEN and KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN instead)
+    const KEY_ONLINE_ENROLLMENTS_NEW_OPEN = "ONLINE_ENROLLMENTS_NEW_OPEN";                                              //Whether new online enrollments are open for parents or not
+    const KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN = "ONLINE_ENROLLMENTS_RENEWAL_OPEN";                                      //Whether online enrollment renewals are open for parents or not
     const KEY_ENROLLMENT_CUSTOM_TEXT = "ENROLLMENT_CUSTOM_TEXT";                                                        //Custom information text shown on online enrollment pages
     const KEY_ENROLLMENT_SHOW_PAYMENT_DATA = "ENROLLMENT_SHOW_PAYMENT_DATA";                                            //Whether bank payment data should be shown after an enrollment submission
     const KEY_ENROLLMENT_PAYMENT_ENTITY = "ENROLLMENT_PAYMENT_ENTITY";                                                  //Bank entity (number)
@@ -128,6 +132,9 @@ class Configurator
     const KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL = "CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL";                //Path to public shared folder in Nextcloud to store virtual catechesis resources
 
     const KEY_MAINTENANCE_MODE = "MAINTENANCE_MODE";                                                                    //Enabling the maintenance mode forbids logins and shows the error 500 page on the landing page
+
+    // Optional fields toggles
+    const KEY_OPTIONAL_FIELD_NIF_ENABLED = "OPTIONAL_FIELD_NIF_ENABLED";                                                // Whether the NIF field is enabled (visible and mandatory) in forms and catechumen records
 
     private static $CONFIGURATIONS = null; //Stores the configuration objects
 
@@ -145,6 +152,8 @@ class Configurator
             self::$CONFIGURATIONS = array(
                 self::KEY_NUM_CATECHISMS => new ConfigurationObject(self::KEY_NUM_CATECHISMS, ConfigurationObject::TYPE_INT, 10),
                 self::KEY_CATECHESIS_WEEK_DAY => new ConfigurationObject(self::KEY_CATECHESIS_WEEK_DAY, ConfigurationObject::TYPE_INT, WeekDay::SUNDAY),
+                self::KEY_CATECHESIS_START_TIME => new ConfigurationObject(self::KEY_CATECHESIS_START_TIME, ConfigurationObject::TYPE_STRING, "10:00:00"),
+                self::KEY_CATECHESIS_END_TIME => new ConfigurationObject(self::KEY_CATECHESIS_END_TIME, ConfigurationObject::TYPE_STRING, "11:00:00"),
                 self::KEY_CATECHUMENS_EVALUATION => new ConfigurationObject(self::KEY_CATECHUMENS_EVALUATION, ConfigurationObject::TYPE_BOOL, true),
 
                 self::KEY_PARISH_NAME => new ConfigurationObject(self::KEY_PARISH_NAME, ConfigurationObject::TYPE_STRING, null),
@@ -164,6 +173,8 @@ class Configurator
                 self::KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE => new ConfigurationObject(self::KEY_USE_CUSTOM_PUBLIC_PAGE_IMAGE, ConfigurationObject::TYPE_BOOL, false),
 
                 self::KEY_ONLINE_ENROLLMENTS_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_OPEN, ConfigurationObject::TYPE_BOOL, false),
+                self::KEY_ONLINE_ENROLLMENTS_NEW_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_NEW_OPEN, ConfigurationObject::TYPE_BOOL, false),
+                self::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN => new ConfigurationObject(self::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN, ConfigurationObject::TYPE_BOOL, false),
                 self::KEY_ENROLLMENT_CUSTOM_TEXT => new ConfigurationObject(self::KEY_ENROLLMENT_CUSTOM_TEXT, ConfigurationObject::TYPE_STRING, "<p>À semelhança dos outros anos, pede-se um contributo, em forma de donativo, para fazer face aos custos dos catecismos, materiais didáticos e outros materiais, utilizados ao longo do ano de catequese. Para este ano definiu-se um valor de <strong>XX euros</strong>.</p>\n"
                                                                                                                                                                    . "<p>O contributo deverá ser efetuado através da referência multibanco indicada <u>na página seguinte</u>, após a submissão do pedido. A validação da inscrição só ficará concluída após receção do respetivo comprovativo de pagamento, porém <strong>que nenhuma criança/adolescente deixe de se inscrever por causa do referido contributo.</strong></p>"),
                 self::KEY_ENROLLMENT_SHOW_PAYMENT_DATA => new ConfigurationObject(self::KEY_ENROLLMENT_SHOW_PAYMENT_DATA, ConfigurationObject::TYPE_BOOL, false),
@@ -176,7 +187,10 @@ class Configurator
                 self::KEY_CATECHESIS_NEXTCLOUD_BASE_URL => new ConfigurationObject(self::KEY_CATECHESIS_NEXTCLOUD_BASE_URL, ConfigurationObject::TYPE_STRING, null),
                 self::KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL => new ConfigurationObject(self::KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL, ConfigurationObject::TYPE_STRING, null),
 
-                self::KEY_MAINTENANCE_MODE => new ConfigurationObject(self::KEY_MAINTENANCE_MODE, ConfigurationObject::TYPE_BOOL, false)
+                self::KEY_MAINTENANCE_MODE => new ConfigurationObject(self::KEY_MAINTENANCE_MODE, ConfigurationObject::TYPE_BOOL, false),
+
+                // Optional fields toggles
+                self::KEY_OPTIONAL_FIELD_NIF_ENABLED => new ConfigurationObject(self::KEY_OPTIONAL_FIELD_NIF_ENABLED, ConfigurationObject::TYPE_BOOL, false)
             );
         }
     }
@@ -284,4 +298,6 @@ class Configurator
             throw new Exception("Falha ao definir valor de configuração.");
         }
     }
+
+
 }

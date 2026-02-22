@@ -5,12 +5,14 @@ require_once(__DIR__ . '/PdoDatabaseManager.php');
 require_once(__DIR__ . '/Configurator.php');
 require_once(__DIR__ . '/log_functions.php');
 require_once(__DIR__ . '/domain/EnrollmentOrder.php');
+require_once(__DIR__ . '/domain/Locale.php');
 require_once(__DIR__ . '/UserData.php');
 
 use catechesis\DatabaseAccessMode;
 use catechesis\PdoDatabaseManager;
 use catechesis\Configurator;
 use core\domain\EnrollmentStatus;
+use core\domain\Locale;
 use catechesis\UserData;
 
 
@@ -260,8 +262,21 @@ function computeRecommendedCatechism($birthDate, $previousCatechism = null): int
     // Compute recomendation based on age
     $ageRecomendation = 0;
     {
-        $ageInOctober = date_diff(date_create($birthDate), date_create(date('Y-10-31')))->y;
-        $ageInDecember = date_diff(date_create($birthDate), date_create(date('Y-12-31')))->y;
+        $this_october = date_create(date('Y-10-31'));
+        $this_december = date_create(date('Y-12-31'));
+
+        if( (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL) &&
+            (date('m') >= 1 && date('m') <= 6) )
+        {
+            // Make the computations as if we were on the past year, because we are still enrolling children for the current year
+
+            $current_start_year = date('Y') - 1;  // The civil year when the current catechetical year started
+            $this_october = date_create(date("$current_start_year-10-3"));
+            $this_december = date_create(date("$current_start_year-12-31"));
+        }
+
+        $ageInOctober = date_diff(date_create($birthDate), $this_october)->y;
+        $ageInDecember = date_diff(date_create($birthDate), $this_december)->y;
 
         $conditionalChild = (date_create($birthDate)->format('m') > 10); //Conditional catechumens brithdays are in November or December
         if($conditionalChild)

@@ -36,18 +36,20 @@ class CustomUploadHandler extends UploadHandler
     }
 
 
-    private function check_file_is_valid_pdf($filename)
+    private function check_file_is_valid($filename)
     {
-        // Verificar que o ficheiro e' mesmo um PDF, usando magic numbers
+        // Verificar que o ficheiro e' mesmo um PDF, JPG ou PNG, usando magic numbers
         $file_info = new finfo(FILEINFO_MIME); 
         $mime_type = $file_info->file($filename); 
-        if (strpos($mime_type, 'application/pdf') !== false)
+        if (strpos($mime_type, 'application/pdf') !== false || 
+            strpos($mime_type, 'image/jpeg') !== false || 
+            strpos($mime_type, 'image/png') !== false)
         {
             return true;
         }
         else
         {
-            //echo("Os dados submetidos não correspondem a um ficheiro PDF válido.");
+            //echo("Os dados submetidos não correspondem a um ficheiro PDF, JPG ou PNG válido.");
             return false;
         }
     }
@@ -58,9 +60,9 @@ class CustomUploadHandler extends UploadHandler
 
         if(!parent::validate($uploaded_file, $file, $error, $index))
             return false;
-        else if( !$this->check_file_is_valid_pdf($uploaded_file) )
+        else if( !$this->check_file_is_valid($uploaded_file) )
         {
-            $file->error = "Os dados submetidos não correspondem a um ficheiro PDF válido.";
+            $file->error = "Os dados submetidos não correspondem a um ficheiro PDF, JPG ou PNG válido.";
             return false;
         }
 
@@ -91,7 +93,17 @@ class CustomUploadHandler extends UploadHandler
             return $file;
         }
 
-        $myFileName = $sacrament . '_' . $cid . '.pdf';
+        // Determine file extension based on MIME type
+        $file_info = new finfo(FILEINFO_MIME);
+        $mime_type = $file_info->file($uploaded_file);
+        $extension = '.pdf'; // Default extension
+
+        if (strpos($mime_type, 'image/jpeg') !== false)
+            $extension = '.jpg';
+        else if (strpos($mime_type, 'image/png') !== false)
+            $extension = '.png';
+
+        $myFileName = $sacrament . '_' . $cid . $extension;
 
         $file = parent::handle_file_upload(
         	$uploaded_file, $myFileName /*$name*/, $size, $type, $error, $index, $content_range

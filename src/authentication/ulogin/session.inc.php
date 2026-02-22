@@ -340,9 +340,11 @@ class ulSessionManager
 
 	public static function sessionWriteClose()
 	{
-		session_write_close();
-    self::$SessionStore = NULL;
+		$ret = session_write_close();
+        self::$SessionStore = NULL;
 		self::$SessionRunning = false;
+
+        return $ret;
 	}
 
 	private static function EnsureStorage()
@@ -397,8 +399,8 @@ function sses_regenerate_id($delete_old_session = false)
 // Use instead of session_write_close().
 function sses_write_close()
 {
-  ulLog::DebugLog('Session close requested by host.');
-	ulSessionManager::sessionWriteClose();
+    ulLog::DebugLog('Session close requested by host.');
+	return ulSessionManager::sessionWriteClose();
 }
 
 // Are we inside a secure session? Returns a boolean.

@@ -220,7 +220,13 @@ $menu->renderHTML();
                 <div class="clearfix"></div>
             </div>
 
-            <form id="form_imprime_presencas<?= $contador ?>" action="folhasPresencas.php" method="post">
+            <form id="form_imprime_presencas<?= $contador ?>" action="folhasPresencas.php" method="post" target="_blank">
+                <input type="hidden" name="ano_catequetico" value="<?= $row['ano_lectivo'] ?>">
+                <input type="hidden" name="catecismo" value="<?= $row['ano_catecismo'] ?>">
+                <input type="hidden" name="turma" value="<?= Utils::sanitizeOutput($row['turma']) ?>">
+            </form>
+
+            <form id="form_marcar_presencas<?= $contador ?>" action="marcarPresencas.php" method="post" target="_blank">
                 <input type="hidden" name="ano_catequetico" value="<?= $row['ano_lectivo'] ?>">
                 <input type="hidden" name="catecismo" value="<?= $row['ano_catecismo'] ?>">
                 <input type="hidden" name="turma" value="<?= Utils::sanitizeOutput($row['turma']) ?>">
@@ -236,8 +242,9 @@ $menu->renderHTML();
 			{
                 $catechumensListWidgets[$contador-1]->setCatechumensList($result2);
                 $catechumensListWidgets[$contador-1]->addButtonsToToolbar("
+                    <button type=\"button\" onclick=\"marcar_presencas($contador)\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-check\"></span> Marcar presenças</button>
+                    <button type=\"button\" onclick=\"window.open('aproveitamento.php');\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-graduate\"></span> Registar aproveitamento </button>
                     <button type=\"button\" onclick=\"imprime_presencas($contador)\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>
-                    <button type=\"button\" onclick=\"window.open('aproveitamento.php');\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-check\"></span> Registar aproveitamento </button>
                 ");
                 $catechumensListWidgets[$contador-1]->renderHTML();
 
@@ -282,6 +289,10 @@ $pageUI->renderJS(); // Render the widgets' JS code
 function imprime_presencas(num)
 {
 	document.getElementById("form_imprime_presencas".concat(num.toString())).submit();
+}
+function marcar_presencas(num)
+{
+	document.getElementById("form_marcar_presencas".concat(num.toString())).submit();
 }
 </script>
 

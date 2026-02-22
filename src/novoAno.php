@@ -1,4 +1,4 @@
- <?php
+<?php
   
 require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
@@ -55,7 +55,6 @@ $db = new PdoDatabaseManager();
 
 
  //Erros
- $err1 = false;
  $err2 = false;
  $err3 = false;
  $err4 = false;
@@ -73,12 +72,6 @@ try
 
     if(isset($catechetical_years) && count($catechetical_years) > 0)
         $existe_ano_anterior = true;
-    else
-    {
-        $err1 = true;
-
-;
-    }
 
 }
 catch(Exception $e)
@@ -215,12 +208,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <?php $pageUI->renderCSS(); // Render the widgets' CSS ?>
   <link rel="stylesheet" href="css/custom-navbar-colors.css">
 
-    <?php
-    $pageUI->renderJS(); // Render the widgets' JS code
-    ?>
-  <script src="js/rowlink.js"></script>
-
-  
   <style>
   	@media print
 	{    
@@ -277,11 +264,7 @@ $menu->renderHTML();
  <?php
  
  	//Mensagens de erro
- 	
- 	if($err1)
- 	{
- 		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Falha ao detectar anos catequéticos anteriores na base de dados.</div>");
- 	}
+
  	if($err2)
  	{
  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O ano catequético é inválido. Criação de grupos cancelada.</div>");
@@ -295,9 +278,9 @@ $menu->renderHTML();
  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O modo de criação automática de grupos é inválido. Criação de grupos cancelada.</div>");
  	}
  	if($abort1)
- 	{
- 		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Falha ao detectar anos catequéticos anteriores na base de dados.</div>");
- 	}
+    {
+        echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Falha ao detectar anos catequéticos anteriores na base de dados.</div>");
+    }
  	if($abort2)
  	{
  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Falha ao criar grupos de catequese.</div>");
@@ -346,9 +329,13 @@ $menu->renderHTML();
    <div class="form-group">
     <div class="col-xs-8">
     	<label for="criar_modo">Criar automaticamente:</label>
-    	<p>&nbsp;&nbsp;<input type="radio" name="criar_modo" value="1" <?php if(!$existe_ano_anterior) echo("checked");?>> <?= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))?> grupos de catequese (1 grupo por catecismo)</p>
+    	<div class="radio">
+            <label><input type="radio" name="criar_modo" value="1" <?php if(!$existe_ano_anterior) echo("checked");?>> <?= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))?> grupos de catequese (1 grupo por catecismo)</label>
+        </div>
     	<?php if($existe_ano_anterior): ?>
-	<p>&nbsp;&nbsp;<input type="radio" name="criar_modo" value="2" checked> mesmos catecismos e grupos que no ano anterior</p>
+        <div class="radio">
+            <label><input type="radio" name="criar_modo" value="2" checked> mesmos catecismos e grupos que no ano anterior</label>
+        </div>
 	<?php endif ?>
     </div>
     <div class="clearfix"></div>
@@ -384,5 +371,11 @@ $menu->renderHTML();
 </datalist>
 
 <?php endif ?>
+
+<?php
+$pageUI->renderJS(); // Render the widgets' JS code
+?>
+<script src="js/rowlink.js"></script>
+
 </body>
 </html>

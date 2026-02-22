@@ -62,6 +62,39 @@ class DataValidationUtils
     }
 
     /**
+     * Checks if a given string represents a valid Portuguese fiscal number.
+     * @param string $nif
+     * @return bool
+     */
+    public static function validateNIF(string $nif)
+    {
+        // Remove spaces and non-numeric characters
+        $nif = preg_replace('/\D/', '', $nif);
+
+        // Check it has 9 digits
+        if (strlen($nif) !== 9) {
+            return false;
+        }
+
+        // Convert to array of digits
+        $digitos = str_split($nif);
+
+        // Compute control digit according to PT rules:
+        // sum = d1*9 + d2*8 + ... + d8*2; check = 11 - (sum % 11); if check >= 10 then 0
+        $soma = 0;
+        for ($i = 0; $i < 8; $i++) {
+            $soma += intval($digitos[$i]) * (9 - $i);
+        }
+        $check = 11 - ($soma % 11);
+        if ($check >= 10) {
+            $check = 0;
+        }
+
+        // Check control digit
+        return intval($digitos[8]) === $check;
+    }
+
+    /**
      * Checks if a given string looks like a valid Portuguese zip code.
      * @param $postal
      * @return false|int

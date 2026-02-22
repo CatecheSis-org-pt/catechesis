@@ -23,7 +23,11 @@ use catechesis\gui\SimpleFooter;
 $periodo_activo = false;
 try
 {
-    $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+    // Check if the new configuration key exists, if not, use the legacy key value
+    if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN))
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN);
+    else
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
 }
 catch (Exception $e)
 {
@@ -106,7 +110,7 @@ $pageUI->addWidget($footer);
            <div class="panel-body">
 
            <div class="panel panel-default" id="painel_catequizando">
-               <div class="panel-heading">Dados biográficos do catequizando</div>
+               <div class="panel-heading">Dados pessoais do catequizando</div>
                <div class="panel-body">
 
                   <div class="img-thumbnail" id="div_camara">
@@ -130,7 +134,7 @@ $pageUI->addWidget($footer);
 
                   <!--nome-->
                     <div class="form-group">
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                       <label for="nome">Nome do catequizando:</label>
                       <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nome'] . '');} else {echo('');} ?>" required>
                       <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
@@ -155,20 +159,32 @@ $pageUI->addWidget($footer);
 
                    <!--local nascimento-->
                     <div class="form-group">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                       <label for="localidade">Em:</label>
                       <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['local_nasc'] . '');} else {echo('');} ?>" required>
                     </div>
                     </div>
 
+                   <?php $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED); if($nifEnabled) { ?>
+                   <!--NIF-->
+                   <div class="col-lg-2">
+                       <div id="nif_div">
+                           <label for="nif">NIF: <span class="forgot_help_text" data-toggle="tooltip" data-placement="top" title="NIF do catequizando, para efeitos de seguro de acidentes pessoais"><span class="glyphicon glyphicon-question-sign"></span></span></label>
 
-                     <!--numero irmaos-->
+                           <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>" required>
+                           <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                       </div>
+                   </div>
+                   <?php } ?>
+
+                    <!--numero irmaos-->
                     <div class="col-lg-1">
                     <div id="num_irmaos_div">
                       <label for="num_irmaos">Irmãos:</label>
                       <input type="number" min=0 class="form-control" id="num_irmaos" name="num_irmaos" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['num_irmaos'] . '');} else {echo('0');} ?>">
                     </div>
                     </div>
+
                     <div class="clearfix"></div>
 
                </div>
@@ -187,8 +203,8 @@ $pageUI->addWidget($footer);
                        <div class="col-lg-12">
                            <div class="row" style="margin-top:20px; "></div>
                            <label for="encarregado educacao">Encarregado de educação:</label>
-                           <label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai"  onchange="mostrar_ocultar_campo_outro_enc_edu(); atualiza_tabela_autorizacoes();" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Pai')){ echo('checked');} ?>>Pai</label>
-                           <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae"  onchange="mostrar_ocultar_campo_outro_enc_edu(); atualiza_tabela_autorizacoes();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Mae'){ echo('checked');} ?>>Mãe</label>
+                           <label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai"  onchange="mostrar_ocultar_campo_outro_enc_edu(); atualiza_tabela_autorizacoes();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Pai'){ echo('checked');} ?>>Pai</label>
+                           <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae"  onchange="mostrar_ocultar_campo_outro_enc_edu(); atualiza_tabela_autorizacoes();" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Mae')){ echo('checked');} ?>>Mãe</label>
                            <label class="radio-inline"><input type="radio" id="enc_edu3" name="enc_edu" value="Outro" onchange="mostrar_ocultar_campo_outro_enc_edu(); atualiza_tabela_autorizacoes();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Outro'){ echo('checked');} ?>>Outro</label>
                        </div>
                        <div class="clearfix"></div>
@@ -667,7 +683,7 @@ $footer->renderHTML();
 <script src="../js/bootstrap-datepicker-1.9.0-dist/locales/bootstrap-datepicker.pt.min.js"></script>
 <script type="text/javascript" src="../webcamjs-master/webcam.js"></script>
 <script src="../js/form-validation-utils.js"></script>
-
+<script src="../js/tooltips.js"></script>
 <script>
 
 function dispara() 
@@ -692,7 +708,7 @@ function prepara_camara()
                   jpeg_quality: 90
               });
     Webcam.attach( '#div_camara' );
-    
+
     document.getElementById('btn_configurar').style.display= (!Webcam.userMedia)?"inline":"none";
     document.getElementById('btn_cancelar').style.display="inline";
     document.getElementById('btn_dispara').style.display="inline";
@@ -709,7 +725,7 @@ function cancela_camara()
     document.getElementById('btn_reiniciar').style.display="none";
     document.getElementById('btn_limpa').style.display="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto_data']!="") echo('inline'); else echo('none')?>";
     document.getElementById('btn_foto').style.display="inline";
-    
+
     document.getElementById('foto_data').value = document.getElementById('original_foto_data').value;
 }
 
@@ -742,9 +758,12 @@ function limpa_foto()
 <script>
 function validar()
 {
-	
+
 	var cod_postal = document.getElementById('codigo_postal').value;
-	var data_nasc = document.getElementById('data_nasc').value;
+    var data_nasc = document.getElementById('data_nasc').value;
+    var nifElem = document.getElementById('nif');
+    var nif = (nifElem)? nifElem.value : "";
+    var NIF_ENABLED = <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)?'true':'false' ?>;
 	var telefone = document.getElementById('telefone').value;
     var telemovel = document.getElementById('telemovel').value;
     var pai = document.getElementById('pai').value;
@@ -766,22 +785,35 @@ function validar()
     var paroquia_comunhao = document.getElementById('paroquia_comunhao').value;
     var data_comunhao = document.getElementById('data_comunhao').value;
    	<?php endif ?>
-	
+
 	if(!data_valida(data_nasc))
+    {
+        alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
+        return false;
+    }
+
+    if(NIF_ENABLED)
+    {
+        if(nif==="" || nif===undefined)
         {
-        	alert("A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
-        	return false;
+            alert("Deve introduzir o NIF do catequizando.");
+            return false;
         }
-        
-        
+        if(!nif_valido(nif))
+        {
+            alert("O número de identificação fiscal que introduziu é inválido.");
+            return false;
+        }
+    }
+
 	if(!codigo_postal_valido(cod_postal, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
 	{
 		alert("O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.");
 		return false;
 	}
-                
-        
-        
+
+
+
         if((telefone==="" || telefone===undefined) && (telemovel==="" || telemovel===undefined) )
         {
 		alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
@@ -797,88 +829,90 @@ function validar()
         	alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
 		return false; 
         }
-        
-        
+
+
         <?php if($_REQUEST['modo']!='editar') :?>
         if( baptizado && (paroquia_baptismo==="" || paroquia_baptismo===undefined))
         {
         	alert("Deve especificar a paróquia de baptismo.");
 		return false; 
         }
-        
+
         if( baptizado && (data_baptismo==="" || data_baptismo===undefined))
         {
         	alert("Deve especificar a data de baptismo.");
 		return false; 
         }
-        
+
         if( baptizado && !data_valida(data_baptismo))
         {
         	alert("A data de baptismo que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
 		return false; 
         }
-        
+
         if( comunhao  && (paroquia_comunhao==="" || paroquia_comunhao===undefined))
         {
         	alert("Deve especificar a paróquia onde realizou a primeira comunhão.");
 		return false; 
         }
-        
+
         if( comunhao  && (data_comunhao==="" || data_comunhao===undefined))
         {
         	alert("Deve especificar a data em que realizou a primeira comunhão.");
 		return false; 
         }
-        
+
         if( comunhao && !data_valida(data_comunhao))
         {
         	alert("A data da primeira comunhão que introduziu é inválida. Deve ser da forma dd-mm-aaaa.");
 		return false; 
         }
         <?php endif ?>
-        
-        
+
+
         if( (enc_edu_pai && (pai==="" || pai===undefined)) || (enc_edu_mae && (mae==="" || mae===undefined)) )
 	{
 		alert("Deve especificar o nome e profissão do encarregado de educação.");
 		return false; 
 	}
-        
-        
+
+
 	if( enc_edu_outro && ((enc_edu_parentesco==="" || enc_edu_parentesco===undefined) || (enc_edu_nome==="" || enc_edu_nome===undefined) || (enc_edu_prof==="" || enc_edu_prof===undefined)) )
 	{
 		alert("Deve especificar o grau de parentesco, nome e profissão do encarregado de educação.");
 		return false; 
 	}
-        
-        
+
+
         if( (pai!=="" && pai!==undefined) && (prof_pai==="" || prof_pai===undefined) )
         {
 		alert("Deve especificar a profissão do pai.");
 		return false; 
         }
-        
+
         if( (prof_pai!=="" && prof_pai!==undefined) && (pai==="" || pai===undefined) )
         {
 		alert("Deve especificar o nome do pai, além da profissão.");
 		return false; 
         }
-        
+
         if( (mae!== "" && mae!==undefined) && (prof_mae=== "" || prof_mae===undefined) )
         {
 		alert("Deve especificar a profissão da mãe.");
 		return false; 
         }
-        
+
          if( (prof_mae!== "" && prof_mae!==undefined) && (mae=== "" || mae===undefined) )
         {
 		alert("Deve especificar o nome da mãe, além da profissão.");
 		return false; 
         }
-        
+
         return true;
-        
+
 }
+
+
 </script>
 
 
@@ -922,7 +956,7 @@ $(function(){
 function verifica_codigo_postal()
 {
 	var cod = document.getElementById('codigo_postal').value;
-	
+
 	if(!codigo_postal_valido(cod, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && cod!="" && cod!=undefined)
 	{ 
 		$('#codigo_postal_div').addClass('has-error');
@@ -941,7 +975,7 @@ function verifica_codigo_postal()
 function verifica_data_nasc()
 {
 	var data_nasc = document.getElementById('data_nasc').value;
-	
+
 	if(!data_valida(data_nasc) && data_nasc!="" && data_nasc!=undefined)
 	{ 
 		$('#data_nasc_div').addClass('has-error');
@@ -956,11 +990,29 @@ function verifica_data_nasc()
 	}
 }
 
+function verifica_nif()
+{
+    var nif = document.getElementById('nif').value;
+
+    if(!nif_valido(nif) && nif!="" && nif!=undefined)
+    {
+        $('#nif_div').addClass('has-error');
+        $('#nif_div').addClass('has-feedback');
+        $('#erro_nif_icon').show();
+        return false;
+    } else {
+        $('#nif_div').removeClass('has-error');
+        $('#nif_div').removeClass('has-feedback');
+        $('#erro_nif_icon').hide();
+        return true;
+    }
+}
+
 
 function verifica_data_baptismo()
 {
 	var data_bap = document.getElementById('data_baptismo').value;
-	
+
 	if(!data_valida(data_bap) && data_bap!="" && data_bap!=undefined)
 	{ 
 		$('#data_baptismo_div').addClass('has-error');
@@ -978,7 +1030,7 @@ function verifica_data_baptismo()
 function verifica_data_comunhao()
 {
 	var data_com = document.getElementById('data_comunhao').value;
-	
+
 	if(!data_valida(data_com) && data_com!="" && data_com!=undefined)
 	{ 
 		$('#data_comunhao_div').addClass('has-error');
@@ -996,7 +1048,7 @@ function verifica_data_comunhao()
 function verifica_telefone()
 {
 	var telefone = document.getElementById('telefone').value;
-	
+
 	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
 	{ 
 		$('#telefone_div').addClass('has-error');
@@ -1014,7 +1066,7 @@ function verifica_telefone()
 function verifica_telemovel()
 {
 	var telemovel = document.getElementById('telemovel').value;
-	
+
 	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
 	{ 
 		$('#telemovel_div').addClass('has-error');
@@ -1155,7 +1207,7 @@ $(document).ready(function()
         });
     }
 </script>
-    
+
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 <script type="text/javascript">
     window.cookieconsent_options = {"message":"Este sítio utiliza cookies para melhorar a sua experiência de navegação. <br>Ao continuar está a consentir essa utilização.","dismiss":"Aceito","learnMore":"Mais info","link":null,"theme":"light-floating"};

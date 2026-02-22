@@ -7,6 +7,7 @@ require_once(__DIR__ . '/../../../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/../../../authentication/Authenticator.php');
 require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../AboutDialog/AboutDialogWidget.php');
+require_once(__DIR__ . '/../UpdateDialog/UpdateDialogWidget.php');
 
 namespace catechesis\gui\MainNavbar;
 abstract class MENU_OPTION
@@ -39,6 +40,8 @@ class MainNavbar extends Widget
     private /*int*/                 $menuOption = MENU_OPTION::NONE;        // The menu tab where the invoking page belongs. One of the constants in MainNavbar::MENU_OPTION
     private /*bool*/                $allowsSiblingEnrollment = False;       // Whether the option 'enroll a sibling' should be enabled in invoking page
     private /*AboutDialogWidget*/   $aboutDialog = null;                    // The dialog window about CatecheSis
+    private /*UpdateDialogWidget*/  $updateDialog = null;                   // The update notification window
+
 
     public function __construct(string $id = null, int $menuOption, bool $allowsSiblingEnrollment=False)
     {
@@ -49,6 +52,7 @@ class MainNavbar extends Widget
         $this->addCSSDependency('css/custom-navbar-colors.css'); //FIXME Remove this when migrating to Bootstrap 5
         $this->addCSSDependency('font-awesome/fontawesome-free-5.15.1-web/css/all.min.css');
         $this->addCSSDependency('gui/widgets/Navbar/MainNavbar.css');
+        $this->addCSSDependency('css/animate.min.css');
 
         $this->addJSDependency('js/jquery.min.js');
         $this->addJSDependency('js/bootstrap.min.js');
@@ -58,6 +62,12 @@ class MainNavbar extends Widget
         foreach($this->aboutDialog->getCSSDependencies() as $path)
             $this->addCSSDependency($path);
         foreach($this->aboutDialog->getJSDependencies() as $path)
+            $this->addJSDependency($path);
+
+        $this->updateDialog = new UpdateDialogWidget("updater");
+        foreach($this->updateDialog->getCSSDependencies() as $path)
+            $this->addCSSDependency($path);
+        foreach($this->updateDialog->getJSDependencies() as $path)
             $this->addJSDependency($path);
 
         $this->menuOption = $menuOption;
@@ -80,6 +90,19 @@ class MainNavbar extends Widget
     public function renderJS()
     {
         $this->aboutDialog->renderJS();
+        $this->updateDialog->renderJS();
+        ?>
+        <script>
+        $(function() {
+            $('[data-toggle="popover"]').popover({
+                html: true,
+                content: function() {
+                    return $('#popover-content').html();
+                }
+            });
+        });
+        </script>
+        <?php
     }
 
     /**
@@ -102,9 +125,15 @@ class MainNavbar extends Widget
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#catechesisNavbar" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
                     <a class="navbar-brand" href="dashboard.php"><img src="img/CatecheSis_Logo_Navbar.svg" class="img-responsive" style="height:200%; margin-top: -7%;"></a>
                 </div>
-                <div>
+                <div class="collapse navbar-collapse" id="catechesisNavbar">
                     <ul class="nav navbar-nav">
                         <!-- Dashboard -->
                         <li<?php if($this->menuOption==MENU_OPTION::HOME) echo(' class="active"'); ?>><a href="dashboard.php"><i class="fas fa-home"></i> </a></li>
@@ -147,6 +176,7 @@ class MainNavbar extends Widget
                         <li class="dropdown<?php if($this->menuOption==MENU_OPTION::CATECHESIS) echo(', active'); ?>"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-bible"></i> Catequese<span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li role="presentation" class="dropdown-header"><i class="fas fa-user-graduate"></i> Tarefas do catequista</li>
+                                <li><a href="marcarPresencas.php">Marcar presenças</a></li>
                                 <li><a href="gerarFolhasPresencas.php">Área de Impressão</a></li>
                                 <li><a href="aproveitamento.php">Aproveitamento dos catequizandos</a></li>
                                 <li class="divider"></li>
@@ -197,6 +227,7 @@ class MainNavbar extends Widget
                                 <li role="presentation" class="dropdown-header"><i class="fas fa-chart-pie"></i> Estatísticas</li>
                                 <li><a href="estatisticaNumCatequizandos.php">Número de catequizandos por catequista</a></li>
                                 <li><a href="estatisticaDesistencias.php">Desistências</a></li>
+                                <li><a href="estatisticaAssiduidade.php">Assiduidade</a></li>
                                 <li><a href="estatisticaPercursosCompletos.php">Percursos catequéticos completos</a></li>
                                 <li><a href="estatisticaResidentes.php">Catequizandos residentes na paróquia</a></li>
                                 <li class="divider"></li>
@@ -216,6 +247,18 @@ class MainNavbar extends Widget
 
                     <!-- Right area -->
                     <ul class="nav navbar-nav navbar-right">
+
+                        <?php
+                        if($_SESSION['IS_UPDATE_AVAILABLE'])
+                        {
+                        ?>
+                        <!-- Updates available -->
+                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#updater" href="#"><i style="color: darkorange;" class="fas fa-arrow-alt-circle-up animated animate__animated animate__heartBeat animate__repeat-3 animate__delay-2s"></i></a>
+                        </li>
+                        <?php
+                        }
+                        ?>
+
                         <!-- Settings -->
                         <li <?php if($this->menuOption==MENU_OPTION::SETTINGS) echo(' class="active"'); ?>><a href="configuracoes.php"><i class="fas fa-cog"></i></a></li>
 
@@ -250,5 +293,10 @@ class MainNavbar extends Widget
         <?php
 
         $this->aboutDialog->renderHTML();
+
+        if($_SESSION['IS_UPDATE_AVAILABLE'])
+        {
+            $this->updateDialog->renderHTML();
+        }
     }
 }

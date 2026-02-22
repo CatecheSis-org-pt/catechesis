@@ -43,12 +43,12 @@ interface DatabaseManager
                                                          bool $onlyScouts = false);
     public function getCatechumenCurrentCatechesisGroup(int $cid, int $catecheticalYear);                               // Returns the catechesis group where the catechumen is enrolled, in that year
     public function getCatechumenSiblings(int $cid);                                                                    // Returns the IDs of all catechumens whose responsible is the responsible/father/mother of this catechumen
-    public function createCatechumen(string $name, string $birthdate, string $birthplace,                               // Inserts a new catechumen in the database
-                                        $father_fid, $mother_fid, int $responsible_fid,
-                                        string $responsible_relationship, string $photo, int $numSiblings,
-                                        bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
-                                        string $observations, string $createdByUsername);
-    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace,                     // Updates most fields of a catechumen
+    public function createCatechumen(string $name, string $birthdate, string $birthplace, string $nif = null,
+                                     $father_fid, $mother_fid, int $responsible_fid,
+                                     string $responsible_relationship, string $photo, int $numSiblings,
+                                     bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
+                                     string $observations, string $createdByUsername);
+    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, string $nif = null, // Updates most fields of a catechumen
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed);
@@ -102,8 +102,8 @@ interface DatabaseManager
     public function getNumberOfPendingEnrollments(int $catecheticalYear = null);                                        // Counts the number of pending enrollment submissions
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,  // Submits a renewal order to the database and returns its ID
                                      string $ipAddress, string $email = null, string $obs = null);
-    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, int $nSiblings,   // Registers a new enrollment order
-                                        string $address, string $postalCode,
+    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null, // Registers a new enrollment order
+                                        int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,
                                         bool $scout, bool $photosAllowed, bool $exitAllowed, array $exitAuthorizations,
                                         string $photo = null, string $obs = null,
@@ -155,12 +155,15 @@ interface DatabaseManager
     public function getCatechismsAndGroupsFromLatestYear();                                                             // Returns the pairs of (catechism, group) from the latest registered year in the database
     public function hasCatechism(int $catecheticalYear, int $catechism);                                                // Returns true if a particular catechism exists in the database
     public function getGroupLetters(int $catecheticalYear = null);                                                      // Returns all the distinct group (class) letters in the database
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group);                              // Returns the details of a particular catechism group
     public function createCatechismGroup(int $catecheticalYear, int $catechism, string $group);                         // Inserts a new catechism group
     public function deleteCatechismGroup(int $catecheticalYear, int $catechism, string $group);                         // Deletes a group from the database
     public function enrollCatechumenInGroup(int $cid, int $catecheticalYear, int $catechism, string $group,             // Enrolls a catechumen in a catechesis group
                                             bool $pass, bool $paid, string $username);
     public function unenrollCatechumenFromGroup(int $cid, int $catecheticalYear, int $catechism, string $group);        // Unenrolls a catechumen from a catechesis group
     public function unenrollCatechumenFromAllGroups(int $cid, bool $useTransaction=true);                               // Unenrolls a catechumen from all the groups where he/she is enrolled
+    public function updateGroupSchedule(int $catecheticalYear, int $catechism, string $group,                           // Updates the schedule for a particular catechism group
+                                         ?int $weekDay, ?string $startTime, ?string $endTime);
     public function updateCatechumenEnrollmentPayment(int $cid, int $catecheticalYear, int $catechism, string $group,   // Updates the payment status of a catechumen enrollment
                                                        bool $paid);
     public function getCatecheticalYearsWhereCatechumenIsNotEnrolled(int $cid);                                         // Returns all the catechetical years where the catechumen is NOT enrolled
@@ -200,6 +203,16 @@ interface DatabaseManager
     public function getAbandonmentByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage);                 // Returns the number of catechumens abandoning catechesis by catechetical year
     public function getCompleteCatecheticalJourneysByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage);// Returns the number of catechumens completing the catechetical journey by catechetical year
     public function getCatechumensByCatechistAndYear(bool $accumulated);                                                // Returns the number of catechumens by catechist and catechetical year
+    public function getAttendancePercentageByGroup(int $catecheticalYear);                                              // Returns the percentage of present catechumens in each group and catechesis session of the given year
+
+    // Attendance and sessions
+    public function createCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);         // Creates a new session entry for a group/year
+    public function getCatechesisSessions(int $catecheticalYear, int $catechism, string $group);                         // Lists all session dates for a group in a year
+    public function setCatechumenAttendance(string $date, int $catechism, string $group, int $catecheticalYear,          // Registers attendance for a catechumen in a session
+                                            int $cid, int $attendance, string $markedByUsername);
+    public function getLessonAttendees(string $date, int $catechism, string $group, int $catecheticalYear);              // Returns catechumens that attended a given session
+    public function getCatechumenAttendanceForGroup(int $catecheticalYear, int $catechism, string $group, int $cid);     // Returns attendance status for all sessions of a group/year for a catechumen
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);         // Deletes a session and its attendance records
 
     // Virtual catechesis
     public function getVirtualCatechesisSessionDates(int $catechism = null, string $group = null,                       // Returns the calendar dates for which a virtual catechesis session exists
@@ -213,11 +226,6 @@ interface DatabaseManager
                                                   int $catechism = null, string $group = null);
     public function getListOfVirtualCatechesisObservers(string $sessionDate, int $timeThreshold, int $catechism = null, // Returns the list of users currently editing a virtual catechesis
                                                         string $group = null, string $excludeUsername = null);
-    public function postVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, string $url,          // Creates or updates the URL of a virtual catechesis room
-                                              string $roomPassword, string $username);
-    public function getVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, int $timeThreshold=90);// Returns the URL, password and status of a virtual catechesis room
-    public function updateVirtualCatechisRoomStatus(string $sessionDate, int $catechism, string $group, int $status);   // Changes the open/closed status of a virtual catechesis room
-    public function closeVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group);                     // Sets the status of a virtual room as closed
 
     // Settings
     public function getConfigValue(string $key);                                                                        // Returns the configuration value associated with the given key

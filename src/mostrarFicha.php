@@ -58,6 +58,21 @@ $pageUI->addWidget($deleteDialog);
 	    {
 		display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .panel-heading {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background-color: #f5f5f5 !important;
+        }
 	    
 	    /*@page {
 		    size: 297mm 210mm;*/ /* landscape */
@@ -105,7 +120,8 @@ $menu->renderHTML();
 		$result = NULL;
 		
 		$nome = NULL;
-		$data_nasc = NULL;
+        $data_nasc = NULL;
+        $nif = NULL;
 		$local_nasc = NULL;
 		$num_irmaos = NULL;
 		$escuteiro = NULL;
@@ -147,6 +163,7 @@ $menu->renderHTML();
 
             $nome = Utils::sanitizeOutput($catechumen['nome']);
             $data_nasc = Utils::sanitizeOutput($catechumen['data_nasc']);
+            $nif = intval($catechumen['nif']);
             $local_nasc = Utils::sanitizeOutput($catechumen['local_nasc']);
             $num_irmaos = intval($catechumen['num_irmaos']);
             $escuteiro = Utils::sanitizeOutput($catechumen['escuteiro']);
@@ -284,7 +301,8 @@ $menu->renderHTML();
 			
 			$_SESSION['nome'] = $nome;
 			$_SESSION['data_nasc_row'] = $data_nasc;
-			$_SESSION['data_nasc'] = $data_nasc = date( "d-m-Y", strtotime($data_nasc));
+            $_SESSION['data_nasc'] = $data_nasc = date( "d-m-Y", strtotime($data_nasc));
+            $_SESSION['nif'] = $nif;
 			$_SESSION['local_nasc'] = $local_nasc;
 			$_SESSION['num_irmaos'] = $num_irmaos;
 			$_SESSION['escuteiro'] = $escuteiro;
@@ -454,19 +472,25 @@ $menu->renderHTML();
 	    </div>
 	    
 	    
-	     <!--idade-->
+       <!--idade-->
 	   <div class="form-group">
-	    <div class="col-xs-6">
-	    	<label for="idade">Idade:</label>
+	    <div class="col-xs-2">
+	    	<label for="idade">Idade:</label><br>
 	    	<span class="input-xlarge uneditable-input">
-	    	<?php
-	    		echo("" . date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y . "");
-	    	?>
+	    	<?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
 	    	</span>
 	    </div>
-	    <div class="clearfix"></div>
-	    </div>
-    
+       </div>
+
+       <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+       <!--NIF-->
+       <div class="col-xs-3">
+           <label for="nif">NIF:</label>
+           <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
+               <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
+           <div class="clearfix"></div>
+       </div>
+       <?php } ?>
     
     </div>
    </div>
@@ -745,13 +769,17 @@ HTML_CODE
 $printDialog->setTitle("Imprimir");
 
 $printDialog->setBodyContents(<<<HTML_CODE
-        <p>Dependendo das configurações de impressão do seu navegador, o conteúdo da ficha poderá não ser totalmente legível numa página A4.</p>
-	    <p>Obterá melhores resultados se transferir a ficha e imprimir no Microsoft Word.</p>
+        <p>A página foi automaticamente configurada para otimizar a legibilidade da ficha impressa.</p>
+	    <p>Poderá ainda obter melhores resultados se transferir a ficha e imprimir no Microsoft Word.</p>
 	    
 	    <div class="clearfix" style="margin-bottom: 20px;"></div>
 	    
-	    <p><input type="radio" name="imprimir_como" id="imprimir_word" value="word" checked> Transferir como documento do Microsoft Word <b><i>[RECOMENDADO]</i></b></p>
-	    <p><input type="radio" name="imprimir_como" id="imprimir_borwser" value="browser"> Imprimir directamente no navegador</p>
+     <div class="radio">
+          <label><input type="radio" name="imprimir_como" id="imprimir_word" value="word" checked> Transferir como documento do Microsoft Word <b><i>[RECOMENDADO]</i></b></label>
+     </div>
+     <div class="radio">
+          <label><input type="radio" name="imprimir_como" id="imprimir_borwser" value="browser"> Imprimir directamente no navegador</label>
+     </div>
 HTML_CODE
 );
 
@@ -779,7 +807,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
         var mywindow = window.open('', 'Ficha', 'height=800,width=600');
         mywindow.document.write('<html><head><title>Ficha</title><link rel="stylesheet" href="css/bootstrap.min.css">\
                                     <link rel="stylesheet" href="css/custom-navbar-colors.css">');
-        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; }	}');
+        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } @page { size: portrait; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }	.panel-heading { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #f5f5f5 !important; } }');
         mywindow.document.write('@media screen { .only-print, .only-print * { display: none !important;	} } textarea { resize: vertical; }</style>');
         mywindow.document.write('</head><body >');
         mywindow.document.write(data);

@@ -240,7 +240,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
   <div class="form-group">
     <div class="col-xs-4">
  	 <label for="ano_catequetico">Ano catequético: </label>
- 	 <select name="ano_catequetico_prec" onchange="this.form.submit()">
+   <select class="form-control" name="ano_catequetico_prec" onchange="this.form.submit()">
   
 	<?php
 
@@ -281,7 +281,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
    	<div class="form-group">
    	<div class="col-xs-3">
    		<label for="catecismo">Catecismo:</label>
-		<select name="catecismo_prec" onchange="this.form.submit()">
+  <select class="form-control" name="catecismo_prec" onchange="this.form.submit()">
 			
 	<?php
 
@@ -323,7 +323,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
    <div class="form-group">
    	<div class="col-xs-3">
    		<label for="turma">Grupo:</label>
-		<select name="turma_prec" onchange="this.form.submit()">
+  <select class="form-control" name="turma_prec" onchange="this.form.submit()">
 			
 	<?php
 
@@ -406,7 +406,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
 	
 	<div class="col-xs-6">
 	 <label for="sacramento">Sacramento: </label>
-	 <select name="sacramento" onchange="this.form.submit()"> 
+  <select class="form-control" name="sacramento" onchange="this.form.submit()">
 	 	<option value="<?= Sacraments::toInternalString(Sacraments::BAPTISM)?>"     <?php if(!is_null($sacramento) && $sacramento==Sacraments::BAPTISM) echo('selected'); ?>     >Batismo</option>
 	 	<option value="<?= Sacraments::toInternalString(Sacraments::FIRST_COMMUNION)?>"  <?php if(!is_null($sacramento) && $sacramento==Sacraments::FIRST_COMMUNION) echo('selected'); ?>  >Eucaristia (Primeira Comunhão)</option>
 	 	<option value="<?= Sacraments::toInternalString(Sacraments::PROFESSION_OF_FAITH)?>" <?php if(!is_null($sacramento) && $sacramento==Sacraments::PROFESSION_OF_FAITH) echo('selected'); ?> >Profissão de Fé</option>
@@ -744,6 +744,8 @@ function guardar()
         defaultViewDate: { year: <?= date("Y") ?>, month: 1, day: 1 },
         startView: 2,
         language: "pt",
+        orientation: "bottom auto",
+        container: '#data_sacramento_div',
         autoclose: true
 	   	 });
 </script>

@@ -2,6 +2,89 @@
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 
+## [Versão UNRELEASED] - 2026-xx-xx
+
+#### Novidades:
+- Nova funcionalidade de marcação de presenças dos catequizandos nas sessões de catequese;
+- Novo gráfico com estatísticas de assiduidade dos grupos de catequese, acessível no menu _Estatísticas_;
+- A assiduidade de cada catequizando é agora mostrada no respetivo _Arquivo_, na tabela do percurso catequético, e também na página de registo de aproveitamento dos catequizandos (para apoio à decisão);
+- As folhas de presenças podem agora ser impressas pré-preenchidas com as presenças marcadas no sistema até à data, ou completamente vazias;
+- É agora possível definir um dia da semana e um horário específico para cada grupo de catequese;
+- É agora possível alterar os registos de aproveitamento dos catequizandos para datas passadas;
+- Os Administradores podem agora modificar os registos de aproveitamento dos catequizandos para qualquer grupo e data;
+
+#### Melhorias de usabilidade:
+- Novos atalhos na _dashboard_ e nos resultados de pesquisa para grupos para aceder diretamente à página de marcação de presenças;
+- O design da página de registo do aproveitamento dos catequizandos foi revisto e uniformizado;
+- O aspeto de diversas caixas de seleção e botões foi uniformizado em toda a aplicação;
+
+#### Correções:
+- Alguns widgets de seleção de data, utilizados em diversas páginas, eram renderizados fora do campo respetivo ou desalinhados;
+
+
+
+## [Versão 2.3.2] - 2026-01-11
+
+#### Melhorias de usabilidade:
+- A barra de menu é agora colapsada em dispositivos com ecrãs pequenos; 
+- Os botões de impressão configuram agora automaticamente algumas definições do navegador (como imprimir a página na horizontal) para otimizar a legibilidade, conforme o tipo de documento a imprimir; 
+
+#### Correções:
+- Campo NIF era ilegível nalguns telemóveis;
+- A data é agora exibida por extenso, em português, na página da catequese virtual, independentemente da língua do servidor;
+- Alguns tipos de letra / efeitos de texto do editor de catequese virtual não eram mostrados em alguns navegadores;
+
+
+
+## [Versão 2.3.1] - 2025-10-13
+
+#### Correções:
+- Corrigida fórmula de validação do NIF português nos formulários;
+
+
+## [Versão 2.3.0] - 2025-10-12
+
+#### Novidades:
+- Adicionado novo campo NIF nas fichas dos catequizandos, necessário nalgumas paróquias para efeitos de seguro de acidentes pessoais. Este campo pode ser ativado ou desativado nas configurações;
+- É agora possível carregar comprovativos de sacramentos em formato JPG e PNG (para além de PDF);
+- Novos interruptores para abrir/fechar inscrições e/ou renovações de matrícula de forma independente;
+
+#### Melhorias de usabilidade:
+- *Mãe* passa a ser o encarregado de educação selecionado por omissão, atendendo às estatísticas reportadas voluntariamente por algumas paróquias;
+
+#### Correções:
+- A fórmula de cálculo do catecismo recomendado para inscrição na catequese com base na idade foi revista para Portugal, nos casos em que a inscrição se efetua na segunda metade do ano catequético (entre Janeiro e Junho);
+- Corrigida desformatação do fundo personalizado na página inicial pública em ecrãs grandes;
+- O nome do utilizador atualmente autenticado, mostrado na barra de menu, mudava erradamente quando um administrador modificava os dados da conta de outro utilizador;
+- A estatística "Percursos catequéticos completos" foi corrigida para considerar o número de catecismos configurado para a paróquia;
+
+
+
+## [Versão 2.2.1] - 2024-02-13
+
+#### Correções:
+- Corrigido bug que provocava erro fatal (array nulo) em alguns sistemas;
+
+
+## [Versão 2.2.0] - 2024-02-13
+
+#### Novidades:
+- Notificação de atualização disponível;
+- Assistente de atualização automática;
+
+#### Melhorias de usabilidade:
+- Melhorada mensagem na página *Gerir grupos de catequese* quando não existem anos catequéticos;
+- Geração automática do ficheiro `.htaccess` durante a instalação. A instalação é agora completamente automática;
+
+#### Correções:
+- A configuração do CHARACTER SET e COLLATION da base de dados não era executada corretamente em algumas versões mais recentes do servidor MySQL;
+- Assistente de Instalação agora permite reiniciar uma instalação mesmo após ter atingido a última etapa;
+- Corrigido bug que afetava alguns sistemas na criação de novo ano catequético;
+- Removida funcionalidade de videochamadas Jitsi devido a [alterações na política de utilização do serviço](https://jitsi.org/blog/authentication-on-meet-jit-si/) alheias ao CatecheSis;
+- Corrigidas posições nas caixas nas fichas de pré-inscrição geradas em .docx;
+
+
+
 ## [Versão 2.1.0] - 2023-05-01
 
 #### Novidades:
@@ -9,7 +92,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 #### Melhorias de usabilidade:
 - Melhorada nomenclatura e comportamento do campo _último catecismo frequentado_ das páginas de inscrição/renovação de matrícula, para evitar erros de preenchimento;
-- Melhoradas as recomendações de catecismos com base na idade do cadidato e no último catecismo frequentado;
+- Melhoradas as recomendações de catecismos com base na idade do candidato e no último catecismo frequentado;
 - Funcionalidade _Reprografia_ renomeada para _Área de Impressão_;
 
 

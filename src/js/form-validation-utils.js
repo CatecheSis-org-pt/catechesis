@@ -34,3 +34,26 @@ function data_valida(data)
     var pattern = /^[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{4}$/;
     return (pattern.test(data));
 }
+
+function nif_valido(nif)
+{
+    // Remove espaços e caracteres não numéricos
+    nif = (nif || "").toString().replace(/\D/g, '');
+
+    // Verifica se o NIF tem 9 dígitos
+    if (nif.length !== 9) {
+        return false;
+    }
+
+    // Converte o NIF em um array de dígitos
+    const digitos = nif.split('').map(Number);
+
+    // Calcula o dígito de controlo (PT): sum(d1*9 + d2*8 + ... + d8*2)
+    const soma = digitos.slice(0, 8).reduce((acc, curr, index) => acc + curr * (9 - index), 0);
+
+    let check = 11 - (soma % 11);
+    if (check >= 10) check = 0;
+
+    // Verifica se o dígito de controlo está correto
+    return check === digitos[8];
+}

@@ -1,18 +1,20 @@
 body
 {
     height: 100%;
+    min-height: 100vh;
     /*background-color: #008fcf;*/
     background-color: white;
     background-image: radial-gradient(ellipse 120vw 50% at top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 80%, rgba(255, 255, 255, 1) 100%), url('../img/index_img_filter.png'), url('../resources/parishPublicPicture.php');
-    /*background-size:100% 100%;*/
-    background-size:  contain, cover;
-    /*background-size:  100% 100%, cover;*/
-    /*-o-background-size: 100% 100%;
-    -webkit-background-size: 100% 100%;*/
+    background-size: 100% 100%, 100% 100%, 100% auto;
+    background-position: center top;
     background-repeat: no-repeat;
-    display:flex;
+    background-attachment: scroll;
+    display: flex;
     font-family: Nexa, sans-serif;
+    overflow-x: hidden;
+    position: relative;
 }
+
 
 h1
 {

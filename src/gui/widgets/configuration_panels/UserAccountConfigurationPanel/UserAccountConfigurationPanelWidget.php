@@ -316,7 +316,9 @@ class UserAccountConfigurationPanelWidget extends AbstractSettingsPanelWidget
                 {
                     writeLogEntry("Dados da conta do utilizador " . $editar_username . " actualizados.");
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados da " . ($editar_username == Authenticator::getUsername()?"sua conta":("conta " . $editar_username)) . " foram actualizados.</div>");
-                    $_SESSION['nome_utilizador'] = $editar_nome;
+
+                    if($editar_username == Authenticator::getUsername())
+                        $_SESSION['nome_utilizador'] = $editar_nome;
                 }
                 else
                 {

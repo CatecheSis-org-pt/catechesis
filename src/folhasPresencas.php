@@ -61,6 +61,15 @@ $pageUI->addWidget($printDialog);
 	    {
 		display: none !important;
 	    }
+
+        @page {
+            size: landscape;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 	    
 	    /*@page {
 		    size: 297mm 210mm;*/ /* landscape */
@@ -75,16 +84,30 @@ $pageUI->addWidget($printDialog);
 			page-break-inside: avoid;
 		}
 
+        tr:nth-child(odd) td{
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
+        tr:nth-child(even) td.success {
+            background-color: #d0e9c6 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
-	    tr:nth-child(even) td{
-		    background-color: #f9f9f9 !important;
-		    -webkit-print-color-adjust: exact; 
-		}
-		
+        tr:nth-child(odd) td.success {
+            background-color: #c1e2b3 !important;
+            -webkit-print-color-adjust: exact;
+        }
 
-		
-		
+        tr:nth-child(even) td.danger {
+            background-color: #ebcccc !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.danger {
+            background-color: #e4b9b9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 	}
 	
 	@media screen
@@ -93,6 +116,31 @@ $pageUI->addWidget($printDialog);
 		{
 			display: none !important;
 		}
+
+        tr:nth-child(odd) td{
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(even) td.success {
+            background-color: #d0e9c6 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.success {
+            background-color: #c1e2b3 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(even) td.danger {
+            background-color: #ebcccc !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr:nth-child(odd) td.danger {
+            background-color: #e4b9b9 !important;
+            -webkit-print-color-adjust: exact;
+        }
 	}
 	
 	
@@ -131,12 +179,11 @@ function add_rows()
 		while(linhas < to_add)
 		{
 			var row = table.insertRow(-1);
-			var numCells = table.rows[1].cells.length;
-			while(numCells >= 0)
+			var numCells = table.rows[2].cells.length;
+			for(var j=0; j<numCells; j++)
 			{
-				var cell = row.insertCell(0);
+				var cell = row.insertCell(-1);
 				cell.innerHTML = "&nbsp;";
-				numCells--;
 			}
 			linhas++;
 		}
@@ -189,20 +236,37 @@ $menu->renderHTML();
 
       <div class="row" style="margin-top:20px; "></div>
 
-      <div class="well well-lg" style="position:relative; z-index:2;">
+      <form id="form_filtros" action="folhasPresencas.php" method="post">
+        <input type="hidden" name="ano_catequetico" value="<?php if(isset($_POST['ano_catequetico'])) echo('' . $_POST['ano_catequetico'] . ''); ?>">
+        <input type="hidden" name="catecismo" value="<?php if(isset($_POST['catecismo'])) echo('' . $_POST['catecismo'] . ''); ?>">
+        <input type="hidden" name="turma" value="<?php if(isset($_POST['turma'])) echo('' . $_POST['turma'] . ''); ?>">
+        
+        <div class="well well-lg" style="position:relative; z-index:2;">
 
-        <div class="col-xs-3">
-          <div class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default glyphicon glyphicon-print" data-toggle="modal" data-target="#instrucoesImpressao" onclick=""> Imprimir</button>
-          </div>
+            <div class="col-xs-3">
+              <div class="btn-group" role="group" aria-label="...">
+              <button type="button" class="btn btn-default glyphicon glyphicon-print" data-toggle="modal" data-target="#instrucoesImpressao" onclick=""> Imprimir</button>
+              </div>
+            </div>
+
+            <div class="col-xs-4">
+              <input type="checkbox" id="linhas-sup-checkbox" class="my-checkbox" onchange="add_rows();">  &nbsp; Linhas suplementares
+            </div>
+
+            <div class="col-xs-5">
+                <?php
+                $show_actual_data = true;
+                if (isset($_POST['dados_reais']) && $_POST['dados_reais'] == 'off') {
+                    $show_actual_data = false;
+                }
+                ?>
+                <input type="checkbox" name="dados_reais_checkbox" id="dados-reais-checkbox" class="my-checkbox" <?= $show_actual_data ? "checked" : "" ?>> &nbsp; Mostrar presenças/faltas
+                <input type="hidden" name="dados_reais" id="dados_reais_hidden" value="<?= $show_actual_data ? "on" : "off" ?>">
+            </div>
+
+            <div class="clearfix"></div>
         </div>
-
-        <div class="col-xs-9">
-          <input type="checkbox" id="linhas-sup-checkbox" class="my-checkbox" onchange="add_rows();">  &nbsp; Linhas suplementares
-        </div>
-
-        <div class="clearfix"></div>
-      </div>
+      </form>
 
    </div>
    
@@ -214,68 +278,69 @@ $menu->renderHTML();
 <?php
 
 
-	function escreve_dias($ano_i, $ano_f)
+	function get_dates($ano_catequetico, $catecismo, $turma, $show_actual_data = true)
 	{
-        $weekDay = WeekDay::toString(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY));
-		$timestamp = strtotime('first ' . $weekDay . ' of ' . Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_i));
+		$db = new PdoDatabaseManager();
+		$dates = array();
 
-		setlocale(LC_TIME, "pt_PT");
-		$mes_actual = strftime('%m', $timestamp);
-		$ultimo_mes = strftime('%m', $timestamp);
-	
-		echo("<tr>\n");
-		for($i=0; $timestamp <= strtotime('last ' . $weekDay . ' of ' . Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_f)); $i++)
-		{
-		 	 while($mes_actual==$ultimo_mes)
-			 {
-			 	echo("\t<th><small>" . intval(strftime('%d', $timestamp)) . "</small></th>\n");
-			 	$timestamp = strtotime('next ' . $weekDay, $timestamp);
-			 	
-			 	$ultimo_mes = $mes_actual;
-				$mes_actual = strftime('%m', $timestamp);
-			 }
+		$weekDay = WeekDay::toString(Utils::getEffectiveWeekDay($ano_catequetico, $catecismo, $turma));
+		$ano_i = Utils::getCatecheticalYearStart($ano_catequetico);
+		$ano_f = Utils::getCatecheticalYearEnd($ano_catequetico);
 
-			 $mes_actual = strftime('%m', $timestamp);
-			 $ultimo_mes = strftime('%m', $timestamp);
+		$start_month = Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE));
+		$end_month = Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE));
+
+		$timestamp = strtotime('first ' . $weekDay . ' of ' . $start_month, strtotime('1-1-' . $ano_i));
+		$end_timestamp = strtotime('last ' . $weekDay . ' of ' . $end_month, strtotime('1-1-' . $ano_f));
+
+		$today = date('Y-m-d');
+
+		if ($show_actual_data) {
+			$registered_sessions = $db->getCatechesisSessions($ano_catequetico, $catecismo, $turma);
+			foreach($registered_sessions as $s) {
+				$dates[] = $s['data'];
+			}
+
+			// Add future dates
+			while ($timestamp <= $end_timestamp) {
+				$d = date('Y-m-d', $timestamp);
+				if ($d > $today && !in_array($d, $dates)) {
+					$dates[] = $d;
+				}
+				$timestamp = strtotime('next ' . $weekDay, $timestamp);
+			}
+		} else {
+			// Old behavior: only planned week days
+			while ($timestamp <= $end_timestamp) {
+				$dates[] = date('Y-m-d', $timestamp);
+				$timestamp = strtotime('next ' . $weekDay, $timestamp);
+			}
+		}
 		
-			 echo("\n");
+		sort($dates);
+		return $dates;
+	}
+
+	function escreve_dias($dates)
+	{
+		setlocale(LC_TIME, "pt_PT");
+		echo("<tr>\n");
+		foreach($dates as $date)
+		{
+			echo("\t<th><small>" . intval(date('d', strtotime($date))) . "</small></th>\n");
 		}
 		echo("</tr>\n");
 	}
 	
-	
-	
-	function computeNumCatechesisDays($ano_i, $ano_f, $mes)
+	function computeNumCatechesisDays($dates, $mes)
 	{
-        $weekDay = WeekDay::toString(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_WEEK_DAY));
-        $months = array(1 => 'January', 2 =>'February', 3 =>'March', 4 =>'April', 5 =>'May', 6 =>'June', 7 =>'July', 8 =>'August', 9 =>'September', 10 =>'October', 11 =>'November', 12 =>'December' );
-		
-		$ano = $ano_i;
-		if($mes<9)
-			$ano = $ano_f;
-		
-		$timestamp = strtotime('first ' . $weekDay . ' of ' . $months[intval($mes)], strtotime('1-1-' . $ano));
-
-		setlocale(LC_TIME, "pt_PT");
-		$mes_actual = strftime('%m', $timestamp);
-		$ultimo_mes = strftime('%m', $timestamp);
-		
 		$res = 0;
-		if($timestamp <= strtotime('last ' . $weekDay . ' of ' . Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)), strtotime('1-1-' . $ano_f)))
+		foreach($dates as $date)
 		{
-		 	 while($mes_actual==$ultimo_mes)
-			 {
-			 	if($mes_actual==$mes)
-					$res++;
-					
-			 	$timestamp = strtotime('next ' . $weekDay, $timestamp);
-			 	
-			 	$ultimo_mes = $mes_actual;
-				$mes_actual = strftime('%m', $timestamp);			
-				
-			 }
+			if (intval(date('m', strtotime($date))) == intval($mes)) {
+				$res++;
+			}
 		}
-
 		return $res;
 	}
 
@@ -286,6 +351,7 @@ $menu->renderHTML();
 		$ano_catequetico = intval($_POST['ano_catequetico']);
 		$catecismo = intval($_POST['catecismo']);
 		$turma = Utils::sanitizeInput($_POST['turma']);
+        $show_actual_data = !isset($_POST['dados_reais']) || $_POST['dados_reais'] !== 'off';
 
 		if($ano_catequetico < 1000000)	//Tem de ser da forma '20152016', logo, com 8 digitos
 		{
@@ -323,30 +389,54 @@ $menu->renderHTML();
 
 			if (count($result) >= 1)
 			{
+                $effectiveWeekDay = Utils::getEffectiveWeekDay($ano_catequetico, $catecismo, $turma);
+                $start_time = Utils::getEffectiveStartTime($ano_catequetico, $catecismo, $turma);
+                $end_time = Utils::getEffectiveEndTime($ano_catequetico, $catecismo, $turma);
+                $formatted_time = WeekDay::toPortugueseString($effectiveWeekDay) . " " . substr($start_time, 0, 5) . " - " . substr($end_time, 0, 5);
+
 				echo("<h4 class='only-print'>Folha de presenças</h4>\n");
-				echo("<span>Ano catequético: ".  Utils::formatCatecheticalYear($ano_catequetico) ."&nbsp;&nbsp;&nbsp;Catecismo: " . intval($catecismo) . "º" . $turma . "</span>");
+				echo("<span>Ano catequético: ".  Utils::formatCatecheticalYear($ano_catequetico) ."&nbsp;&nbsp;&nbsp;Catecismo: " . intval($catecismo) . "º" . $turma . "&nbsp;&nbsp;&nbsp;Horário: " . $formatted_time . "</span>");
                 $ano_i = Utils::getCatecheticalYearStart($ano_catequetico);
                 $ano_f = Utils::getCatecheticalYearEnd($ano_catequetico);
+				$dates = get_dates($ano_catequetico, $catecismo, $turma, $show_actual_data);
 				?>
 					<table id="tabela-presencas" class="table table-striped table-bordered table-condensed">
 					<thead>
 						<tr>
 							<th rowspan="2" style="width: 200px; ">Nome</th>
                             <?php
-                            $month_i = date_parse(Locale::catechesisStartMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)));
-                            $month_f = date_parse(Locale::catechesisEndMonth(Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)));
                             $months_abrv = array(1 => 'Jan', 2 =>'Fev', 3 =>'Mar', 4 =>'Abr', 5 =>'Mai', 6 =>'Jun', 7 =>'Jul', 8 =>'Ago', 9 =>'Set', 10 =>'Out', 11 =>'Nov', 12 =>'Dez' );
 
-                            $month = $month_i['month'];
-                            for($i = 0; $i < 12; $i++)
-                            {
-                                ?>
-                                <th colspan="<?= computeNumCatechesisDays($ano_i, $ano_f, $month)  ?>"><?= $months_abrv[$month] ?></th>
-                                <?php
+                            $current_month = -1;
+                            $current_year = -1;
+                            $month_dates_count = 0;
+                            $months_to_render = array();
 
-                                if($month == $month_f['month'])
-                                    break;
-                                $month = ($month %12 + 1);
+                            foreach ($dates as $date) {
+                                $d = strtotime($date);
+                                $m = intval(date('m', $d));
+                                $y = intval(date('Y', $d));
+
+                                if ($m !== $current_month || $y !== $current_year) {
+                                    if ($current_month !== -1) {
+                                        $months_to_render[] = array('name' => $months_abrv[$current_month], 'count' => $month_dates_count);
+                                    }
+                                    $current_month = $m;
+                                    $current_year = $y;
+                                    $month_dates_count = 1;
+                                } else {
+                                    $month_dates_count++;
+                                }
+                            }
+                            // Add last month
+                            if ($current_month !== -1) {
+                                $months_to_render[] = array('name' => $months_abrv[$current_month], 'count' => $month_dates_count);
+                            }
+
+                            foreach ($months_to_render as $m_data) {
+                                ?>
+                                <th colspan="<?= $m_data['count'] ?>"><?= $m_data['name'] ?></th>
+                                <?php
                             }
 							?>
 						</tr>
@@ -354,7 +444,7 @@ $menu->renderHTML();
 			
 				<?php	
 		
-				escreve_dias(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico)); //Gera linha da tabela com os dias dos sabados
+				escreve_dias($dates); //Gera linha da tabela com os dias das sessoes de catequese
 			
 				?>
 			
@@ -366,19 +456,36 @@ $menu->renderHTML();
 				foreach($result as $row)
 				{
 					$nome = Utils::sanitizeOutput($row['nome']);
+					$cid = intval($row['cid']);
+					$attendance = array();
+                    if ($show_actual_data) {
+                        $raw_attendance = $db->getCatechumenAttendanceForGroup($ano_catequetico, $catecismo, $turma, $cid);
+                        foreach($raw_attendance as $ra) {
+                            $attendance[$ra['data']] = $ra['presenca'];
+                        }
+                    }
 
 					//Preencher ficha
 					echo("\t<tr>\n");
 					echo("\t\t<td>" . Utils::firstAndLastName($nome) . "</td>\n\n");
 
-                    $month = $month_i['month'];
-                    for($i = 0; $i < 10; $i++)
-                    {
-                        for($j=0; $j<computeNumCatechesisDays(Utils::getCatecheticalYearStart($ano_catequetico), Utils::getCatecheticalYearEnd($ano_catequetico), $month); $j++)
-                            echo("\t\t<td></td>\n");
-
-                        $month = ($month %12 + 1);
-                    }
+                    foreach($dates as $date)
+					{
+						$symbol = "";
+						if (isset($attendance[$date]) && (intval($attendance[$date]) === 1))
+                        {
+							//$symbol = (intval($attendance[$date]) === 1) ? "<i class=\"fas fa-solid fa-check\"></i>✅" : "❌";
+                            echo("\t\t<td class='success text-center'><b><i class='fas fa-solid fa-check'></i></b></td>\n");
+						}
+                        else if(isset($attendance[$date]) && (intval($attendance[$date]) === 0))
+                        {
+                            echo("\t\t<td class='danger text-center'><b><i class='fas fa-solid fa-times'></i></b></td>\n");
+                        }
+                        else
+                        {
+                            echo("\t\t<td class='text-center'><b></b></td>\n");
+                        }
+					}
 					
 					echo("\t</tr>\n");
 				}
@@ -417,7 +524,7 @@ $menu->renderHTML();
     $printDialog->setTitle("Recomendação");
 
     $printDialog->setBodyContents(<<<HTML_CODE
-        <p>É recomendado que configure a impressora para imprimir a página na horizontal e que configure a escala de impressão de tal modo que a tabela caiba, em toda a sua largura, na página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
+        <p>A página foi automaticamente configurada para ser impressa na horizontal. É recomendado que configure a escala de impressão de tal modo que a tabela caiba, em toda a sua largura, na página impressa. Utilize a janela de pré-visualização de impressão do seu navegador para ajustar a escala antes de imprimir.</p>
       	<p>Quando clicar em OK abrir-se-á a janela de configuração da impressora.</p>
       	<a style="cursor: pointer;" data-toggle="collapse" data-target="#exemplo">Mostre-me um exemplo <span class="glyphicon glyphicon-chevron-down"></span></a>
       	<div id="exemplo" class="collapse">
@@ -463,6 +570,11 @@ $(function () {
 												onColor: 'success',
 												offColor: ''
 												});
+
+    $('#dados-reais-checkbox').on('switchChange.bootstrapSwitch', function(event, state) {
+        $('#dados_reais_hidden').val(state ? 'on' : 'off');
+        $('#form_filtros').submit();
+    });
 });
 
 /*$('input[class="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {

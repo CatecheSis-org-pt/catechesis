@@ -59,6 +59,15 @@ $pageUI->addWidget($deleteFamilyMemberDialog);
 	    {
 			display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 	    
 	    .btn
 	    {
@@ -568,14 +577,19 @@ $menu->renderHTML();
 
                     <!--idade-->
                     <div class="form-group">
-                        <div class="col-xs-6">
-                            <label for="idade">Idade:</label>
+                        <div class="col-xs-2">
+                            <label for="idade">Idade:</label><br>
                             <span class="input-xlarge uneditable-input">
-                            <?php
-                                echo(date_diff(date_create($_SESSION['data_nasc']), date_create('today'))->y);
-                            ?>
+                            <?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
                             </span>
                         </div>
+                    </div>
+
+                    <!--NIF-->
+                    <div class="col-xs-3">
+                        <label for="nif">NIF:</label>
+                        <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
+                            <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
                         <div class="clearfix"></div>
                     </div>
 
@@ -828,7 +842,7 @@ function Popup(data)
 {
     var mywindow = window.open('', 'Autorizações', 'height=800,width=600');
     mywindow.document.write('<html><head><title>Autorizações</title><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/custom-navbar-colors.css">');
-    mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } ' +
+    mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } @page { size: portrait; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } ' +
         '.progress {\n' +
         '    position: relative;\n' +
         '}\n' +

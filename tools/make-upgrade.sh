@@ -46,8 +46,9 @@ function upgrade_sql_file()
   ./schemalex -o "$dstDirectory/$2" "$dstDirectory/previous_db.sql" "$dstDirectory/new_db.sql"
 
   #Hack: Restore removed strings
-  sed -i '1s/^/DELIMITER ;\n/' "$dstDirectory/$2"
+  #sed -i '1s/^/DELIMITER ;\n/' "$dstDirectory/$2"    # Do not add DELIMITER because it is not supported by the updater running in PHP
   sed -i 's/batata/data/' "$dstDirectory/$2"
+
 
   #Cleanup temporary files
   rm "$dstDirectory/previous_db.sql"
@@ -129,6 +130,10 @@ while read -d $'\0' file; do
 done < $dstDirectory/changed_files.txt #dummy directory needed because the file path contains ../
 rm -r $dstDirectory/changes/dummy
 rm -r $dstDirectory/careful_changes/dummy
+rm -r -f $dstDirectory/changes/src/setup # We don't want to include the setup wizard on a system that is already installed in production
+
+# Copy the documentation always (we cannot check for changes in the git submodule)
+cp -r $srcDirectory/help/. $dstDirectory/changes/src/help/
 
 # Write the same file names in a more user-readable format
 git diff --name-only "$1" HEAD $srcDirectory >$dstDirectory/all_diff.txt
@@ -144,12 +149,15 @@ echo "#Put this file in the CatecheSis root folder of your server!" >>$dstDirect
 echo "" >>$dstDirectory/delete_old_files.sh
 while read -r filename; do
   echo "rm ${filename#$srcDirectory}" >> $dstDirectory/delete_old_files.sh #Write file names except the leading src directory
-done <$dstDirectory/deleted_files.txt
+done < $dstDirectory/deleted_files.txt
 echo "echo \"Done! Some empty folders may have been left...\"" >>$dstDirectory/delete_old_files.sh
 
 # Create SQL upgrade scripts
 upgrade_sql_file "catechesis_database.sql" "db_upgrade_catechesis_database.sql"
 diff_sql_file "users.sql" "db_upgrade_users.patch"
+
+# Copy upgrade recipe
+cp ./update_recipe.php $dstDirectory/update_recipe.php
 
 #Create a tar.gz package
 (

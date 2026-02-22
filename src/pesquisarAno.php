@@ -145,7 +145,7 @@ $menu->renderHTML();
   <div class="form-group">
     <div class="col-xs-5">
  	 <label for="ano_catequetico">Ano catequético: </label> 
- 	 <select name="ano_catequetico" >
+   <select class="form-control" name="ano_catequetico" >
     		<option value="" <?php if (!$_POST['ano_catequetico'] || $_POST['ano_catequetico']=="") echo("selected"); ?>>Todos</option>
 	<?php
 
@@ -186,7 +186,7 @@ $menu->renderHTML();
    	<div class="form-group">
    	<div class="col-xs-4">
    		<label for="catecismo">Catecismo:</label>
-		<select name="catecismo">
+  <select class="form-control" name="catecismo">
 			<option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todos</option>
 	<?php
 
@@ -224,7 +224,7 @@ $menu->renderHTML();
    <div class="form-group">
    	<div class="col-xs-3">
    		<label for="turma">Grupo:</label>
-		<select name="turma">
+  <select class="form-control" name="turma">
 			<option value="" <?php if (!$_POST['catecismo'] || $_POST['catecismo']=="") echo("selected"); ?>>Todas</option>
 	<?php
 
@@ -270,7 +270,7 @@ $menu->renderHTML();
   	<div class="form-group">
    	<div class="col-xs-6">
    		<label for="filtro_bap">Baptismo:</label>
-		<select name="filtro_bap">
+  <select class="form-control" name="filtro_bap">
 			<option value="0" <?php if (!$_POST['filtro_bap'] || $_POST['filtro_bap']=="" || $_POST['filtro_bap']==0) echo("selected"); ?>>Indiferente</option>
 			<option value="1" <?php if ($_POST['filtro_bap']==1) echo("selected"); ?>>Fez</option>
 			<option value="2" <?php if ($_POST['filtro_bap']==2) echo("selected"); ?>>Não fez</option>
@@ -278,7 +278,7 @@ $menu->renderHTML();
 	</div>
 	<div class="col-xs-6">
    		<label for="filtro_com">Primeira comunhão:</label>
-		<select name="filtro_com">
+  <select class="form-control" name="filtro_com">
 			<option value="0" <?php if (!$_POST['filtro_com'] || $_POST['filtro_com']=="" || $_POST['filtro_com']==0) echo("selected"); ?>>Indiferente</option>
 			<option value="1" <?php if ($_POST['filtro_com']==1) echo("selected"); ?>>Fez</option>
 			<option value="2" <?php if ($_POST['filtro_com']==2) echo("selected"); ?>>Não fez</option>
@@ -326,9 +326,12 @@ $menu->renderHTML();
 		
 		if($ano_catequetico > 1000000 && $catecismo > 0 && $catecismo <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) && $turma!="")
 		{
-			echo("<div class=\"col-xs-4\">\n");
-			echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>\n");
-			echo("</div>\n");
+			echo("<div class=\"col-xs-8\">\n");
+            echo("<div class=\"btn-group\" role=\"group\">\n");
+            echo("<button type=\"button\" onclick=\"marcar_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-user-check\"></span> Marcar presenças </button>\n");
+            echo("<button type=\"button\" onclick=\"imprime_presencas()\" class=\"btn btn-default no-print\"><span class=\"fas fa-stamp\"></span> Ir para a Área de Impressão</button>\n");
+            echo("</div>\n");
+            echo("</div>\n");
 		}
 		
 	}
@@ -454,6 +457,12 @@ $menu->renderHTML();
 				<input type="hidden" name="catecismo" value="<?php echo('' . $catecismo . '');?>" >
 				<input type="hidden" name="turma" value="<?php echo('' . $turma . '');?>" >
 			</form>
+			
+			<form id="form_marcar_presencas" action="marcarPresencas.php" method="post" target="_blank">
+				<input type="hidden" name="ano_catequetico" value="<?php echo('' . $ano_catequetico . '');?>" >
+				<input type="hidden" name="catecismo" value="<?php echo('' . $catecismo . '');?>" >
+				<input type="hidden" name="turma" value="<?php echo('' . $turma . '');?>" >
+			</form>
 		
 		
 		<?php
@@ -477,6 +486,8 @@ if($_POST['ano_catequetico'] && $_POST['catecismo'] && $_POST['turma'])
         echo("<script>\n");
         echo("function imprime_presencas(){\n");
         echo("\tdocument.getElementById(\"form_imprime_presencas\").submit();}\n");
+        echo("function marcar_presencas(){\n");
+        echo("\tdocument.getElementById(\"form_marcar_presencas\").submit();}\n");
         echo("</script>\n");
     }
 }

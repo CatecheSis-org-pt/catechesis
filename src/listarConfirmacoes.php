@@ -153,7 +153,7 @@ $menu->renderHTML();
   <div class="form-group">
     <div class="col-xs-3">
  	 <label for="ano_civil">Ano: </label> 
- 	 <select name="ano_civil" >
+   <select name="ano_civil" class="form-control">
     		<option value="" <?php if (!$_POST['ano_civil'] || $_POST['ano_civil']=="") echo("selected"); ?>>Todos</option>
 	<?php
 
@@ -191,7 +191,7 @@ $menu->renderHTML();
    	<div class="form-group">
    	<div class="col-xs-9">
    		<label for="paroquia">Paróquia:</label>
-		<select name="paroquia">
+  <select name="paroquia" class="form-control">
 			<option value="" <?php if (!$_POST['paroquia'] || $_POST['paroquia']=="") echo("selected"); ?>>Todas</option>
 	<?php
 

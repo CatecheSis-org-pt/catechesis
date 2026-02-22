@@ -29,7 +29,11 @@ $db = new PdoDatabaseManager();
 $periodo_activo = false;
 try
 {
-    $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+    // Check if the new configuration key exists, if not, use the legacy key value
+    if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN))
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_NEW_OPEN);
+    else
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
 }
 catch (Exception $e)
 {
@@ -133,7 +137,10 @@ $navbar->renderHTML();
         //Dados biograficos do catequizando
         $foto_data = Utils::sanitizeInput($_POST['foto_data']);		// Foto codificada em base64
 	  	$nome = Utils::sanitizeInput($_POST['nome']);
-	  	$data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $data_nasc = Utils::sanitizeInput($_POST['data_nasc']);
+        $nif = Utils::sanitizeInput($_POST['nif']);
+        $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED);
+        if(!$nifEnabled) { $nif = null; }
 	  	$local_nasc = Utils::sanitizeInput($_POST['localidade']);
 	  	$num_irmaos = intval(Utils::sanitizeInput($_POST['num_irmaos']));
 
@@ -197,6 +204,7 @@ $navbar->renderHTML();
         $_SESSION['foto_data'] = $foto_data;
         $_SESSION['nome'] = $nome;
         $_SESSION['data_nasc'] = $data_nasc;
+        $_SESSION['nif'] = $nif;
         $_SESSION['local_nasc'] = $local_nasc;
         $_SESSION['num_irmaos'] = $num_irmaos;
 
@@ -238,8 +246,8 @@ $navbar->renderHTML();
 
 
 
-		
-	  	
+
+
 	  	//Pre-processamento de checkboxes
 	  	if($casados=="Sim")
 	  		$casados = true;
@@ -248,12 +256,12 @@ $navbar->renderHTML();
             $casados = false;
             $casados_como = null;
         }
-	  	
+
 	  	if($escuteiro=="Sim")
 	  		$escuteiro = true;
 	  	else
 	  		$escuteiro = false;
-	  		
+
 	  	if($autorizacao_fotos=="aceito")
 	  		$autorizacao_fotos=true;
 	  	else
@@ -263,7 +271,7 @@ $navbar->renderHTML();
             $rgpd_ee=true;
         else
             $rgpd_ee=false;
-	  		
+
 	  	if($baptizado=="Sim")
 	  		$baptizado=1;
 	  	else
@@ -272,7 +280,7 @@ $navbar->renderHTML();
             $data_baptismo = null;
             $paroquia_baptismo = null;
         }
-	  		
+
 	  	if($comunhao=="Sim")
 	  		$comunhao=1;
 	  	else
@@ -295,73 +303,82 @@ $navbar->renderHTML();
             $ultimo_catecismo = null;
         }
 
-	  		
-	  		
-	  		
-	  		
-	  		
-	  		
+
+
+
+
+
+
 	  	//Verificar inputs
 	  	$inputs_invalidos = false;
-	  	
+
 	  	if(!DataValidationUtils::validateDate($data_nasc))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A data de nascimento que introduziu é inválida. Deve ser da forma dd-mm-aaaa.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
-	  		  	
+
+        if($nifEnabled)
+        {
+            if(!$nif || $nif==="" || !DataValidationUtils::validateNIF($nif))
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
+                $inputs_invalidos = true;
+            }
+        }
+
+
 	  	if(!DataValidationUtils::validateZipCode($codigo_postal, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O código postal que introduziu é inválido. Deve ser da forma 'xxxx-yyy Localidade'.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
-	  	
+
+
 	  	if($telefone!="" && !DataValidationUtils::validatePhoneNumber($telefone, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
+
 	  	if($telemovel!="" && !DataValidationUtils::validatePhoneNumber($telemovel, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
-	  	
+
+
 	  	if($baptizado==1 && !DataValidationUtils::validateDate($data_baptismo))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A data de baptismo que introduziu é inválida. Deve ser da forma dd-mm-aaaa.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
+
 	  	if($baptizado==1 && (!$paroquia_baptismo || $paroquia_baptismo==""))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve especificar a paróquia de baptismo.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
+
 	  	if($comunhao==1 && !DataValidationUtils::validateDate($data_comunhao))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> A data de primeira comunhão que introduziu é inválida. Deve ser da forma dd-mm-aaaa.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
+
 	  	if($comunhao==1 && (!$paroquia_comunhao || $paroquia_comunhao==""))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve especificar a paróquia onde realizou a primeira comunhão.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
-	  	
-	  	
+
+
 	  	if($enc_edu=="Pai" && (!$pai || $pai=="" || !$prof_pai || $prof_pai==""))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve especificar o nome e profissão do pai, porque é o encarregado de educação.</div>");
 	  		$inputs_invalidos = true;
 	  	}
-	  	
+
 	  	if($enc_edu=="Mae" && (!$mae || $mae=="" || !$prof_mae || $prof_mae==""))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve especificar o nome e profissão da mãe, porque é o encarregado de educação.</div>");
@@ -382,13 +399,13 @@ $navbar->renderHTML();
                 $inputs_invalidos = true;
             }
         }
-	  	
+
 	  	if($enc_edu=="Outro" && (!$outro_enc_edu_quem || $outro_enc_edu_quem=="" || !$outro_enc_edu_nome || $outro_enc_edu_nome=="" || !$outro_enc_edu_prof || $outro_enc_edu_prof==""))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve especificar o grau de parentesco, nome e profissão do encarregado de educação.</div>");
 	  		$inputs_invalidos = true;
 	  	}
-	  	
+
 	  	if($email && $email!="" && !DataValidationUtils::validateEmail($email))
 	  	{
 	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O e-mail que introduziu é inválido.</div>");
@@ -448,7 +465,7 @@ $navbar->renderHTML();
                 //Processar foto
                 $foto_cam = UserData::saveUploadedCatechumenPhoto($foto_data);			                                // Devolve o nome do ficheiro onde a foto foi guardada (se existir)
 
-                $eid = $db->postEnrollmentOrder($nome, $data_nasc, $local_nasc, $num_irmaos,
+                $eid = $db->postEnrollmentOrder($nome, $data_nasc, $local_nasc, $nif, $num_irmaos,
                     $morada, $codigo_postal,
                     $responsibleIndex, $_SERVER['REMOTE_ADDR'],
                     $escuteiro, $autorizacao_fotos, $autoriza_saida, $autorizacoes_saida_menores,
@@ -568,7 +585,7 @@ $navbar->renderHTML();
             }
 
         }
-	
+
 	}
 	else
 	{
@@ -578,7 +595,7 @@ $navbar->renderHTML();
 		die();
 	}
 
-	
+
 	if($_REQUEST['modo']!="editar")
 	{
 		//Sugerir inscrever um irmao
@@ -588,7 +605,7 @@ $navbar->renderHTML();
         echo("<p class=\"no-print\"><span class= \"glyphicon glyphicon-circle-arrow-left\"></span><a href=\"inscricoes.php\">&nbsp; Voltar à página principal de inscrições</a></p>");
 
     }
-	
+
 
 	//Libertar recursos
 	$result = null;

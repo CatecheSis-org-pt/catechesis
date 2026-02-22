@@ -71,12 +71,12 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
                                                          bool $onlyScouts = false);
     public function getCatechumenCurrentCatechesisGroup(int $cid, int $catecheticalYear);
     public function getCatechumenSiblings(int $cid);
-    public function createCatechumen(string $name, string $birthdate, string $birthplace,
+    public function createCatechumen(string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
                                      string $observations, string $createdByUsername);
-    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace,
+    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed);
@@ -130,8 +130,8 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function getNumberOfPendingEnrollments(int $catecheticalYear = null);
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,
                                      string $ipAddress, string $email = null, string $obs = null);
-    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, int $nSiblings,
-                                        string $address, string $postalCode,
+    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null,
+                                        int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,
                                         bool $scout, bool $photosAllowed, bool $exitAllowed, array $exitAuthorizations,
                                         string $photo = null, string $obs = null,
@@ -184,6 +184,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function getCatechismsAndGroupsFromLatestYear();
     public function hasCatechism(int $catecheticalYear, int $catechism);
     public function getGroupLetters(int $catecheticalYear = null);
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group);
     public function createCatechismGroup(int $catecheticalYear, int $catechism, string $group);
     public function deleteCatechismGroup(int $catecheticalYear, int $catechism, string $group);
     public function enrollCatechumenInGroup(int $cid, int $catecheticalYear, int $catechism, string $group,
@@ -241,11 +242,8 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
                                                   int $catechism = null, string $group = null);
     public function getListOfVirtualCatechesisObservers(string $sessionDate, int $timeThreshold, int $catechism = null,
                                                         string $group = null, string $excludeUsername = null);
-    public function postVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, string $url,
-                                              string $roomPassword, string $username);
-    public function getVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, int $timeThreshold = 90);
-    public function updateVirtualCatechisRoomStatus(string $sessionDate, int $catechism, string $group, int $status);
-    public function closeVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group);
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);
+
 
     // Settings
     public function getConfigValue(string $key);
@@ -454,7 +452,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
         //Build query
-        $sql = "SELECT c.nome AS nome, data_nasc, local_nasc, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, foto, obs, criado_por, DATE(criado_em) AS criado_em, u.nome AS criado_por_nome, lastLSN_ficha, lastLSN_arquivo, lastLSN_autorizacoes FROM catequizando c, utilizador u WHERE c.cid = :cid AND c.criado_por=u.username;";
+        $sql = "SELECT c.nome AS nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, foto, obs, criado_por, DATE(criado_em) AS criado_em, u.nome AS criado_por_nome, lastLSN_ficha, lastLSN_arquivo, lastLSN_autorizacoes FROM catequizando c, utilizador u WHERE c.cid = :cid AND c.criado_por=u.username;";
 
         try
         {
@@ -536,7 +534,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
         //Build query
-        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.foto, t1.escuteiro, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.obs, t2.ano_catecismo, t2.turma,  t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT c.cid, nome, data_nasc, foto, escuteiro, autorizou_fotos, autorizou_saida_sozinho, obs FROM catequizando c ";
+        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.foto, t1.escuteiro, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.obs, t2.ano_catecismo, t2.turma,  t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT c.cid, nome, data_nasc, nif, foto, escuteiro, autorizou_fotos, autorizou_saida_sozinho, obs FROM catequizando c ";
 
         if (($name && $name != "") || ($birth_date && $birth_date != ""))
         {
@@ -640,10 +638,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
         //Build query
-        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.escuteiro, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.lastLSN_ficha, t1.lastLSN_arquivo, t2.ano_catecismo, t2.turma,";
+        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.escuteiro, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.lastLSN_ficha, t1.lastLSN_arquivo, t2.ano_catecismo, t2.turma,";
         if($includeAchievementRecord)
             $sql = $sql . " t2.passa, ";
-        $sql = $sql . " t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, pai, mae, enc_edu, enc_edu_quem, escuteiro, foto, obs, autorizou_fotos, autorizou_saida_sozinho, lastLSN_ficha, lastLSN_arquivo ";
+        $sql = $sql . " t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, nif, pai, mae, enc_edu, enc_edu_quem, escuteiro, foto, obs, autorizou_fotos, autorizou_saida_sozinho, lastLSN_ficha, lastLSN_arquivo ";
         if($includeAchievementRecord)
             $sql = $sql . ", p.passa ";
         $sql = $sql . " FROM catequizando c, pertence p WHERE c.cid=p.cid";
@@ -660,9 +658,9 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             //Complete query with filters and exclusions
             $sql = $this->generateQueryWithFilters($sql, $searchCatecheticalYear, $baptism, $communion, $excludedCatechisms);
             $sql = $this->addCatechumenOrderByClause($sql, $orderBy);
-            
+
             $stm = $this->_connection->prepare($sql);
-            
+
             $stm->bindParam(":ano_catequetico_actual", $currentCatecheticalYear, PDO::PARAM_INT);
 
             if (($searchCatecheticalYear && $searchCatecheticalYear != "" && $searchCatecheticalYear != 0))
@@ -716,17 +714,17 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
         //Build query
-        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.foto, t1.escuteiro, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t2.ano_catecismo, t2.turma, t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, foto, escuteiro, obs, autorizou_fotos, autorizou_saida_sozinho FROM catequizando c, pertence p, lecciona l WHERE c.cid=p.cid AND p.ano_lectivo=l.ano_lectivo AND p.ano_catecismo=l.ano_catecismo AND p.turma=l.turma";
+        $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.foto, t1.escuteiro, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t2.ano_catecismo, t2.turma, t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, nif, foto, escuteiro, obs, autorizou_fotos, autorizou_saida_sozinho FROM catequizando c, pertence p, lecciona l WHERE c.cid=p.cid AND p.ano_lectivo=l.ano_lectivo AND p.ano_catecismo=l.ano_catecismo AND p.turma=l.turma";
 
         if($catechist && $catechist!="")
             $sql = $sql . " AND l.username=:catequista";
-        
+
         try
         {
             //Complete query with filters and exclusions
             $sql = $this->generateQueryWithFilters($sql, $searchCatecheticalYear, $baptism, $communion, $excludedCatechisms, $onlyScouts);
             $sql = $this->addCatechumenOrderByClause($sql, $orderBy);
-            
+
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":ano_catequetico_actual", $currentCatecheticalYear, PDO::PARAM_INT);
@@ -774,7 +772,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         //Build query
         $sql = $baseQuery;
-        
+
         if ($searchCatecheticalYear && $searchCatecheticalYear != "" && $searchCatecheticalYear != 0) {
             $sql = $sql . " AND p.ano_lectivo=:ano_catequetico";
         }
@@ -938,7 +936,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param string $observations
      * @param string $createdByUsername
      */
-    public function createCatechumen(string $name, string $birthdate, string $birthplace,
+    public function createCatechumen(string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed, bool $allowedToGoOutAlone,
@@ -949,7 +947,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         try
         {
-            $sql = "INSERT INTO catequizando(nome, data_nasc, local_nasc, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, foto, obs, criado_por, criado_em) VALUES (:nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :num_irmaos, :escuteiro, :autorizacao_fotos, :autorizou_saida_sozinho, :fid_pai, :fid_mae, :fid_ee, :enc_edu_quem, :foto, :obs, :utilizador, NOW());";
+            $sql = "INSERT INTO catequizando(nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, foto, obs, criado_por, criado_em) VALUES (:nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizacao_fotos, :autorizou_saida_sozinho, :fid_pai, :fid_mae, :fid_ee, :enc_edu_quem, :foto, :obs, :utilizador, NOW());";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -961,6 +959,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $stm->bindParam(":nome", $name);
             $stm->bindParam(":data_nasc", $birthdate);
             $stm->bindParam(":local_nasc", $birthplace);
+            if(isset($nif) && $nif!=="" && nif!==0)
+                $stm->bindParam(":nif", $nif, PDO::PARAM_INT);
+            else
+                $stm->bindParam(":nif", $mynull, PDO::PARAM_NULL);
             $stm->bindParam(":num_irmaos", $numSiblings, PDO::PARAM_INT);
             $stm->bindParam(":escuteiro", $scout, PDO::PARAM_INT);
             $stm->bindParam(":autorizacao_fotos", $photosAuthorization, PDO::PARAM_INT);
@@ -1000,7 +1002,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (PDOException $e)
         {
             //echo $e->getMessage();
-            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false)
+                throw new Exception("Entrada duplicada. Já existe um catequizando com este nome e data de nascimento ou NIF.");
+            else
+                throw new Exception("Falha interna ao tentar aceder à base de dados.");
         }
     }
 
@@ -1022,7 +1027,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param bool $photosAllowed
      * @param string $createdByUsername
      */
-    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace,
+    public function updateCatechumen(int $cid, string $name, string $birthdate, string $birthplace, string $nif = null,
                                      $father_fid, $mother_fid, int $responsible_fid,
                                      string $responsible_relationship, string $photo, int $numSiblings,
                                      bool $isScout, bool $photosAllowed)
@@ -1032,7 +1037,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         try
         {
-            $sql = "UPDATE catequizando SET nome=:nome, data_nasc=STR_TO_DATE(:data_nasc, '%d-%m-%Y'), local_nasc=:local_nasc, num_irmaos=:num_irmaos, escuteiro=:escuteiro, autorizou_fotos=:autorizacao_fotos, pai=:fid_pai, mae=:fid_mae, enc_edu=:fid_ee, enc_edu_quem=:enc_edu_quem, foto=:foto WHERE cid=:cid;";
+            $sql = "UPDATE catequizando SET nome=:nome, data_nasc=STR_TO_DATE(:data_nasc, '%d-%m-%Y'), local_nasc=:local_nasc, nif=:nif, num_irmaos=:num_irmaos, escuteiro=:escuteiro, autorizou_fotos=:autorizacao_fotos, pai=:fid_pai, mae=:fid_mae, enc_edu=:fid_ee, enc_edu_quem=:enc_edu_quem, foto=:foto WHERE cid=:cid;";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -1044,6 +1049,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $stm->bindParam(":nome", $name);
             $stm->bindParam(":data_nasc", $birthdate);
             $stm->bindParam(":local_nasc", $birthplace);
+            if(isset($nif))
+                $stm->bindParam(":nif", $nif, PDO::PARAM_INT);
+            else
+                $stm->bindParam(":nif", $mynull, PDO::PARAM_NULL);
             $stm->bindParam(":num_irmaos", $numSiblings, PDO::PARAM_INT);
             $stm->bindParam(":escuteiro", $scout, PDO::PARAM_INT);
             $stm->bindParam(":autorizacao_fotos", $photosAuthorization, PDO::PARAM_INT);
@@ -1278,7 +1287,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         try
         {
-            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.foto, t1.obs, t1.escuteiro, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t2.ano_catecismo, t2.turma, t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, foto, obs, escuteiro, autorizou_fotos, autorizou_saida_sozinho FROM catequizando c, pertence p WHERE c.cid=p.cid AND p.ano_lectivo=:ano_catequetico_actual AND c.escuteiro=1) AS t1 LEFT OUTER JOIN pertence t2 ON (t1.cid=t2.cid AND t2.ano_lectivo=:ano_catequetico_actual) ";
+            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.foto, t1.obs, t1.escuteiro, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t2.ano_catecismo, t2.turma, t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma FROM (SELECT DISTINCT c.cid, nome, data_nasc, nif, foto, obs, escuteiro, autorizou_fotos, autorizou_saida_sozinho FROM catequizando c, pertence p WHERE c.cid=p.cid AND p.ano_lectivo=:ano_catequetico_actual AND c.escuteiro=1) AS t1 LEFT OUTER JOIN pertence t2 ON (t1.cid=t2.cid AND t2.ano_lectivo=:ano_catequetico_actual) ";
 
             //Sacraments
             $sql = $sql . " LEFT OUTER JOIN baptismo t3 ON (t1.cid=t3.cid)  LEFT OUTER JOIN primeiraComunhao t4 ON (t1.cid=t4.cid)  LEFT OUTER JOIN confirmacao t5 ON (t1.cid=t5.cid)";
@@ -2233,7 +2242,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $catecheticalYearStart = intval($catecheticalYear / 10000);
         $catecheticalYearEnd = $catecheticalYear % 10000;
 
-        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
+        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
         $sql = $sql . " ORDER BY nome;";
 
         $result = [];
@@ -2283,7 +2292,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $result = [];
         try
         {
-            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE iid=:iid;";
+            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE iid=:iid;";
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":iid", $eid, PDO::PARAM_INT);
@@ -2501,8 +2510,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @return mixed
      * @throws Exception
      */
-    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, int $nSiblings,   // Registers a new enrollment order
-                                        string $address, string $postalCode,
+    public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null,              // Registers a new enrollment order
+                                        int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,
                                         bool $scout, bool $photosAllowed, bool $exitAllowed, array $exitAuthorizations,
                                         string $photo = null, string $obs = null,
@@ -2547,8 +2556,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         try
         {
             //Build query
-            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid)";
-            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :mae_nome, :prof_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, NULL);";
+            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid)";
+            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :mae_nome, :prof_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, NULL);";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -2556,6 +2565,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $stm->bindParam(":nome", $catechumenName, PDO::PARAM_STR);
             $stm->bindParam(":data_nasc", $birthDay, PDO::PARAM_STR);
             $stm->bindParam(":local_nasc", $birthPlace, PDO::PARAM_STR);
+            if(isset($nif) && $nif!="")
+                $stm->bindParam(":nif", $nif, PDO::PARAM_INT);
+            else
+                $stm->bindParam(":nif", $mynull, PDO::PARAM_NULL);
             $stm->bindParam(":num_irmaos", $nSiblings, PDO::PARAM_INT);
             $stm->bindParam(":escuteiro", $scout, PDO::PARAM_INT);
             $stm->bindParam(":autorizou_fotos", $photosAllowed, PDO::PARAM_INT);
@@ -2698,7 +2711,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             case EnrollmentStatus::PENDING:
                 $processed = 0;
                 break;
-                
+
             case EnrollmentStatus::PROCESSED:
                 $processed = 1;
                 break;
@@ -3731,6 +3744,44 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
     /**
+     * Returns the details of a particular catechism group.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return array|null
+     * @throws Exception
+     */
+    public function getGroupDetails(int $catecheticalYear, int $catechism, string $group)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT dia_da_semana, hora_inicio, hora_fim FROM grupo WHERE ano_lectivo=:ano_lectivo AND ano_catecismo=:catecismo AND turma=:turma;";
+
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":ano_lectivo", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group, PDO::PARAM_STR);
+
+            if($stm->execute())
+            {
+                $res = $stm->fetch();
+                return $res ? $res : null;
+            }
+            else
+                throw new Exception("Falha ao obter os detalhes do grupo de catequese.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
      * Inserts a new catechism group.
      * Returns true in case of success, and false (or an exception) if something goes wrong.
      * @param int $catecheticalYear
@@ -3821,6 +3872,44 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (Exception $e)
         {
             throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
+     * Updates the schedule for a particular catechism group.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @param int|null $weekDay
+     * @param string|null $startTime
+     * @param string|null $endTime
+     * @return bool
+     * @throws Exception
+     */
+    public function updateGroupSchedule(int $catecheticalYear, int $catechism, string $group, ?int $weekDay, ?string $startTime, ?string $endTime)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "UPDATE grupo SET dia_da_semana=:weekDay, hora_inicio=:startTime, hora_fim=:endTime WHERE ano_lectivo=:ano_lectivo AND ano_catecismo=:catecismo AND turma=:turma;";
+
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":weekDay", $weekDay, is_null($weekDay) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stm->bindParam(":startTime", $startTime, is_null($startTime) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stm->bindParam(":endTime", $endTime, is_null($endTime) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stm->bindParam(":ano_lectivo", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group, PDO::PARAM_STR);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados ao atualizar o horário do grupo.");
         }
     }
 
@@ -4084,6 +4173,239 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (PDOException $e)
         {
             //echo $e->getMessage();
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
+     * Creates a new catechesis session for a group and catechetical year.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return bool
+     * @throws Exception
+     */
+    public function createCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "INSERT INTO sessao_catequese(data, ano_catecismo, turma, ano_lectivo) VALUES(:data, :catecismo, :turma, :ano);";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha ao criar sessão de catequese.");
+        }
+    }
+
+    /**
+     * Returns all catechesis sessions (dates) for a given group and catechetical year.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCatechesisSessions(int $catecheticalYear, int $catechism, string $group)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT data FROM sessao_catequese WHERE ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano ORDER BY data ASC;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter sessões de catequese.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+    /**
+     * Registers attendance for a catechumen in a given session.
+     * If the session does not exist, it will be created.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @param int $cid
+     * @param int $attendance 0=falta; 1=presente
+     * @param string $markedByUsername
+     * @return bool
+     * @throws Exception
+     */
+    public function setCatechumenAttendance(string $date, int $catechism, string $group, int $catecheticalYear,
+                                            int $cid, int $attendance, string $markedByUsername)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        $attendance = $attendance?1:0;
+
+        try
+        {
+            // Upsert attendance
+            $sql = "INSERT INTO presenca(data, ano_catecismo, turma, ano_lectivo, cid, presenca, marcada_por) 
+                    VALUES(:data, :catecismo, :turma, :ano, :cid, :presenca, :marcada_por)
+                    ON DUPLICATE KEY UPDATE presenca=VALUES(presenca), marcada_por=VALUES(marcada_por);";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm->bindParam(":cid", $cid, PDO::PARAM_INT);
+            $stm->bindParam(":presenca", $attendance, PDO::PARAM_INT);
+            $stm->bindParam(":marcada_por", $markedByUsername);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha ao registar presença.");
+        }
+    }
+
+    /**
+     * Returns catechumens that attended a given session (presenca=1).
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return mixed
+     * @throws Exception
+     */
+    public function getLessonAttendees(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT c.cid, c.nome FROM presenca p JOIN catequizando c ON c.cid=p.cid 
+                    WHERE p.data=:data AND p.ano_catecismo=:catecismo AND p.turma=:turma AND p.ano_lectivo=:ano AND p.presenca=1 
+                    ORDER BY c.nome;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":data", $date);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter presenças.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+    /**
+     * Deletes a catechesis session and all associated attendance records.
+     * @param string $date
+     * @param int $catechism
+     * @param string $group
+     * @param int $catecheticalYear
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $this->beginTransaction(DatabaseAccessMode::DEFAULT_EDIT);
+
+            // Delete attendance records first
+            $sql1 = "DELETE FROM presenca WHERE data=:data AND ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano;";
+            $stm1 = $this->_connection->prepare($sql1);
+            $stm1->bindParam(":data", $date);
+            $stm1->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm1->bindParam(":turma", $group);
+            $stm1->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm1->execute();
+
+            // Delete the session
+            $sql2 = "DELETE FROM sessao_catequese WHERE data=:data AND ano_catecismo=:catecismo AND turma=:turma AND ano_lectivo=:ano;";
+            $stm2 = $this->_connection->prepare($sql2);
+            $stm2->bindParam(":data", $date);
+            $stm2->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm2->bindParam(":turma", $group);
+            $stm2->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+            $stm2->execute();
+
+            $this->commit();
+            return true;
+        }
+        catch (PDOException $e)
+        {
+            $this->rollBack();
+            throw new Exception("Falha ao eliminar a sessão de catequese.");
+        }
+    }
+
+    /**
+     * Returns attendance (0/1 or NULL) for all sessions of a group/year for a given catechumen.
+     * @param int $catecheticalYear
+     * @param int $catechism
+     * @param string $group
+     * @param int $cid
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCatechumenAttendanceForGroup(int $catecheticalYear, int $catechism, string $group, int $cid)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT s.data, p.presenca 
+                    FROM sessao_catequese s 
+                    LEFT JOIN presenca p ON p.data=s.data AND p.ano_catecismo=s.ano_catecismo AND p.turma=s.turma AND p.ano_lectivo=s.ano_lectivo AND p.cid=:cid
+                    WHERE s.ano_catecismo=:catecismo AND s.turma=:turma AND s.ano_lectivo=:ano
+                    ORDER BY s.data ASC;";
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":cid", $cid, PDO::PARAM_INT);
+            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
+            $stm->bindParam(":turma", $group);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Falha ao obter presenças do catequizando.");
+        }
+        catch (PDOException $e)
+        {
             throw new Exception("Falha interna ao tentar aceder à base de dados.");
         }
     }
@@ -4653,12 +4975,12 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $sql = "";
         if(isset($admin) && ($admin || $admin==1))
         {
-            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.email, t1.telefone, t1.telemovel, t2.inscricoes,
+            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.email, t1.telefone, t1.telemovel, t2.inscricoes,
                      t3.ano_catecismo, t3.turma, 
                      t4.data AS data_baptismo, t4.paroquia AS paroquia_batismo, t4.comprovativo AS comprovativo_batismo,
                      t5.data AS data_comunhao, t5.paroquia AS paroquia_comunhao, t5.comprovativo AS comprovativo_comunhao,
                      t6.data AS data_crisma,   t6.paroquia AS paroquia_crisma, t6.comprovativo AS comprovativo_crisma
-                     FROM (SELECT DISTINCT c.cid, c.nome, data_nasc, foto, obs, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, email, telemovel, telefone FROM catequizando c, familiar f";
+                     FROM (SELECT DISTINCT c.cid, c.nome, data_nasc, nif, foto, obs, autorizou_fotos, autorizou_saida_sozinho, pai, mae, enc_edu, enc_edu_quem, email, telemovel, telefone FROM catequizando c, familiar f";
 
             //Filters
             if((isset($catecheticalYear) && $catecheticalYear > 1000000)
@@ -4697,11 +5019,11 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         else
         {
 
-            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.ano_catecismo, t1.turma, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.email, t1.telefone, t1.telemovel, t2.inscricoes,
+            $sql = "SELECT t1.cid, t1.nome, t1.data_nasc, t1.nif, t1.foto, t1.obs, t1.autorizou_fotos, t1.autorizou_saida_sozinho, t1.ano_catecismo, t1.turma, t1.pai, t1.mae, t1.enc_edu, t1.enc_edu_quem, t1.email, t1.telefone, t1.telemovel, t2.inscricoes,
                      t3.data AS data_baptismo, t3.paroquia AS paroquia_batismo, t3.comprovativo AS comprovativo_batismo,
                      t4.data AS data_comunhao, t4.paroquia AS paroquia_comunhao, t4.comprovativo AS comprovativo_comunhao,
                      t5.data AS data_crisma, t5.paroquia AS paroquia_crisma, t5.comprovativo AS comprovativo_crisma
-                     FROM (SELECT DISTINCT c.cid, c.nome, data_nasc, foto, obs, autorizou_fotos, autorizou_saida_sozinho, p.ano_catecismo, p.turma, pai, mae, enc_edu, enc_edu_quem, email, telemovel, telefone FROM catequizando c, pertence p, lecciona l, familiar f 
+                     FROM (SELECT DISTINCT c.cid, c.nome, data_nasc, nif, foto, obs, autorizou_fotos, autorizou_saida_sozinho, p.ano_catecismo, p.turma, pai, mae, enc_edu, enc_edu_quem, email, telemovel, telefone FROM catequizando c, pertence p, lecciona l, familiar f 
                         WHERE c.enc_edu=f.fid AND c.cid=p.cid AND p.ano_lectivo=:ano_catequetico_actual AND p.ano_catecismo=l.ano_catecismo AND p.ano_lectivo=l.ano_lectivo AND p.turma=l.turma AND l.username=:username) AS t1
                      LEFT OUTER JOIN (SELECT p.cid, COUNT(DISTINCT p.ano_catecismo) AS inscricoes FROM pertence p GROUP BY p.cid) AS t2 ON (t1.cid=t2.cid)
                      LEFT OUTER JOIN baptismo t3 ON (t1.cid=t3.cid) 
@@ -5042,7 +5364,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
     /**
      * Computes and returns the absolute frequency ($inPercentage=false) or relative frequency ($inPercentage=true) of
-     * catechumens completing the catechetical journey (10 catechisms + Chrismation) by catechetical year.
+     * catechumens completing the catechetical journey (all catechisms + Chrismation) by catechetical year.
+     * The number of catechisms is obtained from the configuration.
      * @param int $currentCatecheticalYear
      * @param bool $inPercentage
      * @return mixed
@@ -5050,17 +5373,33 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      */
     public function getCompleteCatecheticalJourneysByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage)
     {
-
         if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
             throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        // Get the number of catechisms from configuration
+        $numCatechisms = intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS));
 
         try
         {
             $sql = "";
             if($inPercentage)
-                $sql = "SELECT p.ano_lectivo, COUNT(p.cid)/(select COUNT(p1.cid) from pertence p1 where (p1.ano_catecismo=1 AND p1.ano_lectivo=(p.ano_lectivo-90009)) OR (p1.ano_catecismo=2 AND p1.ano_lectivo=(p.ano_lectivo-80008)) OR (p1.ano_catecismo=3 AND p1.ano_lectivo=(p.ano_lectivo-70007)) OR (p1.ano_catecismo=4 AND p1.ano_lectivo=(p.ano_lectivo-60006)) OR (p1.ano_catecismo=5 AND p1.ano_lectivo=(p.ano_lectivo-50005)) OR (p1.ano_catecismo=6 AND p1.ano_lectivo=(p.ano_lectivo-40004)) OR (p1.ano_catecismo=7 AND p1.ano_lectivo=(p.ano_lectivo-30003)) OR (p1.ano_catecismo=8 AND p1.ano_lectivo=(p.ano_lectivo-20002)) OR (p1.ano_catecismo=9 AND p1.ano_lectivo=(p.ano_lectivo-10001)) OR (p1.ano_catecismo=10 AND p1.ano_lectivo=(p.ano_lectivo)))*100 AS 'percentagem' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p where p.ano_lectivo<:ano_actual AND p.ano_catecismo<10 AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo=10 AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            {
+                // Build the dynamic part of the SQL query for the denominator
+                $denominatorConditions = [];
+                for($i = 1; $i < $numCatechisms; $i++)
+                {
+                    $offset = ($numCatechisms - $i) * 10001;
+                    $denominatorConditions[] = "(p1.ano_catecismo={$i} AND p1.ano_lectivo=(p.ano_lectivo-{$offset}))";
+                }
+                $denominatorConditions[] = "(p1.ano_catecismo={$numCatechisms} AND p1.ano_lectivo=(p.ano_lectivo))";
+                $denominatorSql = implode(" OR ", $denominatorConditions);
+
+                $sql = "SELECT p.ano_lectivo, COUNT(p.cid)/(select COUNT(p1.cid) from pertence p1 where {$denominatorSql})*100 AS 'percentagem' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p where p.ano_lectivo<:ano_actual AND p.ano_catecismo<{$numCatechisms} AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo={$numCatechisms} AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            }
             else
-                $sql = "SELECT p.ano_lectivo, COUNT(p.cid) as 'completos' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p WHERE p.ano_lectivo<:ano_actual AND p.ano_catecismo<10 AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo=10 AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            {
+                $sql = "SELECT p.ano_lectivo, COUNT(p.cid) as 'completos' FROM pertence p WHERE p.cid NOT IN (SELECT DISTINCT p.cid AS desistencias FROM pertence p WHERE p.ano_lectivo<:ano_actual AND p.ano_catecismo<{$numCatechisms} AND p.cid NOT IN (SELECT cid FROM pertence p2 WHERE p2.ano_lectivo=(p.ano_lectivo + 10001))) AND p.ano_catecismo={$numCatechisms} AND p.cid IN (SELECT cid FROM confirmacao c WHERE YEAR(c.data)=(p.ano_lectivo%10000)) GROUP BY p.ano_lectivo;";
+            }
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":ano_actual", $currentCatecheticalYear, PDO::PARAM_INT);
@@ -5109,6 +5448,48 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         catch (PDOException $e)
         {
             //echo $e->getMessage();
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
+     * Returns the percentage of present catechumens in each group and catechesis session of the given year.
+     * The results are returned as an array of rows, where each row contains the date, catechism, group,
+     * number of present catechumens, and total number of enrolled catechumens.
+     * @param int $catecheticalYear
+     * @return array
+     * @throws Exception
+     */
+    public function getAttendancePercentageByGroup(int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT s.data, s.ano_catecismo, s.turma, 
+                           COUNT(CASE WHEN p.presenca = 1 THEN 1 END) as num_present,
+                           COUNT(p.cid) as total_enrolled
+                    FROM sessao_catequese s
+                    LEFT JOIN presenca p ON s.data = p.data 
+                                        AND s.ano_catecismo = p.ano_catecismo 
+                                        AND s.turma = p.turma 
+                                        AND s.ano_lectivo = p.ano_lectivo
+                    WHERE s.ano_lectivo = :ano
+                    GROUP BY s.data, s.ano_catecismo, s.turma
+                    ORDER BY s.data ASC, s.ano_catecismo, s.turma";
+
+            $stm = $this->_connection->prepare($sql);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if ($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Não foi possível obter a informação sobre assiduidade por grupo.");
+        }
+        catch (PDOException $e)
+        {
             throw new Exception("Falha interna ao tentar aceder à base de dados.");
         }
     }
@@ -5417,143 +5798,6 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         return array("active_users_logins" => array(), "active_users_names" => array());
     }
 
-
-    /**
-     * Stores or updates the URL and password for a virtual catechesis room.
-     * @param string $sessionDate
-     * @param int $catechism
-     * @param string $group
-     * @param string $url
-     * @param string $roomPassword
-     * @param string $username
-     * @return false
-     * @throws Exception
-     */
-    public function postVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, string $url,
-                                              string $roomPassword, string $username)
-    {
-        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
-            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
-
-        //Store/update the URL
-        try
-        {
-            $sql = "INSERT INTO salaCatequeseVirtual(data, ano_catecismo, turma, url, passwordSala, aberta, ultima_modificacao_user, ultima_modificacao_timestamp) VALUES(STR_TO_DATE(:data, '%d-%m-%Y'), :catecismo, :turma, :url, :passwordSala, 1, :user, NOW()) ON DUPLICATE KEY UPDATE url=:url, passwordSala=:passwordSala, aberta=1, ultima_modificacao_user=:user, ultima_modificacao_timestamp=NOW();";
-            $stm = $this->_connection->prepare($sql);
-
-            $stm->bindParam(":data", $sessionDate);
-            $stm->bindParam(":catecismo", $catechism, PDO::PARAM_INT);
-            $stm->bindParam(":turma", $group);
-            $stm->bindParam(":url", $url);
-            $stm->bindParam(":passwordSala", $roomPassword);
-            $stm->bindParam(":user", $username);
-
-            return $stm->execute();
-        }
-        catch (PDOException $e)
-        {
-            //echo $e->getMessage();
-            throw new Exception("Falha na concexão à base de dados.");
-        }
-    }
-
-
-    /**
-     * Returns the URL, password and status of a virtual catechesis room, if such room exists.
-     * Returns also the last time it was changed and the user that changed it.
-     * @param string $sessionDate
-     * @param int $catechism
-     * @param string $group
-     * @param int $timeThreshold
-     * @return false
-     * @throws Exception
-     */
-    public function getVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group, int $timeThreshold = 90)
-    {
-        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
-            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
-
-        try
-        {
-            $sql = "SELECT s.url, s.passwordSala, s.aberta, s.ultima_modificacao_user, u.nome AS ultima_modificacao_nome, s.ultima_modificacao_timestamp FROM salaCatequeseVirtual s, utilizador u WHERE s.ultima_modificacao_user=u.username AND data=STR_TO_DATE(:data, '%d-%m-%Y') AND ano_catecismo=:ano_catecismo AND turma=:turma AND aberta=1 AND ultima_modificacao_timestamp > (NOW() - INTERVAL :threshold MINUTE);";
-            $stm = $this->_connection->prepare($sql);
-
-            $stm->bindParam(":data", $sessionDate);
-            $stm->bindParam(":ano_catecismo", $catechism, PDO::PARAM_INT);
-            $stm->bindParam(":turma", $group);
-            $stm->bindParam(":threshold", $timeThreshold, PDO::PARAM_INT);
-
-            if($stm->execute())
-                return $stm->fetch();
-            else
-                return false;
-        }
-        catch (PDOException $e)
-        {
-            //echo $e->getMessage();
-            throw new Exception("Falha na concexão à base de dados.");
-        }
-    }
-
-
-    /**
-     * Sets the state of a virtual catechesis room.
-     * @param string $sessionDate
-     * @param int $catechism
-     * @param string $group
-     * @param int $status
-     * @return false
-     * @throws Exception
-     */
-    public function updateVirtualCatechisRoomStatus(string $sessionDate, int $catechism, string $group, int $status)
-    {
-        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
-            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
-
-        switch($status)
-        {
-            case VirtualRoomStatus::CLOSED:
-                $status = 0;
-                break;
-
-            case VirtualRoomStatus::OPEN:
-                $status = 1;
-                break;
-        }
-        
-        try
-        {
-            $sql = "UPDATE salaCatequeseVirtual SET aberta=:status WHERE data=STR_TO_DATE(:data, '%d-%m-%Y') AND ano_catecismo=:ano_catecismo AND turma=:turma;";
-            $stm = $this->_connection->prepare($sql);
-
-            $stm->bindParam(":data", $sessionDate);
-            $stm->bindParam(":ano_catecismo", $catechism, PDO::PARAM_INT);
-            $stm->bindParam(":turma", $group);
-            $stm->bindParam(":status", $status, PDO::PARAM_INT);
-
-            return $stm->execute();
-        }
-        catch (PDOException $e)
-        {
-            //echo $e->getMessage();
-            throw new Exception("Falha na concexão à base de dados.");
-        }
-    }
-
-
-    /**
-     * Sets the status of a virtual room as closed.
-     * @param string $sessionDate
-     * @param int $catechism
-     * @param string $group
-     * @return false
-     * @throws Exception
-     */
-    public function closeVirtualCatechesisRoom(string $sessionDate, int $catechism, string $group)
-    {
-        //This is really just syntactic sugar
-        return $this->updateVirtualCatechisRoomStatus($sessionDate, $catechism, $group, VirtualRoomStatus::CLOSED);
-    }
 
 
     /**
@@ -5893,10 +6137,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
 
-    
-    
-    
-    
+
+
+
+
 
     /**
      * =================================================================================================================

@@ -1,5 +1,5 @@
 <?php
-	
+
 require_once(__DIR__ . '/core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/authentication/Authenticator.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
@@ -70,8 +70,24 @@ if($_REQUEST['cid'] && $_REQUEST['cid']!="" && $_REQUEST['sacramento'] && $_REQU
 
 
 
-    $nome_externo = $sacramentoExt . " ". $catequizando . ".pdf";
-    header('Content-type: application/pdf');
+    // Determine file extension and MIME type based on the actual file
+    $file_path = UserData::getUploadDocumentsFolder() . '/' . $ficheiro;
+    $file_info = new finfo(FILEINFO_MIME);
+    $mime_type = $file_info->file($file_path);
+    $extension = '.pdf'; // Default extension
+    $content_type = 'application/pdf'; // Default content type
+
+    // Set extension and content type based on MIME type
+    if (strpos($mime_type, 'image/jpeg') !== false) {
+        $extension = '.jpg';
+        $content_type = 'image/jpeg';
+    } else if (strpos($mime_type, 'image/png') !== false) {
+        $extension = '.png';
+        $content_type = 'image/png';
+    }
+
+    $nome_externo = $sacramentoExt . " ". $catequizando . $extension;
+    header('Content-type: ' . $content_type);
     header('Content-Disposition: attachment; filename="' . $nome_externo . '"');
     header('Cache-Control: max-age=0');
     // If you're serving to IE 9, then the following may be needed

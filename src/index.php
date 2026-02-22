@@ -117,7 +117,7 @@ $pageUI->addWidget($footer);
                             <div class="valign-center">
                                 <h2 class="card-title">Catequese Virtual</h2>
                                 <span>Acesso a <strong>conteúdos</strong> digitais.</span><br>
-                                <span>Dinamização de catequeses à distância, por <strong>videochamada</strong>.</span>
+                                <span>Dinamização de catequeses à distância.</span>
                             </div>
                         </div>
                         <div class="col-md-3 vertical-align-center">

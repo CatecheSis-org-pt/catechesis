@@ -8,6 +8,7 @@ require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
+require_once(__DIR__ . '/core/absence_statistics.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
@@ -78,6 +79,25 @@ $pageUI->addWidget($chrismationPanel);
 	    {
 			display: none !important;
 	    }
+
+        @page {
+            size: portrait;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .panel-heading {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background-color: #f5f5f5 !important;
+        }
+
+        .panel-success > .panel-heading {
+            background-color: #dff0d8 !important;
+        }
 	    
 	    .btn
 	    {
@@ -89,6 +109,21 @@ $pageUI->addWidget($chrismationPanel);
 		    /*margin: 35mm;*/
 		    /*margin-right: 45mm;*/ /* for compatibility with both A4 and Letter */
 		  /*}*/
+
+        .progress {
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar {
+            background-color: #337ab7 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .progress-bar-danger {
+            background-color: #d9534f !important;
+            -webkit-print-color-adjust: exact;
+        }
 		  
 	}
 	
@@ -711,16 +746,22 @@ $menu->renderHTML();
 
                <!--idade-->
                <div class="form-group">
-                   <div class="col-xs-6">
-                       <label for="idade">Idade:</label>
+                   <div class="col-xs-2">
+                       <label for="idade">Idade:</label><br>
                        <span class="input-xlarge uneditable-input">
-                        <?php
-                            echo("" . date_diff(date_create($_SESSION['data_nasc']), date_create('today'))->y . "");
-                        ?>
-                       </span>
+                        <?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
+                        </span>
                    </div>
+               </div>
+
+               <!--NIF-->
+               <div class="col-xs-3">
+                   <label for="nif">NIF:</label>
+                   <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
+                       <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
                    <div class="clearfix"></div>
                </div>
+
            </div>
        </div>
 
@@ -777,6 +818,7 @@ $menu->renderHTML();
     			<th>Catecismo</th>
     			<th>Catequistas</th>
     			<th>Inscrito por</th>
+    			<th>Presenças</th>
     			<th>Aproveitamento</th>
     			<th>Pago</th>
     		</tr>
@@ -838,11 +880,26 @@ $menu->renderHTML();
 
 					echo("<td>" . Utils::firstAndLastName(Utils::sanitizeOutput($row['nome'])) . "</td>");	//Nome do catequista que fez a inscricao
 
+					//Presenças
+					$stats = getCatechumenAttendanceStats($cid, $row['ano_lectivo'], $row['ano_catecismo'], Utils::sanitizeOutput($row['turma']));
+					$percentage = $stats['percentage'];
+					$attended = $stats['attended'];
+					$totalSessions = $stats['total'];
+
+					echo("\t<td style=\"width: 15%; min-width: 120px; vertical-align: middle;\">\n");
+					$progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
+					echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
+					echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
+					echo("\t\t\t</div>\n");
+					echo("\t\t</div>\n");
+					echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
+					echo("\t</td>\n");
+
 					//Passou ou nao de ano
 					if(isset($row['passa']) && $row['passa']==-1)
-						echo('<td><span class="label label-danger">Reprovado</span></td>');
+						echo('<td><span class="label label-danger">Reprovou</span></td>');
 					else
-						echo('<td><span class="label label-success">Transita</span></td>');
+						echo('<td><span class="label label-success">Transitou</span></td>');
 
 
 					
@@ -874,7 +931,7 @@ $menu->renderHTML();
     		
     		<tr class="active no-print">
     			
-    			<td><div class="input-group input-group-sm"><select class="" name="ano_catequetico" required>
+    			<td><div class="input-group input-group-sm"><select class="form-control" name="ano_catequetico" required>
     									<option disabled selected></option>
     				<?php
 					
@@ -904,7 +961,7 @@ $menu->renderHTML();
 					$result = null;  				
     				?>
 									</select> </div></td>
-    			<td><div class="input-group input-group-sm"> <select class="" name="catecismo" required>
+    			<td><div class="input-group input-group-sm"> <select class="form-control" name="catecismo" required>
     									<option disabled selected></option>
     				<?php
 
@@ -932,7 +989,8 @@ $menu->renderHTML();
 									</select> </div></td>
     			<td><span class=""><i>Preenchido automaticamente</i></span></td>
     			<td class=""><span class="glyphicon glyphicon-user"></span> <?= Utils::firstAndLastName(Authenticator::getUserFullName()); ?></td>
-    			<td><div class="input-group input-group-sm"> <select class="" name="transita" required>
+                <td><i></i></td>
+    			<td><div class="input-group input-group-sm"> <select class="form-control" name="transita" required>
     									<option value="transita" selected></option>
     									<option value="transita">Transitou</option>
     									<option value="reprovado">Reprovou</option></div></td>
@@ -1318,7 +1376,7 @@ function guardar_obs()
     {
         var mywindow = window.open('', 'Arquivo', 'height=800,width=600');
         mywindow.document.write('<html><head><title>Arquivo</title><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/custom-navbar-colors.css">');
-        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; }	}');
+        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } @page { size: portrait; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }	.panel-heading { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #f5f5f5 !important; } .panel-success > .panel-heading { background-color: #dff0d8 !important; } }');
         mywindow.document.write('@media screen { .only-print, .only-print * { display: none !important;	} } textarea { resize: vertical; }</style>');
         mywindow.document.write('</head><body >');
         mywindow.document.write(data);

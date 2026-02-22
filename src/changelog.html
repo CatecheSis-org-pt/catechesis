@@ -39,6 +39,85 @@
 
   <div style="margin-bottom: 40px;"></div>
 
+  <h2 id="versão-2.3.2---2026-01-11">[Versão 2.3.2] - 2026-01-11</h2>
+  <h4><img src="img/performance_transparent_icon.png"> Melhorias de usabilidade:</h4>
+  <ul class="incremental">
+    <li>A barra de menu é agora colapsada em dispositivos com ecrãs pequenos;</li>
+    <li>Os botões de impressão configuram agora automaticamente algumas definições do navegador (como imprimir a página na horizontal) para otimizar a legibilidade, conforme o tipo de documento a imprimir;</li>
+  </ul>
+  <h4><img src="img/bug_transparent_icon.png"> Correções:</h4>
+  <ul class="incremental">
+    <li>Campo NIF era ilegível nalguns telemóveis;</li>
+    <li>A data é agora exibida por extenso, em português, na página da catequese virtual, independentemente da língua do servidor;</li>
+    <li>Alguns tipos de letra / efeitos de texto do editor de catequese virtual não eram mostrados em alguns navegadores;</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="versão-2.3.1---2025-10-13">[Versão 2.3.1] - 2025-10-13</h2>
+  <h4><img src="img/bug_transparent_icon.png"> Correções:</h4>
+  <ul class="incremental">
+    <li>Corrigida fórmula de validação do NIF português nos formulários;</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="versão-2.3.0---2025-10-12">[Versão 2.3.0] - 2025-10-12</h2>
+  <h4><img src="img/magic_wand_transparent_icon.png"> Novidades:</h4>
+  <ul class="incremental">
+    <li>Adicionado novo campo NIF nas fichas dos catequizandos, necessário nalgumas paróquias para efeitos de seguro de acidentes pessoais. Este campo pode ser ativado ou desativado nas configurações;</li>
+    <li>É agora possível carregar comprovativos de sacramentos em formato JPG e PNG (para além de PDF);</li>
+    <li>Novos interruptores para abrir/fechar inscrições e/ou renovações de matrícula de forma independente;</li>
+  </ul>
+  <h4><img src="img/performance_transparent_icon.png"> Melhorias de usabilidade:</h4>
+  <ul class="incremental">
+      <li><i>"Mãe"</i> passa a ser o encarregado de educação selecionado por omissão, atendendo às estatísticas reportadas voluntariamente por algumas paróquias;</li>
+  </ul>
+  <h4><img src="img/bug_transparent_icon.png"> Correções:</h4>
+  <ul class="incremental">
+    <li>A fórmula de cálculo do catecismo recomendado para inscrição na catequese com base na idade foi revista para Portugal, nos casos em que a inscrição se efetua na segunda metade do ano catequético (entre Janeiro e Junho);</li>
+    <li>Corrigida desformatação do fundo personalizado na página inicial pública em ecrãs grandes;</li>
+    <li>O nome do utilizador atualmente autenticado, mostrado na barra de menu, mudava erradamente quando um administrador modificava os dados da conta de outro utilizador;</li>
+    <li>A estatística "Percursos catequéticos completos" foi corrigida para considerar o número de catecismos configurado para a paróquia;</li>
+  </ul>
+
+
+  <hr>
+
+
+  <h2 id="versão-2.2.1---2024-02-13">[Versão 2.2.1] - 2024-02-13</h2>
+  <h4><img src="img/bug_transparent_icon.png"> Correções:</h4>
+  <ul class="incremental">
+    <li>Corrigido bug que provocava erro fatal (array nulo) em alguns sistemas;</li>
+  </ul>
+
+
+  <hr>
+
+
+  <h2 id="versão-2.2.0---2024-02-13">[Versão 2.2.0] - 2024-02-13</h2>
+  <h4><img src="img/magic_wand_transparent_icon.png"> Novidades:</h4>
+  <ul class="incremental">
+    <li>Notificação de atualização disponível;</li>
+    <li>Assistente de atualização automática;</li>
+  </ul>
+  <h4><img src="img/performance_transparent_icon.png"> Melhorias de usabilidade:</h4>
+  <ul class="incremental">
+    <li>Melhorada mensagem na página *Gerir grupos de catequese* quando não existem anos catequéticos;</li>
+    <li>Geração automática do ficheiro .htaccess durante a instalação. A instalação é agora completamente automática;</li>
+  </ul>
+  <h4><img src="img/bug_transparent_icon.png"> Correções:</h4>
+  <ul class="incremental">
+    <li>A configuração do CHARACTER SET e COLLATION da base de dados não era executada corretamente em algumas versões mais recentes do servidor MySQL;</li>
+    <li>Assistente de Instalação agora permite reiniciar uma instalação mesmo após ter atingido a última etapa;</li>
+    <li>Corrigido bug que afetava alguns sistemas na criação de novo ano catequético;</li>
+    <li>Removida funcionalidade de videochamadas Jitsi devido a <a href="https://jitsi.org/blog/authentication-on-meet-jit-si/">alterações na política de utilização do serviço</a> alheias ao CatecheSis;</li>
+    <li>Corrigidas posições nas caixas nas fichas de pré-inscrição geradas em .docx;</li>
+  </ul>
+
+
+  <hr>
+
 
   <h2 id="versão-2.1.0---2023-05-01">[Versão 2.1.0] - 2023-05-01</h2>
   <h4><img src="img/magic_wand_transparent_icon.png"> Novidades:</h4>
@@ -48,7 +127,7 @@
   <h4><img src="img/performance_transparent_icon.png"> Melhorias de usabilidade:</h4>
   <ul class="incremental">
     <li>Melhorada nomenclatura e comportamento do campo <i>último catecismo frequentado</i> das páginas de inscrição/renovação de matrícula, para evitar erros de preenchimento;</li>
-    <li>Melhoradas as recomendações de catecismos com base na idade do cadidato e no último catecismo frequentado;</li>
+    <li>Melhoradas as recomendações de catecismos com base na idade do candidato e no último catecismo frequentado;</li>
     <li>Funcionalidade <i>Reprografia</i> renomeada para <i>Área de Impressão</i>;</li>
   </ul>
 

@@ -88,7 +88,6 @@
       <li><b>Font Awesome</b> - <a href="FontAwesome/LICENSE.txt">Licença</a></li>
       <li><b>forkit.js</b> - <a href="forkit.js/LICENSE.txt">Licença</a></li>
 	  <li><b>grayscale</b> - <a href="grayscale/LICENSE.txt">Licença</a></li>
-      <li><b>Jitsi Meet</b> - <a href="Jitsi/LICENSE.txt">Licença</a></li>
 	  <li><b>jquery</b> - <a href="jquery/LICENSE.txt">Licença</a></li>
 	  <li><b>jQuery File Upload Plugin</b> - <a href="jQuery-File-Upload-Plugin/License.txt">Licença</a></li>
       <li><b>jQuery Mask Plugin</b> - <a href="jQuery-Mask-Plugin/LICENSE">Licença</a></li>

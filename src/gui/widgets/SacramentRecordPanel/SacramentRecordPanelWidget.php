@@ -140,7 +140,7 @@ class SacramentRecordPanelWidget extends AbstractSettingsPanelWidget
                     { ?>
                         <div class="col-xs-10">
                             <a href="descarregaComprovativo.php?cid=<?= $this->_cid ?>&sacramento=<?= Sacraments::toInternalString($this->_sacrament) ?>" target="_blank"><span class="glyphicon glyphicon-file"></span> Comprovativo</a>
-                            <small id="<?= $this->getID() ?>_upload_tooltip" class="no-print" style="display:none; color: #777"> <i> Arraste para aqui um comprovativo em PDF para substituir </i> </small>
+                            <small id="<?= $this->getID() ?>_upload_tooltip" class="no-print" style="display:none; color: #777"> <i> Arraste para aqui um comprovativo em PDF, JPG ou PNG para substituir </i> </small>
                         </div>
                         <?php
                     }
@@ -148,7 +148,7 @@ class SacramentRecordPanelWidget extends AbstractSettingsPanelWidget
                     { ?>
                         <span class="col-xs-8" style="color: #777">
                             <i>Sem comprovativo</i> <br>
-                            <small id="<?= $this->getID() ?>_upload_tooltip" class="no-print" style="display:none"> <i> Arraste para aqui um comprovativo em PDF </i> </small>
+                            <small id="<?= $this->getID() ?>_upload_tooltip" class="no-print" style="display:none"> <i> Arraste para aqui um comprovativo em PDF, JPG ou PNG </i> </small>
                         </span>
                         <?php
                     }?>
@@ -252,7 +252,9 @@ class SacramentRecordPanelWidget extends AbstractSettingsPanelWidget
             defaultViewDate: { year: <?= date("Y") ?>, month: 1, day: 1 },
             startView: 2,
             language: "pt",
-            autoclose: true
+            autoclose: true,
+            orientation: "bottom auto",
+            container: '#<?= $this->getID() ?>_sacrament_date_div'
         });
 
         $('#<?= $this->getID() ?>_sacrament_date_input').datepicker().on('show', function(ev){ });

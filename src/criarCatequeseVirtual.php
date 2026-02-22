@@ -39,9 +39,6 @@ $menu = new MainNavbar(null, MENU_OPTION::CATECHESIS);
 $pageUI->addWidget($menu);
 $saveDialog = new ModalDialogWidget("confirmarGuardarCatequese");
 $pageUI->addWidget($saveDialog);
-$closeRoomDialog = new ModalDialogWidget("confirmarFecharSala");
-$pageUI->addWidget($closeRoomDialog);
-
 
 ?>
 <!DOCTYPE html>
@@ -272,8 +269,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-2">
       <label for="catecismo">Catecismo:</label>
-        <div class="input-group catecismo">
-        <select id="catecismo" name="catecismo" onchange="muda_catecismo()">
+        <select class="form-control" id="catecismo" name="catecismo" onchange="muda_catecismo()">
             <?php
 
             //Obter catecismos
@@ -301,12 +297,10 @@ $menu->renderHTML();
             <!--<option value="1" <?php if($catecismo==1) echo("selected");?>>Infância</option>
             <option value="7" <?php if($catecismo==7) echo("selected");?>>Adolescência</option>-->
         </select>
-        </div>
     </div>
     <div class="col-xs-2">
         <label for="turma">Grupo:</label>
-        <div class="input-group turma">
-            <select id="turma" name="turma" onchange="this.form.submit()">
+            <select class="form-control" id="turma" name="turma" onchange="this.form.submit()">
                 <?php
 
                 //Obter turmas de catequese
@@ -336,7 +330,6 @@ $menu->renderHTML();
                 ?>
                 <option value="_" <?php if($turma=="_") echo("selected");?>>Todas</option>
             </select>
-        </div>
     </div>
    </div>
     
@@ -358,21 +351,6 @@ $menu->renderHTML();
    <div class="clearfix"></div>
   </div>
 
-
-    <?php
-    if($catecismo != -1  &&  $turma!="_") //Catecismo "Todos" e turma default nao tem sala
-    {
-        //Verificar se ja existe uma sala de catequese virtual
-        try
-        {
-            $salaVirtual = $db->getVirtualCatechesisRoom(date('d-m-Y', strtotime('today')), $catecismo, $turma);
-        }
-        catch(Exception $e)
-        {
-            echo("<p><strong>Erro!</strong> " . $e->getMessage() . "</p>");
-        }
-    }
-    ?>
     <!-- Botao imprimir -->
     <div class="clearfix"></div>
     <div class="btn-group">
@@ -384,12 +362,6 @@ $menu->renderHTML();
         <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_CATECHESIS_NEXTCLOUD_VIRTUAL_RESOURCES_URL))
         {?>
             <button type="button" data-toggle="modal" data-target="#galeriaRecursos" class="btn btn-default no-print"><span class="fas fa-icons"></span> Recursos na nuvem </button>
-        <?php
-        }
-        if($permissaoCatequista && $catecismo != -1  &&  $turma!="_")
-        {?>
-            <button type="button" onclick="fecharSalaVirtual()" id="botao_encerrar_sala" class="btn btn-default no-print" style="display: <?php if($salaVirtual) echo(""); else echo("none"); ?>;"><span class="text-danger glyphicon glyphicon-off"></span>&nbsp; Encerrar sala virtual</button>
-            <button type="button" onclick="entrarSalaVirtual()" id="botao_criar_sala" class="btn btn-primary no-print"><span class="glyphicon glyphicon-facetime-video"></span>&nbsp; <span id="botao_criar_sala_action_text"><?php if($salaVirtual) echo("Entrar na"); else echo("Criar");?></span> sala virtual</button>
         <?php
         }?>
     </div>
@@ -489,24 +461,6 @@ HTML_CODE
                 ->addButton(new Button("Sim", ButtonType::DANGER, "perform_guardar()"));
 
     $saveDialog->renderHTML();
-
-
-
-    // Dialog to confirm close virtual catechesis room
-
-    $closeRoomDialog->setTitle("Confirmar encerramento da sala");
-
-    $closeRoomDialog->setBodyContents(<<<HTML_CODE
-                <p>A sala de catequese virtual encontra-se aberta, podendo estar a decorrer uma sessão de catequese.<br>
-                Se encerrar esta sala a sessão de catequese terminará para todos os participantes.</p>
-                <p>Tem a certeza de que pretende fechar esta sala de catequese?</p>
-HTML_CODE
-    );
-
-    $closeRoomDialog->addButton(new Button("Cancelar", ButtonType::SECONDARY))
-                    ->addButton(new Button("Encerrar", ButtonType::DANGER, "perform_encerrar_sala()"));
-
-    $closeRoomDialog->renderHTML();
 
 }
 ?>
@@ -616,104 +570,6 @@ quill_render_js_scripts();
     }
     keep_alive();                                                                             //Correr a funcao keep_alive() ao abrir a pagina
     var intervalID = setInterval(function(){keep_alive();}, REFRESH_RATE_CATEQUESE_VIRTUAL);  //Correr a funcao keep_alive() periodicamente
-
-
-
-        <?php
-        if($catecismo != -1  &&  $turma!="_")
-        {
-        ?>
-
-        const REFRESH_RATE_SALA_VIRTUAL = 30000;               //Refrescar estado da sala virtual a cada 30s
-        var initial_room_url = '<?= $salaVirtual['url'] ?>';
-
-        function check_virtual_room()
-        {
-            var dataSessao = '<?= date('d-m-Y', strtotime('today')) ?>';
-            var catecismo = '<?= $catecismo ?>';
-            var turma = '<?= $turma ?>';
-
-            $.post("virtual/salaVirtualStatus.php", {dataSessao: dataSessao, catecismo: catecismo, turma: turma}, function(data, status)
-            {
-                var obj = $.parseJSON(data);
-
-                if(obj.room_status === "open")
-                {
-                    open_room();
-                }
-                else
-                {
-                    closed_room();
-                }
-            });
-        }
-
-        var intervalID2 = setInterval(function(){check_virtual_room();}, REFRESH_RATE_SALA_VIRTUAL);  //Correr a funcao check_virtual_room() periodicamente
-
-
-        //Quando o utilizador muda de tab no browser
-        $(window).blur(function()
-        {
-            clearInterval(intervalID2); //Parar o polling
-        });
-
-        //Quando o utilizador volta a esta tab no browser
-        $(window).focus(function()
-        {
-            check_virtual_room();
-            intervalID2 = setInterval(function(){check_virtual_room();}, REFRESH_RATE_SALA_VIRTUAL);  //Reativar o polling
-        });
-
-
-
-
-
-        function closed_room()
-        {
-            document.getElementById("botao_criar_sala_action_text").innerText = "Criar";
-            document.getElementById("botao_encerrar_sala").style.display = "none";
-        }
-
-        function open_room()
-        {
-            document.getElementById("botao_criar_sala_action_text").innerText = "Entrar na";
-            document.getElementById("botao_encerrar_sala").style.display = "block";
-        }
-
-
-        function entrarSalaVirtual()
-        {
-            window.open("<?php echo(constant('CATECHESIS_BASE_URL'));?>/virtual/salaVirtual.php?catecismo=<?php echo($catecismo);?>&turma=<?php echo($turma);?>", '_blank');
-
-        }
-
-        function fecharSalaVirtual()
-        {
-            $("#confirmarFecharSala").modal('show');
-        }
-
-
-        function perform_encerrar_sala()
-        {
-            var dataSessao = '<?= date('d-m-Y', strtotime('today')) ?>';
-            var catecismo = '<?= $catecismo ?>';
-            var turma = '<?= $turma ?>';
-
-            $.post("virtual/encerrarSala.php", {dataSessao: dataSessao, catecismo: catecismo, turma: turma}, function(data, status)
-            {
-                var obj = $.parseJSON(data);
-                if(obj.status_msg !== "OK")
-                {
-                    alert("Falha ao encerrar sala virtual. Erro: " + obj.status_msg);
-                }
-                check_virtual_room();
-            });
-        }
-
-        <?php
-        }
-        ?>
-
 
 
     //Monitorizar se houve alteracoes
@@ -844,6 +700,8 @@ $(function(){
        daysOfWeekHighlighted: "6",*/
        todayHighlight: true,
        autoclose: true,
+       orientation: "bottom auto",
+       container: '#data_sessao_group .input-group.date',
        beforeShowDay: function(date) {
            dateFormat = ("0" + date.getDate()).slice(-2) + '-' + ("0" + (date.getMonth()+1)).slice(-2) + '-' + date.getFullYear(); //We have to sum 1 to the month to make it right xD
            if (highlighted_dates.indexOf(dateFormat) >= 0) {
@@ -919,9 +777,11 @@ function validar()
     function Popup(data)
     {
         var mywindow = window.open('', 'Catequese virtual', 'height=800,width=600');
-        mywindow.document.write('<html><head><title>Catequese virtual</title><link rel="stylesheet" href="css/bootstrap.min.css"/>');
-        mywindow.document.write('<link rel="stylesheet" href="css/quill-1.3.6/quill.snow.css" />');
-        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } .ql-hidden { display: none !important; } } ');
+        mywindow.document.write('<html><head><title>Catequese virtual</title><link rel="stylesheet" href="css/bootstrap.min.css" media="all"/>');
+        mywindow.document.write('<link rel="stylesheet" href="css/quill-1.3.6/quill.snow.css" media="all" />');
+        <?php ob_start(); quill_render_css_links(); $quill_css = ob_get_clean(); ?>
+        mywindow.document.write(<?= json_encode($quill_css) ?>);
+        mywindow.document.write('<style>@media print{.no-print, .no-print *  {display: none !important; }   .btn { display: none !important; } .ql-hidden { display: none !important; } body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } } ');
         mywindow.document.write('@media screen { .only-print, .only-print * { display: none !important;	} } textarea { resize: vertical; }</style>');
         mywindow.document.write('</head><body >');
         mywindow.document.write(data);
@@ -930,10 +790,23 @@ function validar()
         mywindow.document.close(); // necessary for IE >= 10
         mywindow.focus(); // necessary for IE >= 10
 
-        mywindow.addEventListener('load', function () {
-            mywindow.print();
-            mywindow.close();
-        });
+        // Use the FontFaceSet API to wait for fonts to load
+        if (mywindow.document.fonts && mywindow.document.fonts.ready) {
+            mywindow.document.fonts.ready.then(function() {
+                setTimeout(function() {
+                    mywindow.print();
+                    mywindow.close();
+                }, 750); // Increased delay to ensure rendering of complex effects
+            });
+        } else {
+            // Fallback for older browsers
+            mywindow.addEventListener('load', function () {
+                setTimeout(function() {
+                    mywindow.print();
+                    mywindow.close();
+                }, 1000);
+            });
+        }
 
         return true;
     }

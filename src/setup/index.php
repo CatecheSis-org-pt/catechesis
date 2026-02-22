@@ -41,6 +41,8 @@ $dir_already_exists = false;
 $dir_copy_failed = false;
 $main_config_creation_failed = false;
 $shadow_config_creation_failed = false;
+$htaccess_config_creation_failed = false;
+$custom_errors = [];
 $main_config_file = '';
 $db_connection_failed = false;
 $db_tables_creation_failed = false;
@@ -61,9 +63,9 @@ $gdprSettings = null;
 
 // Process form steps
 $current_step = 0;
-if($_POST['setup_step'])
+if($_REQUEST['setup_step'])
 {
-    $current_step = intval($_POST['setup_step']);
+    $current_step = intval($_REQUEST['setup_step']);
 }
 else if($_SESSION['setup_step'])
 {
@@ -74,6 +76,7 @@ switch($current_step)
 {
     case -1: //Restart
         $current_step = 0;
+        $_SESSION['setup_step'] = 0;
         unset($_SESSION['username']);
         unset($_SESSION['admin']);
         session_unset();
@@ -110,6 +113,12 @@ switch($current_step)
             $reqs_satisfied = false;
             $https_pass = false;
         }
+
+        // Enforce PHP version < 8.0 (installation wizard requirement)
+        if (defined('PHP_VERSION_ID') ? PHP_VERSION_ID >= 80000 : version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $reqs_satisfied = false;
+            $custom_errors[] = 'A versão do PHP deve ser inferior a 8.0. Versão detetada: ' . PHP_VERSION;
+        }
         break;
 
     case 3:
@@ -117,17 +126,22 @@ switch($current_step)
         $catechesis_root = dirname(__DIR__) . "/";
         $_SESSION['catechesis_base_url'] = str_replace("/setup/", "", Utils::getBaseUrl());
 
-        //Populate directoris list
+        //Populate directories list
         $dir_list = [];
         echo('<datalist id="dir_list">');
-        $scan = scandir(posix_getpwuid(posix_getuid())['dir']);
-        foreach($scan as $file)
+        $home_dir = SetupUtils\getUserHomeDir();
+
+        $suggested_path = SetupUtils\joinPaths($home_dir, "catechesis-data"); //Suggested path
+        echo('<option value="' . $suggested_path . '">');
+
+        $scan = glob(rtrim($home_dir, "\\/") . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        if ($scan === false) { $scan = []; }
+        foreach ($scan as $dir)
         {
-            if (!is_dir("$file"))
-            {
-                $dir_list[] = '/' . $file;
-                echo('<option value="/' . $file . '">');
-            }
+            $file = realpath($dir);
+            if ($file === false) { continue; }
+            $dir_list[] = $file;
+            echo('<option value="' . $file . '">');
         }
         echo('</datalist>');
 
@@ -174,6 +188,18 @@ switch($current_step)
                     $shadow_settings['<CATECHESIS_UL_SITE_KEY>'] = Utils::secureRandomString(64);
                     SetupUtils\replace_strings_in_file($_SESSION['shadow_config_file'], $shadow_settings);
 
+                    // Write URLs for error pages in main .htaccess file
+                    $error_pages = array();
+                    $error_pages['<ERROR_PAGE_404>'] = $_SESSION['catechesis_base_url'] . '/erro404.php';
+                    $error_pages['<ERROR_PAGE_400>'] = $_SESSION['catechesis_base_url'] . '/erro500.html';
+                    $error_pages['<ERROR_PAGE_500>'] = $_SESSION['catechesis_base_url'] . '/erro500.html';
+                    if(!SetupUtils\xcopy(__DIR__ . "/TEMPLATE.htaccess", $catechesis_root . '/.htaccess'))
+                    {
+                        $htaccess_config_creation_failed = true;
+                        break;
+                    }
+                    SetupUtils\replace_strings_in_file($catechesis_root . '/.htaccess', $error_pages);
+
                 }
             }
             else
@@ -209,8 +235,7 @@ switch($current_step)
 
             //Populate database
             if(!SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/catechesis_database.sql")
-                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/ulogin_database.sql")
-                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/script_collation.sql"))
+                || !SetupUtils\run_sql_script($db_host, $db_name, $db_user, $db_pass, __DIR__ . "/db/ulogin_database.sql"))
                 {
                     $db_tables_creation_failed = true;
                     break;
@@ -321,10 +346,8 @@ switch($current_step)
         break;
 }
 
-
 //Store the current step in the session
 $_SESSION['setup_step'] = $current_step;
-
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -409,7 +432,6 @@ $_SESSION['setup_step'] = $current_step;
                     {
                         case 0:
                             $has_previous = false;
-                            $current_step++;
                             ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
 
@@ -418,13 +440,12 @@ $_SESSION['setup_step'] = $current_step;
 
                             <p>Este assistente vai orientá-lo passo a passo na configuração do CatecheSis para a sua paróquia.</p>
 
-                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step + 1?>">
                         </form>
                     <?php
                         break;
 
                         case 1:
-                            $current_step++;
                             ?>
                         <form class="form-horizontal" id="form-wizard" role="form" action="index.php" method="post">
                             <h1>Termos e condições</h1>
@@ -447,7 +468,7 @@ $_SESSION['setup_step'] = $current_step;
                                 </div>
                             </div>
 
-                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
+                            <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step+1 ?>">
                         </form>
                             <?php
                             break;
@@ -468,7 +489,9 @@ $_SESSION['setup_step'] = $current_step;
                             else
                             {
                                 echo "<div class=\"alert alert-danger\"><strong>Ups!</strong> Alguns requisitos não estão a ser cumpridos pelo seu servidor. :( <br>Confira abaixo a lista completa:<br><br>";
-                                echo "<p>" . join('<br>', $checker->getErrors()) . "</p>";
+                                $errors = $checker->getErrors();
+                                if (!empty($custom_errors)) { $errors = array_merge($errors, $custom_errors); }
+                                echo "<p>" . join('<br>', $errors) . "</p>";
                                 if(!$https_pass)
                                     echo "<p>O servidor não está a utilizar HTTPS. Para garantir a segurança dos dados pessoais, o uso de HTTPS é obrigatório no CatecheSis.</p>";
                                 echo "</div>";
@@ -497,7 +520,7 @@ $_SESSION['setup_step'] = $current_step;
 
                             <div class="form-group">
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="/home/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
+                                    <input type="text" class="form-control" id="data_dir" name="data_dir" placeholder="<?= $home_dir ?>/catechesis-data" list="dir_list" value="<?=$data_dir?>" required>
                                 </div>
                                 <div class="col-md-4">
                                     <span class="fas fa-question-circle" data-toggle="tooltip" data-placement="top" title="A diretoria será criada. É nesta diretoria que serão guardados os dados produzidos durante a utilização do CatecheSis, tais como fotografias e documentos carregados. Esta é a diretoria relevante para efeitos de backup."></span>
@@ -532,6 +555,13 @@ $_SESSION['setup_step'] = $current_step;
                             {
                                 ?>
                                 <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível criar o ficheiro de configuração "shadow" do CatecheSis em <code><?= $_SESSION['shadow_config_file'] ?></code>.<br>
+                                    Por favor verifqiue se o utilizador Apache tem permissões de escrita.</div>
+                                <?php
+                            }
+                            if($htaccess_config_creation_failed)
+                            {
+                                ?>
+                                <div class="alert alert-danger"><strong>ERRO!</strong> Não foi possível configurar o ficheiro .htaccess no diretório base do CatecheSis.<br>
                                     Por favor verifqiue se o utilizador Apache tem permissões de escrita.</div>
                                 <?php
                             }
@@ -784,6 +814,14 @@ $_SESSION['setup_step'] = $current_step;
                                 <input type="hidden" id="setup_step_input" name="setup_step" value="<?= $current_step ?>">
                             </form>
                             <?php
+
+                            // After this page, if the user comes back, restart setup from the beggining
+                            $current_step = -1;
+                            unset($_SESSION['username']);
+                            unset($_SESSION['admin']);
+                            session_unset();
+                            session_destroy();
+
                             break;
                     }
                     ?>
@@ -882,5 +920,9 @@ $_SESSION['setup_step'] = $current_step;
     ?>
 </script>
 
+<?php
+//Store the current step in the session
+$_SESSION['setup_step'] = $current_step;
+?>
 </body>
 </html>

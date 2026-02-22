@@ -5,11 +5,13 @@ require_once(__DIR__ . '/authentication/utils/authentication_verify.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");
+require_once(__DIR__ . '/core/Configurator.php');
 require_once(__DIR__ . '/core/document_generators/classes/PHPExcel.php');
 
 use catechesis\PdoDatabaseManager;
 use core\domain\Sacraments;
 use catechesis\Utils;
+use catechesis\Configurator;
 
 
 
@@ -84,6 +86,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
     //Get catechumens
     $result = null;
+
+    // Optional fields configuration
+    $nifEnabled = false;
+    try {
+        $nifEnabled = Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED);
+    } catch (Exception $e) { /* keep default false on error */ }
     try
     {
         foreach ($catechumensList as $cid)
@@ -123,6 +131,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             ->setVisible(true)
             ->setCollapsed(false)
             ->setAutoSize(true);
+        if($nifEnabled)
+            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setOutlineLevel(1)
+                ->setVisible(true)
+                ->setCollapsed(false)
+                ->setAutoSize(true);
 
         // Freeze panes
         $objPHPExcel->getActiveSheet()->freezePane('A2');
@@ -139,6 +152,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         if($fileType == "pdf")
             $objNomePayable->getFont()->setColor($HEADER_FONT_COLOR);
 
+        $objNifTitle = null;
+        if($nifEnabled)
+        {
+            $objNifTitle = new PHPExcel_RichText();
+            $objNifTitle->createText('');
+            $objNifPayable = $objNifTitle->createTextRun('NIF');
+            $objNifPayable->getFont()->setBold(true);
+            if($fileType == "pdf")
+                $objNifPayable->getFont()->setColor($HEADER_FONT_COLOR);
+        }
 
         $objDataNascTitle = new PHPExcel_RichText();
         $objDataNascTitle->createText('');
@@ -156,34 +179,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $objCatPayable->getFont()->setColor($HEADER_FONT_COLOR);
 
         $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A1', $objNomeTitle)
-            ->setCellValue('B1', $objDataNascTitle)
-            ->setCellValue('C1', $objCatTitle);
+            ->setCellValue('A1', $objNomeTitle);
+        if($nifEnabled)
+            $objPHPExcel->getActiveSheet()->setCellValue('B1', $objNifTitle);
+        $objPHPExcel->getActiveSheet()
+            ->setCellValue(($nifEnabled?'C1':'B1'), $objDataNascTitle)
+            ->setCellValue(($nifEnabled?'D1':'C1'), $objCatTitle);
+
+        $lastHeaderCol = ($nifEnabled ? 'D' : 'C');
 
         // Set header line color
         if($fileType == "pdf")
         {
-            $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
-            $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->getFill()->setStartColor($HEADER_BACKGROUND_COLOR);
-            $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $objPHPExcel->getActiveSheet()->getStyle('A1:' . $lastHeaderCol . '1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+            $objPHPExcel->getActiveSheet()->getStyle('A1:' . $lastHeaderCol . '1')->getFill()->setStartColor($HEADER_BACKGROUND_COLOR);
+            $objPHPExcel->getActiveSheet()->getStyle('A1:' . $lastHeaderCol . '1')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         }
 
         // Set auto filters in all the columns
-        $objPHPExcel->getActiveSheet()->setAutoFilter('A1:C1');
+        $objPHPExcel->getActiveSheet()->setAutoFilter('A1:' . $lastHeaderCol . '1');
 
         $linha = 2;
         foreach ($result as $row)
         {
-
             $objPHPExcel->getActiveSheet()->setCellValue('A' . $linha, $row['nome']);
-            $objPHPExcel->getActiveSheet()->setCellValue('B' . $linha, date("d-m-Y", strtotime($row['data_nasc'])));
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $linha, ($row['ano_catecismo'] ? ($row['ano_catecismo'] . "º" . $row['turma']) : "-"));
+            if($nifEnabled)
+                $objPHPExcel->getActiveSheet()->setCellValue('B' . $linha, $row['nif']);
+            $objPHPExcel->getActiveSheet()->setCellValue(($nifEnabled?'C':'B') . $linha, date("d-m-Y", strtotime($row['data_nasc'])));
+            $objPHPExcel->getActiveSheet()->setCellValue(($nifEnabled?'D':'C') . $linha, ($row['ano_catecismo'] ? ($row['ano_catecismo'] . "º" . $row['turma']) : "-"));
 
+            $lastCol = ($nifEnabled ? 'D' : 'C');
             // Tint alternate lines in PDF output (in Excel output it does not make sense, because the user may want to apply filters)
             if($fileType == "pdf" && ($linha % 2 != 0))
             {
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $linha . ":C" . $linha)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $linha . ":C" . $linha)->getFill()->setStartColor($ODD_ROW_COLOR);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $linha . ":" . $lastCol . $linha)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $linha . ":" . $lastCol . $linha)->getFill()->setStartColor($ODD_ROW_COLOR);
             }
 
             $linha++;

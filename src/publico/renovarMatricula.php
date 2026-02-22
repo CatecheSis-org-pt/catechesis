@@ -21,7 +21,11 @@ use catechesis\gui\SimpleFooter;
 $periodo_activo = false;
 try
 {
-    $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
+    // Check if the new configuration key exists, if not, use the legacy key value
+    if (Configurator::configurationExists(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN))
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_RENEWAL_OPEN);
+    else
+        $periodo_activo = Configurator::getConfigurationValueOrDefault(Configurator::KEY_ONLINE_ENROLLMENTS_OPEN);
 }
 catch (Exception $e)
 {

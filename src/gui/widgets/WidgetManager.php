@@ -18,9 +18,9 @@ namespace catechesis\gui
     {
 
         // (Note: typed properties are only allowed in PHP 7.4+, so types are commented in the meanwhile...)
-        private /*array*/  $_widgets;                        // List of widgets added to this manager
-        private /*array*/  $_additional_css_dependencies;    // Additional CSS dependencies besides the ones declared by the widgets
-        private /*array*/  $_additional_js_dependencies;     // Additional JS dependencies besides the ones declared by the widgets
+        private /*array*/  $_widgets = array();                        // List of widgets added to this manager
+        private /*array*/  $_additional_css_dependencies = array();    // Additional CSS dependencies besides the ones declared by the widgets
+        private /*array*/  $_additional_js_dependencies = array();     // Additional JS dependencies besides the ones declared by the widgets
         private /*string*/ $_path_prefix = "";               // Prefix to add to the path of every widget import of CSS or JS files
 
 

@@ -68,9 +68,14 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     //NOTE: The renderCSS() method is inherited from AbstractCatechumensListingWidget.
 
 
+    /**
+     * @inheritDoc
+     */
     public function renderHTML()
     {
         ?>
+
+        <!-- Catechumens list widget -->
         <div id="<?=$this->getID()?>" class="catechumens_list_widget<?= $this->getCustomClassesString()?>" style="<?=$this->getCustomInlineStyle()?>">
 
             <!-- Tabs -->
@@ -232,7 +237,10 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             </div>
                             Nome</th>
                         <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
-                        <th>Data nascimento</th>
+                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                                <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0">NIF</th>
+                            <?php } ?>
+                            <th>Data nascimento</th>
                         <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
                         <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
                     </tr>
@@ -333,7 +341,13 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                         <?php //--Atributos ?>
 
 
-                        <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
+                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                                <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0;">
+                                    <?= Utils::sanitizeOutput($row['nif']) ?>
+                                </td>
+                            <?php } ?>
+
+                            <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
 
                         <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 10%;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
 
