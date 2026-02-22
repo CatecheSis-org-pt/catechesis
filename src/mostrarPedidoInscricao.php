@@ -627,8 +627,12 @@ if(!isset($submission['cid']))
             <div class="form-group">
                 <div class="col-xs-8">
                     <div class="row"></div>
-                    <label class="radio"><input type="radio" id="quer_inscrever" name="quer_inscrever" value="Nao" checked> Não inscrever agora num grupo de catequese</label>
-                    <label class="radio"><input type="radio" id="quer_inscrever2" name="quer_inscrever" value="Sim">Inscrever agora num grupo de catequese</label>
+                    <div class="radio">
+                        <label><input type="radio" id="quer_inscrever" name="quer_inscrever" value="Nao" checked> Não inscrever agora num grupo de catequese</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" id="quer_inscrever2" name="quer_inscrever" value="Sim"> Inscrever agora num grupo de catequese</label>
+                    </div>
                 </div>
                 <div class="clearfix"></div>
             </div>

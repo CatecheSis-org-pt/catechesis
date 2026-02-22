@@ -329,9 +329,13 @@ $menu->renderHTML();
    <div class="form-group">
     <div class="col-xs-8">
     	<label for="criar_modo">Criar automaticamente:</label>
-    	<p>&nbsp;&nbsp;<input type="radio" name="criar_modo" value="1" <?php if(!$existe_ano_anterior) echo("checked");?>> <?= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))?> grupos de catequese (1 grupo por catecismo)</p>
+    	<div class="radio">
+            <label><input type="radio" name="criar_modo" value="1" <?php if(!$existe_ano_anterior) echo("checked");?>> <?= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS))?> grupos de catequese (1 grupo por catecismo)</label>
+        </div>
     	<?php if($existe_ano_anterior): ?>
-	<p>&nbsp;&nbsp;<input type="radio" name="criar_modo" value="2" checked> mesmos catecismos e grupos que no ano anterior</p>
+        <div class="radio">
+            <label><input type="radio" name="criar_modo" value="2" checked> mesmos catecismos e grupos que no ano anterior</label>
+        </div>
 	<?php endif ?>
     </div>
     <div class="clearfix"></div>

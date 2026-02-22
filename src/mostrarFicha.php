@@ -774,8 +774,12 @@ $printDialog->setBodyContents(<<<HTML_CODE
 	    
 	    <div class="clearfix" style="margin-bottom: 20px;"></div>
 	    
-	    <p><input type="radio" name="imprimir_como" id="imprimir_word" value="word" checked> Transferir como documento do Microsoft Word <b><i>[RECOMENDADO]</i></b></p>
-	    <p><input type="radio" name="imprimir_como" id="imprimir_borwser" value="browser"> Imprimir directamente no navegador</p>
+     <div class="radio">
+          <label><input type="radio" name="imprimir_como" id="imprimir_word" value="word" checked> Transferir como documento do Microsoft Word <b><i>[RECOMENDADO]</i></b></label>
+     </div>
+     <div class="radio">
+          <label><input type="radio" name="imprimir_como" id="imprimir_borwser" value="browser"> Imprimir directamente no navegador</label>
+     </div>
 HTML_CODE
 );
 
