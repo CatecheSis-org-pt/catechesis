@@ -203,6 +203,7 @@ interface DatabaseManager
     public function getAbandonmentByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage);                 // Returns the number of catechumens abandoning catechesis by catechetical year
     public function getCompleteCatecheticalJourneysByCatecheticalYear(int $currentCatecheticalYear, bool $inPercentage);// Returns the number of catechumens completing the catechetical journey by catechetical year
     public function getCatechumensByCatechistAndYear(bool $accumulated);                                                // Returns the number of catechumens by catechist and catechetical year
+    public function getAttendancePercentageByGroup(int $catecheticalYear);                                              // Returns the percentage of present catechumens in each group and catechesis session of the given year
 
     // Attendance and sessions
     public function createCatechesisSession(string $date, int $catechism, string $group, int $catecheticalYear);         // Creates a new session entry for a group/year

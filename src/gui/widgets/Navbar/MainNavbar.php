@@ -227,6 +227,7 @@ class MainNavbar extends Widget
                                 <li role="presentation" class="dropdown-header"><i class="fas fa-chart-pie"></i> Estatísticas</li>
                                 <li><a href="estatisticaNumCatequizandos.php">Número de catequizandos por catequista</a></li>
                                 <li><a href="estatisticaDesistencias.php">Desistências</a></li>
+                                <li><a href="estatisticaAssiduidade.php">Assiduidade</a></li>
                                 <li><a href="estatisticaPercursosCompletos.php">Percursos catequéticos completos</a></li>
                                 <li><a href="estatisticaResidentes.php">Catequizandos residentes na paróquia</a></li>
                                 <li class="divider"></li>

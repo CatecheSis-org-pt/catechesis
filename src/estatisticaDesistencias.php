@@ -102,6 +102,7 @@ $menu->renderHTML();
   <ul class="nav nav-tabs">
   <li role="presentation"><a href="estatisticaNumCatequizandos.php">Número de catequizandos por catequista</a></li>
   <li role="presentation" class="active"><a href="">Desistências</a></li>
+  <li role="presentation"><a href="estatisticaAssiduidade.php">Assiduidade</a></li>
   <li role="presentation"><a href="estatisticaPercursosCompletos.php">Percursos catequéticos completos</a></li>
   <li role="presentation"><a href="estatisticaResidentes.php">Catequizandos residentes na paróquia</a></li>
   </ul>

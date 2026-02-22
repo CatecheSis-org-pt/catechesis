@@ -5454,6 +5454,48 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
 
     /**
+     * Returns the percentage of present catechumens in each group and catechesis session of the given year.
+     * The results are returned as an array of rows, where each row contains the date, catechism, group,
+     * number of present catechumens, and total number of enrolled catechumens.
+     * @param int $catecheticalYear
+     * @return array
+     * @throws Exception
+     */
+    public function getAttendancePercentageByGroup(int $catecheticalYear)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_READ))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        try
+        {
+            $sql = "SELECT s.data, s.ano_catecismo, s.turma, 
+                           COUNT(CASE WHEN p.presenca = 1 THEN 1 END) as num_present,
+                           COUNT(p.cid) as total_enrolled
+                    FROM sessao_catequese s
+                    LEFT JOIN presenca p ON s.data = p.data 
+                                        AND s.ano_catecismo = p.ano_catecismo 
+                                        AND s.turma = p.turma 
+                                        AND s.ano_lectivo = p.ano_lectivo
+                    WHERE s.ano_lectivo = :ano
+                    GROUP BY s.data, s.ano_catecismo, s.turma
+                    ORDER BY s.data ASC, s.ano_catecismo, s.turma";
+
+            $stm = $this->_connection->prepare($sql);
+            $stm->bindParam(":ano", $catecheticalYear, PDO::PARAM_INT);
+
+            if ($stm->execute())
+                return $stm->fetchAll();
+            else
+                throw new Exception("Não foi possível obter a informação sobre assiduidade por grupo.");
+        }
+        catch (PDOException $e)
+        {
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
+
+
+    /**
      * Returns an array with all the calendar dates for which a virtual catechesis session exists in the database,
      * for the particular catechism/group provided.
      * If 'recursive' is true, searches for catechesis sessions recursively in the contents pyramid, starting from a session for this specific group,
