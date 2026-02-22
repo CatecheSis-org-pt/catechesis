@@ -8,7 +8,7 @@ require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/UserData.php');
-require_once(__DIR__ . '/core/statistics.php');
+require_once(__DIR__ . '/core/absence_statistics.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/core/domain/Sacraments.php");

@@ -12,7 +12,7 @@ require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . '/core/Configurator.php');
-require_once(__DIR__ . '/core/statistics.php');
+require_once(__DIR__ . '/core/absence_statistics.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 
 use catechesis\DataValidationUtils;
