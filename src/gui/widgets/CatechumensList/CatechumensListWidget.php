@@ -7,6 +7,7 @@ require_once(__DIR__ . '/../AbstractCatechumensListing/AbstractCatechumensListin
 require_once(__DIR__ . '/../../../core/Configurator.php');
 require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../../../core/UserData.php');
+require_once(__DIR__ . '/../../../core/absence_statistics.php');
 
 use catechesis\Configurator;
 use catechesis\UserData;
@@ -28,6 +29,8 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     private /*string*/ $selector_column_name = "Selecionar";  // Name for the column that holds the switch buttons
     private /*string*/ $selector_on_text = "&nbsp;&nbsp;&nbsp;&nbsp;";      // String displayed in the "on" state of the switch
     private /*string*/ $selector_off_text = "&nbsp;&nbsp;&nbsp;&nbsp;";        // String displayed in the "off" state of the switch
+    private /*bool*/ $show_attendance = false;               // Whether to show the attendance column in the list view
+    private /*int*/ $attendance_catechetical_year = null;     // Catechetical year to show attendance for
 
     public function __construct(string $id = null)
     {
@@ -79,6 +82,20 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     {
         $this->selector_on_text = $onText;
         $this->selector_off_text = $offText;
+        return $this;
+    }
+
+
+    /**
+     * Sets whether to show the attendance column in the list view.
+     * @param bool $show
+     * @param int|null $year If null, the current catechetical year is used.
+     * @return $this
+     */
+    public function setShowAttendance(bool $show, int $year = null)
+    {
+        $this->show_attendance = $show;
+        $this->attendance_catechetical_year = $year ?? intval(Utils::currentCatecheticalYear());
         return $this;
     }
 
@@ -156,9 +173,12 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     {
         ?>
         <div class="panel panel-default catechumens-ground-plane" id="<?=$this->getID()?>_catechist_groups_panel">
-            <!--<div class="panel-heading text-center">Catequizandos</div>-->
-            <div class="clearfix" style="margin-bottom: 20px"></div>
             <div class="panel-body">
+                <?php if($this->is_selector): ?>
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-hand-pointer"></i> Clique nos cartões para os levantar ou baixar. Marque catequizandos levantando os respetivos cartões, e desmarque baixando os cartões.
+                    </div>
+                <?php endif; ?>
                 <?php
                 $cardCounter = 0;
                 $rowCounter = 0;
@@ -314,12 +334,15 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             <?php } ?>
                             <th>Data nascimento</th>
                         <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
+                        <?php if($this->show_attendance): ?>
+                            <th>Presenças</th>
+                        <?php endif; ?>
                         <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
                     </tr>
                     </thead>
                     <tfoot class="only-print">
                     <tr>
-                        <td colspan="<?= ($this->is_selector ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 6 : 5) : (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 5 : 4)) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                        <td colspan="<?= ($this->is_selector ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 6 : 5) : (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 5 : 4)) + ($this->show_attendance ? 1 : 0) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
                     </tr>
                     </tfoot>
                     <tbody data-link="row" class="rowlink">
@@ -434,6 +457,22 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
                         <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 10%;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
 
+                        <?php if($this->show_attendance): ?>
+                            <?php
+                            $stats = getCatechumenAttendanceStats($cid, $this->attendance_catechetical_year, $row['ano_catecismo'] ? intval($row['ano_catecismo']) : null, $row['turma']);
+                            $percentage = $stats['percentage'];
+                            $attended = $stats['attended'];
+                            $totalSessions = $stats['total'];
+                            ?>
+                            <td style="width: 20%; min-width: 150px; vertical-align: middle;">
+                                <div class="progress" style="margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;">
+                                    <div class="progress-bar <?= ($percentage < 50.0) ? 'progress-bar-danger' : '' ?>" role="progressbar" aria-valuenow="<?= $attended ?>" aria-valuemin="0" aria-valuemax="<?= $totalSessions ?>" style="width: <?= $percentage ?>%;">
+                                    </div>
+                                </div>
+                                <span style="font-size: 11px; font-weight: bold;"><?= $attended ?> / <?= $totalSessions ?></span>
+                            </td>
+                        <?php endif; ?>
+
                         <td class="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"');?> >
 
                         <?php
@@ -529,16 +568,24 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                         <?php if($this->is_selector): ?>
                         { "width": "10%", "targets": 0 },
                         { "width": "25%", "targets": 1 },
-                        { "width": "35%", "targets": 2 },
+                        { "width": "<?= $this->show_attendance ? '25' : '35' ?>%", "targets": 2 },
                         { "width": "10%", "targets": 3 },
                         { "width": "10%", "targets": 4 },
-                        { "width": "10%", "targets": 5 }
+                        { "width": "10%", "targets": 5 },
+                        <?php if($this->show_attendance): ?>
+                            { "width": "10%", "targets": 6 },
+                        <?php endif; ?>
                         <?php else: ?>
                         { "width": "30%", "targets": 0 },
-                        { "width": "40%", "targets": 1 },
+                        { "width": "<?= $this->show_attendance ? '30' : '40' ?>%", "targets": 1 },
                         { "width": "10%", "targets": 2 },
                         { "width": "10%", "targets": 3 },
-                        { "width": "10%", "targets": 4 }
+                        <?php if($this->show_attendance): ?>
+                            { "width": "10%", "targets": 4 },
+                            { "width": "10%", "targets": 5 }
+                        <?php else: ?>
+                            { "width": "10%", "targets": 4 }
+                        <?php endif; ?>
                         <?php endif; ?>
                     ]
                 });
