@@ -30,9 +30,26 @@
 
 }
 .catechumen-card:hover .catechumen-card-inner {
-    transform: rotateX(10deg);
+    transform: rotateX(20deg);
     transform-origin : center bottom;
 }
+
+.catechumen-card-selectable .catechumen-card-inner {
+    transform: rotateX(90deg);
+}
+
+.catechumen-card-selectable.selected .catechumen-card-inner {
+    transform: rotateX(-20deg);
+}
+
+.catechumen-card-selectable:hover .catechumen-card-inner {
+    transform: rotateX(70deg);
+}
+
+.catechumen-card-selectable.selected:hover .catechumen-card-inner {
+    transform: rotateX(20deg);
+}
+
 .catechumen-card-front,
 .catechumen-card-back {
     position: absolute;

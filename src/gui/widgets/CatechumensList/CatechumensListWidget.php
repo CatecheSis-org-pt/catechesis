@@ -24,6 +24,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 {
     private /*PDO result array*/ $catechumens_list;         // Stores the list of catechumens to show in the list widget
     private /*string*/ $entities_name = "resultado";        // Name to use in the results header to refer to the entities in the list (e.g. "results" or "catechumens")
+    private /*bool*/ $is_selector = false;                  // Whether the widget works as a simple list or as a selector (with selectable 3D cards)
 
     public function __construct(string $id = null)
     {
@@ -32,6 +33,18 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
         // Static CSS styles of this widget that are common to all instances (only imported once)
         $this->addCSSDependency('gui/widgets/CatechumensList/CatechumensListWidget.css');
+    }
+
+
+    /**
+     * Sets whether the widget works as a simple list or as a selector (with selectable 3D cards).
+     * @param bool $isSelector
+     * @return $this
+     */
+    public function setIsSelector(bool $isSelector)
+    {
+        $this->is_selector = $isSelector;
+        return $this;
     }
 
 
@@ -79,21 +92,21 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
         <div id="<?=$this->getID()?>" class="catechumens_list_widget<?= $this->getCustomClassesString()?>" style="<?=$this->getCustomInlineStyle()?>">
 
             <!-- Tabs -->
-            <ul class="nav nav-pills" style="float: right;">
-                <li role="presentation" class="active"><a href="#tabList" aria-controls="tabList" role="tab" data-toggle="tab"><i class="fas fa-th-list"></i></a></li>
-                <li role="presentation" class=""><a href="#tabGrid" aria-controls="tabGrid" role="tab" data-toggle="tab"><i class="fas fa-id-card-alt"></i></a></li>
+            <ul class="nav nav-pills" style="float: right; position: relative; z-index: 10;">
+                <li role="presentation" class="active" data-toggle="tooltip" data-placement="top" title="Vista de lista"><a href="#<?=$this->getID()?>_tabList" aria-controls="<?=$this->getID()?>_tabList" role="tab" data-toggle="tab"><i class="fas fa-th-list"></i></a></li>
+                <li role="presentation" class="" data-toggle="tooltip" data-placement="top" title='Vista de cartões "Quem é quem"'><a href="#<?=$this->getID()?>_tabGrid" aria-controls="<?=$this->getID()?>_tabGrid" role="tab" data-toggle="tab"><i class="fas fa-id-card-alt"></i></a></li>
             </ul>
 
             <div class="tab-content">
                 <!-- List view -->
-                <div role="tabpanel" class="tab-pane active" id="tabList">
+                <div role="tabpanel" class="tab-pane active" id="<?=$this->getID()?>_tabList">
                 <?php
                 $this->renderListViewHTML();
                 ?>
                 </div>
 
                 <!-- Grid view -->
-                <div role="tabpanel" class="tab-pane catechumens-grid-panel" id="tabGrid">
+                <div role="tabpanel" class="tab-pane catechumens-grid-panel" id="<?=$this->getID()?>_tabGrid">
                     <?php
                     $this->renderGridViewHTML();
                     ?>
@@ -131,7 +144,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 ?>
 
                 <div class="col-sm-3">
-                    <div class="catechumen-card" onclick="window.open('mostrarFicha.php?cid=<?=$row['cid']?>');" >
+                    <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $row['cid'] . '\');') ?>" >
                         <div class="catechumen-card-inner">
                             <div class="catechumen-card-front">
                                 <img src="<?php
@@ -404,6 +417,11 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     {
         ?>
         <script type="text/javascript">
+            function toggle_catechumen_selection(element)
+            {
+                $(element).toggleClass('selected');
+            }
+
             // Initialize variables defined in the common JS code for this widget instance
             set_attributes_visibility('<?=$this->getID();?>', false);
             set_sacraments_visibility('<?=$this->getID();?>', <?php if($this->sacraments_shown) echo('true'); else echo('false'); ?>);
@@ -433,6 +451,10 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     redraw_datatable('#<?=$this->getID()?>_resultados', table_<?= $this->getID(); ?>);
                 });
             } );
+
+            $('#<?=$this->getID()?>_tabList').parent().tooltip();
+            $('#<?=$this->getID()?>_tabGrid').parent().tooltip();
+
         </script>
         <?php
 
