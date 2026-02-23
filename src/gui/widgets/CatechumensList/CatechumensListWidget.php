@@ -35,6 +35,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     private /*int*/ $attendance_catechetical_year = null;     // Catechetical year to show attendance for
     private /*bool*/ $show_attributes_feature = true;        // Whether to show the "Mostrar atributos" button and corresponding columns
     private /*bool*/ $show_sacraments_feature = true;         // Whether to show the "Mostrar sacramentos" button and corresponding columns
+    private /*bool*/ $show_catechism_feature = true;          // Whether to show the "Catecismo" column
 
     public function __construct(string $id = null)
     {
@@ -113,6 +114,18 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     public function showSacraments(bool $show = true)
     {
         $this->show_sacraments_feature = $show;
+        return $this;
+    }
+
+
+    /**
+     * Sets whether to show the "Catecismo" column.
+     * @param bool $show
+     * @return $this
+     */
+    public function showCatechism(bool $show = true)
+    {
+        $this->show_catechism_feature = $show;
         return $this;
     }
 
@@ -333,7 +346,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             <?php } ?>
                         <?php endif; ?>
                         <th></th>
-                        <th></th>
+                        <?php if($this->show_catechism_feature): ?>
+                            <th></th>
+                        <?php endif; ?>
                         <?php if($this->show_attendance): ?>
                             <th></th>
                         <?php endif; ?>
@@ -365,7 +380,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                                 <?php } ?>
                             <?php endif; ?>
                             <th>Data nascimento</th>
-                        <th style="text-align:right;">Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
+                        <?php if($this->show_catechism_feature): ?>
+                            <th style="text-align:right;">Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
+                        <?php endif; ?>
                         <?php if($this->show_attendance): ?>
                             <th>Presenças</th>
                         <?php endif; ?>
@@ -376,7 +393,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     </thead>
                     <tfoot class="only-print">
                     <tr>
-                        <td colspan="<?= ($this->is_selector ? 2 : 1) + ($this->show_attributes_feature ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 2 : 1) : 0) + 2 + ($this->show_attendance ? 1 : 0) + ($this->show_sacraments_feature ? 1 : 0) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                        <td colspan="<?= ($this->is_selector ? 2 : 1) + ($this->show_attributes_feature ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 2 : 1) : 0) + 1 + ($this->show_catechism_feature ? 1 : 0) + ($this->show_attendance ? 1 : 0) + ($this->show_sacraments_feature ? 1 : 0) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
                     </tr>
                     </tfoot>
                     <tbody data-link="row" class="rowlink">
@@ -496,7 +513,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
                             <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
 
-                        <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 40px;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
+                        <?php if($this->show_catechism_feature): ?>
+                            <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 40px;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
+                        <?php endif; ?>
 
                         <?php if($this->show_attendance): ?>
                             <?php
@@ -624,7 +643,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                                 <?php endif; ?>
                             <?php endif; ?>
                             { "width": "10%", "targets": <?= $colIdx++ ?> }, // Birthdate
-                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php if($this->show_catechism_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php endif; ?>
                             <?php if($this->show_attendance): ?>
                                 { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attendance
                             <?php endif; ?>
@@ -641,7 +662,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                                 <?php endif; ?>
                             <?php endif; ?>
                             { "width": "10%", "targets": <?= $colIdx++ ?> }, // Birthdate
-                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php if($this->show_catechism_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php endif; ?>
                             <?php if($this->show_attendance): ?>
                                 { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attendance
                             <?php endif; ?>

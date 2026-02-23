@@ -448,12 +448,16 @@ $menu->renderHTML();
 
         <?php
         $listWidget->setCatechumensList($catechumens)
-                   ->setupSelector("Presença", "Presente", "Falta", "presenca[]")
-                   ->setSelectorSelectedCids($presentCids)
+                    ->setEntitiesName("catequizando")
+                    ->setupSelector("Presença", "Presente", "Falta", "presenca[]")
+                    ->setSelectorSelectedCids($presentCids)
                     ->showAttributes(false)
                     ->showSacraments(false)
+                    ->showCatechism(false)
                    ->renderHTML();
         ?>
+
+        <div class="clearfix" style="margin-bottom: 40px"></div>
 
         <div class="no-print">
             <div class="btn-group" role="group">
