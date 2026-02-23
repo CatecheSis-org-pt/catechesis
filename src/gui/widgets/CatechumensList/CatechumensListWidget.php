@@ -422,14 +422,17 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             $rowClass = $isSelected ? "success" : "danger";
 
 
+                        $popoverAttributes = "data-container='body' data-toggle='popover' data-placement='top' data-content=\"<img src='";
+                        if($foto && $foto!="")
+                            $popoverAttributes .= "resources/catechumenPhoto.php?foto_name=$foto";
+                        else
+                            $popoverAttributes .= "img/default-user-icon-profile.png";
+                        $popoverAttributes .= "' style='height:133px;'>\"";
+
+
                         ?>
                         <tr id="<?=$this->getID()?>_row_<?=$cid?>" data-cid="<?=$cid?>" class="<?= $rowClass ?>">
-                            <td data-container="body" data-toggle="popover" data-placement="top" data-content="<img src='<?php
-                        if($foto && $foto!="")
-                            echo("resources/catechumenPhoto.php?foto_name=$foto");
-                        else
-                            echo("img/default-user-icon-profile.png");
-                        ?>' style='height:133px;'>">
+                            <td <?= (!$this->is_selector ? $popoverAttributes : "") ?>>
                                 <?php if($this->is_selector): ?>
                                     <input type="checkbox" class="selector-switch" name="<?= $this->selector_field_name ?>" value="<?= $cid ?>" <?= $isSelected ? "checked" : "" ?>>
                                 <?php else: ?>
@@ -438,7 +441,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             </td>
 
                         <?php if($this->is_selector): ?>
-                            <td>
+                            <td <?= $popoverAttributes ?>>
                                 <a href="mostrarFicha.php?cid=<?=$cid?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
                             </td>
                         <?php endif; ?>
