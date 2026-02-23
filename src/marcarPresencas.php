@@ -14,6 +14,7 @@ require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . '/gui/widgets/Navbar/MainNavbar.php');
 require_once(__DIR__ . '/gui/widgets/ModalDialog/ModalDialogWidget.php');
+require_once(__DIR__ . '/gui/widgets/CatechumensList/CatechumensListWidget.php');
 require_once(__DIR__ . '/gui/common/Button.php');
 require_once(__DIR__ . '/core/log_functions.php');
 
@@ -29,6 +30,7 @@ use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
 use catechesis\gui\ModalDialogWidget;
+use catechesis\gui\CatechumensListWidget;
 use catechesis\gui\Button;
 use catechesis\gui\ButtonType;
 
@@ -43,6 +45,9 @@ $pageUI->addWidget($menu);
 
 $confirmDeleteDialog = new ModalDialogWidget("confirmarEliminarSessao");
 $pageUI->addWidget($confirmDeleteDialog);
+
+$listWidget = new CatechumensListWidget("lista_presencas");
+$pageUI->addWidget($listWidget);
 
 ?>
 <!DOCTYPE html>
@@ -441,58 +446,13 @@ $menu->renderHTML();
         <input type="hidden" name="turma" value="<?= $turma ?>">
         <input type="hidden" name="data_sessao" value="<?= $data_sessao ?>">
 
-        <div class="row" style="margin-top:20px; "></div>
-        <div class="page-header" style="position:relative; z-index:2;">
-            <h1><small><span id="numero_resultados"></span> catequizandos</small></h1>
-        </div>
-        <div class="row" style="margin-top:20px; "></div>
-
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <?php if (count($catechumens) >= 1): ?>
-                    <tr class="no-print">
-                        <th>
-                            <input type="checkbox" id="checkbox-geral">
-                            <span style="margin-left: 10px; vertical-align: middle;">Todos</span>
-                        </th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    <?php endif; ?>
-                    <tr>
-                        <th>Presença</th>
-                        <th>Nome</th>
-                        <th>Data nascimento</th>
-                    </tr>
-                </thead>
-                <tbody class="rowlink">
-                    <?php
-                    if (count($catechumens) >= 1) {
-                        foreach($catechumens as $row) {
-                            $cid = intval($row['cid']);
-                            $isPresent = in_array($cid, $presentCids);
-                            $rowClass = $isPresent ? "success" : "danger";
-                            ?>
-                            <tr class="<?= $rowClass ?>">
-                                <td>
-                                    <input type="checkbox" class="attendance-switch" name="presenca[]" value="<?= $cid ?>" <?= $isPresent ? "checked" : "" ?>>
-                                </td>
-                                <td>
-                                    <a href="mostrarFicha.php?cid=<?= $cid ?>" target="_blank"></a>
-                                    <?= Utils::sanitizeOutput($row['nome']) ?>
-                                </td>
-                                <td><?= date("d-m-Y", strtotime($row['data_nasc'])) ?></td>
-                            </tr>
-                            <?php
-                        }
-                    } else {
-                        echo("<tr><td colspan='3' class='text-center'>Sem catequizandos para este grupo</td></tr>");
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+        <?php
+        $listWidget->setCatechumensList($catechumens)
+                   ->setupSelector("Presença", "Presente", "Falta")
+                   ->setSelectorFieldName("presenca[]")
+                   ->setSelectorSelectedCids($presentCids)
+                   ->renderHTML();
+        ?>
 
         <div class="no-print">
             <div class="btn-group" role="group">

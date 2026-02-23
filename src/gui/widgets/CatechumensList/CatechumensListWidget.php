@@ -27,6 +27,8 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     private /*string*/ $entities_name = "resultado";        // Name to use in the results header to refer to the entities in the list (e.g. "results" or "catechumens")
     private /*bool*/ $is_selector = false;                  // Whether the widget works as a simple list or as a selector (with selectable 3D cards)
     private /*string*/ $selector_column_name = "Selecionar";  // Name for the column that holds the switch buttons
+    private /*string*/ $selector_field_name = "presenca[]";    // Name for the field containing the checkbox in the widget
+    private /*array*/ $selector_selected_cids = [];          // List of cids that are initially selected
     private /*string*/ $selector_on_text = "&nbsp;&nbsp;&nbsp;&nbsp;";      // String displayed in the "on" state of the switch
     private /*string*/ $selector_off_text = "&nbsp;&nbsp;&nbsp;&nbsp;";        // String displayed in the "off" state of the switch
     private /*bool*/ $show_attendance = false;               // Whether to show the attendance column in the list view
@@ -73,6 +75,30 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
 
     /**
+     * Sets the name for the field containing the checkbox in the widget when is_selector is true.
+     * @param string $name
+     * @return $this
+     */
+    public function setSelectorFieldName(string $name)
+    {
+        $this->selector_field_name = $name;
+        return $this;
+    }
+
+
+    /**
+     * Sets the list of cids that are initially selected when is_selector is true.
+     * @param array $selectedCids
+     * @return $this
+     */
+    public function setSelectorSelectedCids(array $selectedCids)
+    {
+        $this->selector_selected_cids = $selectedCids;
+        return $this;
+    }
+
+
+    /**
      * Sets the strings displayed in the "on" and "off" states of the switch when is_selector is true.
      * @param string $onText
      * @param string $offText
@@ -92,7 +118,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
      * @param int|null $year If null, the current catechetical year is used.
      * @return $this
      */
-    public function setShowAttendance(bool $show, int $year = null)
+    public function setShowAttendance(bool $show=true, int $year = null)
     {
         $this->show_attendance = $show;
         $this->attendance_catechetical_year = $year ?? intval(Utils::currentCatecheticalYear());
@@ -200,7 +226,8 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 ?>
 
                 <div class="col-sm-3">
-                    <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?>" data-cid="<?= $cid ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $cid . '\');') ?>" >
+                    <?php $isSelected = in_array($cid, $this->selector_selected_cids); ?>
+                    <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?> <?= ($isSelected?'selected':'') ?>" data-cid="<?= $cid ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $cid . '\');') ?>" >
                         <div class="catechumen-card-inner">
                             <div class="catechumen-card-front">
                                 <img src="<?php
@@ -365,9 +392,14 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                         //Numerical catechism order for DataTables
                         $catechismOrder = $row['ano_catecismo']?($row['ano_catecismo']*100 + Utils::toNumber(Utils::sanitizeOutput($row['turma']))):0;
 
+                        $isSelected = in_array($cid, $this->selector_selected_cids);
+                        $rowClass = "";
+                        if($this->is_selector)
+                            $rowClass = $isSelected ? "success" : "danger";
+
 
                         ?>
-                        <tr id="<?=$this->getID()?>_row_<?=$cid?>" data-cid="<?=$cid?>">
+                        <tr id="<?=$this->getID()?>_row_<?=$cid?>" data-cid="<?=$cid?>" class="<?= $rowClass ?>">
                             <td data-container="body" data-toggle="popover" data-placement="top" data-content="<img src='<?php
                         if($foto && $foto!="")
                             echo("resources/catechumenPhoto.php?foto_name=$foto");
@@ -375,7 +407,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             echo("img/default-user-icon-profile.png");
                         ?>' style='height:133px;'>">
                                 <?php if($this->is_selector): ?>
-                                    <input type="checkbox" class="selector-switch" name="presenca[]" value="<?= $cid ?>">
+                                    <input type="checkbox" class="selector-switch" name="<?= $this->selector_field_name ?>" value="<?= $cid ?>" <?= $isSelected ? "checked" : "" ?>>
                                 <?php else: ?>
                                     <a href="mostrarFicha.php?cid=<?=$cid?>" target="_blank"></a><?= Utils::sanitizeOutput($row['nome']) ?>
                                 <?php endif; ?>
