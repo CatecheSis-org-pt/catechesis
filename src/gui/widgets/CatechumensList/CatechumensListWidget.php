@@ -330,33 +330,25 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             <!-- Resultados -->
             <div class="col-xs-12">
                 <div class="only-print" style="margin-top: -150px; position:relative; z-index:1;"></div>
+
+                <?php if($this->is_selector && count($this->catechumens_list) >= 1): ?>
+                    <div class="no-print">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="<?=$this->getID()?>_checkbox_geral" class="selector-switch-geral" checked>
+                                    <span style="margin-left: 10px; vertical-align: middle;">Todos</span>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="row" style="margin-top:20px; "></div>
+                <?php endif; ?>
+
                 <table class="table table-hover" id="<?=$this->getID()?>_resultados">
                     <thead>
-                    <?php if($this->is_selector && count($this->catechumens_list) >= 1): ?>
-                    <tr class="no-print">
-                        <th style="background-color: transparent;">
-                            <input type="checkbox" id="<?=$this->getID()?>_checkbox_geral" class="selector-switch-geral">
-                            <span style="margin-left: 10px; vertical-align: middle;">Todos</span>
-                        </th>
-                        <th></th>
-                        <?php if($this->show_attributes_feature): ?>
-                            <th></th>
-                            <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
-                                <th></th>
-                            <?php } ?>
-                        <?php endif; ?>
-                        <th></th>
-                        <?php if($this->show_catechism_feature): ?>
-                            <th></th>
-                        <?php endif; ?>
-                        <?php if($this->show_attendance): ?>
-                            <th></th>
-                        <?php endif; ?>
-                        <?php if($this->show_sacraments_feature): ?>
-                            <th></th>
-                        <?php endif; ?>
-                    </tr>
-                    <?php endif; ?>
                     <tr>
                         <th style="background-color: transparent;">
                             <div class="only-print" style="opacity:0.0;">
