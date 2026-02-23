@@ -33,6 +33,8 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     private /*string*/ $selector_off_text = "&nbsp;&nbsp;&nbsp;&nbsp;";        // String displayed in the "off" state of the switch
     private /*bool*/ $show_attendance = false;               // Whether to show the attendance column in the list view
     private /*int*/ $attendance_catechetical_year = null;     // Catechetical year to show attendance for
+    private /*bool*/ $show_attributes_feature = true;        // Whether to show the "Mostrar atributos" button and corresponding columns
+    private /*bool*/ $show_sacraments_feature = true;         // Whether to show the "Mostrar sacramentos" button and corresponding columns
 
     public function __construct(string $id = null)
     {
@@ -53,35 +55,13 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
      * @param bool $isSelector
      * @return $this
      */
-    public function setupSelector(string $categoryName, string $positiveClass, string $negativeClass)
+    public function setupSelector(string $categoryName, string $positiveClass, string $negativeClass, string $fieldName)
     {
         $this->is_selector = true;
-        $this->setSelectorColumnName($categoryName);
-        $this->setSelectorSwitchTexts($positiveClass, $negativeClass);
-        return $this;
-    }
-
-
-    /**
-     * Sets the name for the column that holds the switch buttons when is_selector is true.
-     * @param string $name
-     * @return $this
-     */
-    public function setSelectorColumnName(string $name)
-    {
-        $this->selector_column_name = $name;
-        return $this;
-    }
-
-
-    /**
-     * Sets the name for the field containing the checkbox in the widget when is_selector is true.
-     * @param string $name
-     * @return $this
-     */
-    public function setSelectorFieldName(string $name)
-    {
-        $this->selector_field_name = $name;
+        $this->selector_column_name = $categoryName;
+        $this->selector_on_text = $positiveClass;
+        $this->selector_off_text = $negativeClass;
+        $this->selector_field_name = $fieldName;
         return $this;
     }
 
@@ -98,19 +78,6 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
     }
 
 
-    /**
-     * Sets the strings displayed in the "on" and "off" states of the switch when is_selector is true.
-     * @param string $onText
-     * @param string $offText
-     * @return $this
-     */
-    public function setSelectorSwitchTexts(string $onText, string $offText)
-    {
-        $this->selector_on_text = $onText;
-        $this->selector_off_text = $offText;
-        return $this;
-    }
-
 
     /**
      * Sets whether to show the attendance column in the list view.
@@ -118,10 +85,34 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
      * @param int|null $year If null, the current catechetical year is used.
      * @return $this
      */
-    public function setShowAttendance(bool $show=true, int $year = null)
+    public function showAttendance(bool $show=true, int $year = null)
     {
         $this->show_attendance = $show;
         $this->attendance_catechetical_year = $year ?? intval(Utils::currentCatecheticalYear());
+        return $this;
+    }
+
+
+    /**
+     * Sets whether to show the "Mostrar atributos" button and corresponding columns.
+     * @param bool $show
+     * @return $this
+     */
+    public function showAttributes(bool $show = true)
+    {
+        $this->show_attributes_feature = $show;
+        return $this;
+    }
+
+
+    /**
+     * Sets whether to show the "Mostrar sacramentos" button and corresponding columns.
+     * @param bool $show
+     * @return $this
+     */
+    public function showSacraments(bool $show = true)
+    {
+        $this->show_sacraments_feature = $show;
         return $this;
     }
 
@@ -273,19 +264,23 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'pdf');"><img src="img/pdf_icon.png" style="width: 10%; height: 10%;"/> Como PDF (.pdf) <span style="margin-right: 20px;"></span></a></li>
                 </ul>
             </div>
-            <button type="button" onclick="show_hide_catechumen_attributes('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_atributos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar atributos</button>
+            <?php if($this->show_attributes_feature): ?>
+                <button type="button" onclick="show_hide_catechumen_attributes('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_atributos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar atributos</button>
+            <?php endif; ?>
 
-            <?php
-            if($this->sacraments_shown)
-            {?>
-                <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-close"></span> Ocultar sacramentos</button>
-            <?php
-            }
-            else
-            {?>
-                <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar sacramentos</button>
-            <?php
-            } ?>
+            <?php if($this->show_sacraments_feature): ?>
+                <?php
+                if($this->sacraments_shown)
+                {?>
+                    <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-close"></span> Ocultar sacramentos</button>
+                <?php
+                }
+                else
+                {?>
+                    <button type="button" onclick="show_hide_catechumen_sacraments('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_sacramentos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar sacramentos</button>
+                <?php
+                } ?>
+            <?php endif; ?>
         </div>
 
         <form target="_blank" action="transferirResultadosPesquisa.php" method="post" id="<?=$this->getID()?>_transferir_form" name="<?=$this->getID()?>_transferir_form">
@@ -309,7 +304,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     <h1 class="results_header"><small><span id="<?=$this->getID()?>_numero_resultados"></span><?php if(count($this->catechumens_list)==0) echo("Sem"); else echo(count($this->catechumens_list));?> <?= $this->entities_name ?><?php if(count($this->catechumens_list)!=1) echo("s"); ?></small></h1>
                 </div>
                 <div class="col-md-8 pull-right">
-                    <div id="<?=$this->getID()?>_legenda_sacramentos" class="pull-right" style="<?php if(!$this->sacraments_shown) echo('opacity:0.0;');?>"> <span><span class="label label-success">&nbsp;</span> Nesta paróquia</span> &nbsp; <span><span class="label label-default">&nbsp;</span> Noutra paróquia</span>  <span><span class="badge-green" data-badge="">&nbsp;&nbsp;</span> Comprovativo</span></div>
+                    <div id="<?=$this->getID()?>_legenda_sacramentos" class="pull-right" style="<?php if(!$this->sacraments_shown || !$this->show_sacraments_feature) echo('opacity:0.0;');?>"> <span><span class="label label-success">&nbsp;</span> Nesta paróquia</span> &nbsp; <span><span class="label label-default">&nbsp;</span> Noutra paróquia</span>  <span><span class="badge-green" data-badge="">&nbsp;&nbsp;</span> Comprovativo</span></div>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -331,12 +326,20 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             <span style="margin-left: 10px; vertical-align: middle;">Todos</span>
                         </th>
                         <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                        <?php if($this->show_attributes_feature): ?>
                             <th></th>
-                        <?php } ?>
+                            <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                                <th></th>
+                            <?php } ?>
+                        <?php endif; ?>
+                        <th></th>
+                        <th></th>
+                        <?php if($this->show_attendance): ?>
+                            <th></th>
+                        <?php endif; ?>
+                        <?php if($this->show_sacraments_feature): ?>
+                            <th></th>
+                        <?php endif; ?>
                     </tr>
                     <?php endif; ?>
                     <tr>
@@ -355,21 +358,25 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                         <?php if($this->is_selector): ?>
                             <th>Nome</th>
                         <?php endif; ?>
-                        <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
-                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
-                                <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0">NIF</th>
-                            <?php } ?>
+                            <?php if($this->show_attributes_feature): ?>
+                                <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="text-align: right; max-width:50px; opacity:0">Atributos</th> <!-- Coluna de simbolos/icones vários -->
+                                <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                                    <th class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0">NIF</th>
+                                <?php } ?>
+                            <?php endif; ?>
                             <th>Data nascimento</th>
-                        <th>Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
+                        <th style="text-align:right;">Catecismo (<?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) ?>)</th>
                         <?php if($this->show_attendance): ?>
                             <th>Presenças</th>
                         <?php endif; ?>
-                        <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
+                        <?php if($this->show_sacraments_feature): ?>
+                            <th class="<?=$this->getID()?>_col_sacramentos" data-field="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"'); ?>>Sacramentos</th>
+                        <?php endif; ?>
                     </tr>
                     </thead>
                     <tfoot class="only-print">
                     <tr>
-                        <td colspan="<?= ($this->is_selector ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 6 : 5) : (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 5 : 4)) + ($this->show_attendance ? 1 : 0) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
+                        <td colspan="<?= ($this->is_selector ? 2 : 1) + ($this->show_attributes_feature ? (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED) ? 2 : 1) : 0) + 2 + ($this->show_attendance ? 1 : 0) + ($this->show_sacraments_feature ? 1 : 0) ?>"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
                     </tr>
                     </tfoot>
                     <tbody data-link="row" class="rowlink">
@@ -419,75 +426,77 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             </td>
                         <?php endif; ?>
 
-                        <?php
-                        // Atributos
-                        ?>
-                        <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="max-width:50px; opacity:0">
-
-                        <?php if(isset($observacoes) && $observacoes!="")
-                        {?>
-                            <span class='glyphicon glyphicon-comment' data-placement='top' data-toggle='popover' title='Observações' data-content='<?= $observacoes ?>' style='float:right'></span>
-                        <?php
-                        }
-                        else
-                        {?>
-                            <span class='glyphicon glyphicon-comment' style='float:right; opacity: 0.0;'></span>
-                        <?php
-                        }
-
-                        if($escuteiro)
-                        {?>
-                            <span class='fas fa-campground' style='float:right; margin-inline: 5px;' data-placement='top' data-toggle='popover' data-content='Escuteiro'>&nbsp;</span>
-                        <?php
-                        }
-                        else
-                        {?>
-                            <span class='fas fa-campground' style='float:right; margin-inline: 5px; opacity: 0.0;'>&nbsp;</span>
-                        <?php
-                        }
-
-                        if($autorizou_saida==0)
-                        {?>
-                            <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="O catequizando NÂO está autorizado a sair sozinho.">
-                            <i class='fas fa-door-open icon-stack-base'></i>
-                            <i class='fas fa-ban ban-overlay'></i>
-                        </span>
+                        <?php if($this->show_attributes_feature): ?>
                             <?php
-                        }
-                        else
-                        { ?>
-                            <span class='fas fa-door-open' style='float:right; margin-inline: 5px; opacity: 1.0;' data-placement='top' data-toggle='popover' data-content='O catequizando pode sair sozinho.'>&nbsp;</span>
-                            <?php
-                        }
+                            // Atributos
+                            ?>
+                            <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="max-width:50px; opacity:0">
 
-                        if($autorizou_fotos==0)
-                        {?>
-                            <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="NÃO autoriza a utilização e divulgação de fotografias do educando.">
-                                <i class='fas fa-camera icon-stack-base'></i>
+                            <?php if(isset($observacoes) && $observacoes!="")
+                            {?>
+                                <span class='glyphicon glyphicon-comment' data-placement='top' data-toggle='popover' title='Observações' data-content='<?= $observacoes ?>' style='float:right'></span>
+                            <?php
+                            }
+                            else
+                            {?>
+                                <span class='glyphicon glyphicon-comment' style='float:right; opacity: 0.0;'></span>
+                            <?php
+                            }
+
+                            if($escuteiro)
+                            {?>
+                                <span class='fas fa-campground' style='float:right; margin-inline: 5px;' data-placement='top' data-toggle='popover' data-content='Escuteiro'>&nbsp;</span>
+                            <?php
+                            }
+                            else
+                            {?>
+                                <span class='fas fa-campground' style='float:right; margin-inline: 5px; opacity: 0.0;'>&nbsp;</span>
+                            <?php
+                            }
+
+                            if($autorizou_saida==0)
+                            {?>
+                                <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="O catequizando NÂO está autorizado a sair sozinho.">
+                                <i class='fas fa-door-open icon-stack-base'></i>
                                 <i class='fas fa-ban ban-overlay'></i>
                             </span>
-                        <?php
-                        }
-                        else
-                        { ?>
-                            <span class='icon-stack' style='float:right; opacity: 0.0;'> </span>
-                        <?php
-                        }
-                        ?>
+                                <?php
+                            }
+                            else
+                            { ?>
+                                <span class='fas fa-door-open' style='float:right; margin-inline: 5px; opacity: 1.0;' data-placement='top' data-toggle='popover' data-content='O catequizando pode sair sozinho.'>&nbsp;</span>
+                                <?php
+                            }
 
-                        </td>
-                        <?php //--Atributos ?>
+                            if($autorizou_fotos==0)
+                            {?>
+                                <span class='icon-stack' style='float:right' data-toggle="popover" data-placement="top" data-content="NÃO autoriza a utilização e divulgação de fotografias do educando.">
+                                    <i class='fas fa-camera icon-stack-base'></i>
+                                    <i class='fas fa-ban ban-overlay'></i>
+                                </span>
+                            <?php
+                            }
+                            else
+                            { ?>
+                                <span class='icon-stack' style='float:right; opacity: 0.0;'> </span>
+                            <?php
+                            }
+                            ?>
+
+                            </td>
+                            <?php //--Atributos ?>
 
 
-                        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
-                                <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0;">
-                                    <?= Utils::sanitizeOutput($row['nif']) ?>
-                                </td>
-                            <?php } ?>
+                            <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
+                                    <td class="<?=$this->getID()?>_col_atributos" data-field="<?=$this->getID()?>_col_atributos" style="opacity:0;">
+                                        <?= Utils::sanitizeOutput($row['nif']) ?>
+                                    </td>
+                                <?php } ?>
+                        <?php endif; ?>
 
                             <td data-order="<?=strtotime($row['data_nasc'])?>"><span data-container="body" data-toggle="popover" data-placement="top" data-content="<?= date_diff(date_create($row['data_nasc']), date_create('today'))->y ?> anos"><?=date( "d-m-Y", strtotime($row['data_nasc']))?></span></td>
 
-                        <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 10%;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
+                        <td data-order="<?= $catechismOrder ?>" style="text-align:right; padding-right: 40px;"><?=($row['ano_catecismo']?($row['ano_catecismo'] . "º" . Utils::sanitizeOutput($row['turma'])):"-")?></td>
 
                         <?php if($this->show_attendance): ?>
                             <?php
@@ -505,38 +514,40 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                             </td>
                         <?php endif; ?>
 
-                        <td class="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"');?> >
+                        <?php if($this->show_sacraments_feature): ?>
+                            <td class="<?=$this->getID()?>_col_sacramentos" <?php if(!$this->sacraments_shown) echo('style="max-width:0px; opacity:0"');?> >
 
-                        <?php
-                        switch(Utils::sacramentParish($paroquia_batismo))
-                        {
-                            case 1:
-                                echo("<span class=\"label label-success " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
-                                break;
-                            case 2:
-                                echo("<span class=\"label label-default " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
-                                break;
-                        }
-                        switch(Utils::sacramentParish($paroquia_comunhao))
-                        {
-                            case 1:
-                                echo("<span class=\"label label-success " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
-                                break;
-                            case 2:
-                                echo("<span class=\"label label-default " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
-                                break;
-                        }
-                        switch(Utils::sacramentParish($paroquia_crisma))
-                        {
-                            case 1:
-                                echo("<span class=\"label label-success " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
-                                break;
-                            case 2:
-                                echo("<span class=\"label label-default " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
-                                break;
-                        }
-                        ?>
-                        </td>
+                            <?php
+                            switch(Utils::sacramentParish($paroquia_batismo))
+                            {
+                                case 1:
+                                    echo("<span class=\"label label-success " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
+                                    break;
+                                case 2:
+                                    echo("<span class=\"label label-default " . ((isset($comprovativo_batismo) && $comprovativo_batismo!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Batismo\">B</span>");
+                                    break;
+                            }
+                            switch(Utils::sacramentParish($paroquia_comunhao))
+                            {
+                                case 1:
+                                    echo("<span class=\"label label-success " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
+                                    break;
+                                case 2:
+                                    echo("<span class=\"label label-default " . ((isset($comprovativo_comunhao) && $comprovativo_comunhao!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Eucaristia (Primeira Comunhão)\">E</span>");
+                                    break;
+                            }
+                            switch(Utils::sacramentParish($paroquia_crisma))
+                            {
+                                case 1:
+                                    echo("<span class=\"label label-success " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
+                                    break;
+                                case 2:
+                                    echo("<span class=\"label label-default " . ((isset($comprovativo_crisma) && $comprovativo_crisma!=null)?"badge-green\" data-badge=\"\"":"\"") . " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Confirmação (Crisma)\">C</span>");
+                                    break;
+                            }
+                            ?>
+                            </td>
+                        <?php endif; ?>
                         </tr>
                     <?php
                     }
@@ -585,8 +596,12 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             <?php endif; ?>
 
             // Initialize variables defined in the common JS code for this widget instance
-            set_attributes_visibility('<?=$this->getID();?>', false);
-            set_sacraments_visibility('<?=$this->getID();?>', <?php if($this->sacraments_shown) echo('true'); else echo('false'); ?>);
+            <?php if($this->show_attributes_feature): ?>
+                set_attributes_visibility('<?=$this->getID();?>', false);
+            <?php endif; ?>
+            <?php if($this->show_sacraments_feature): ?>
+                set_sacraments_visibility('<?=$this->getID();?>', <?php if($this->sacraments_shown) echo('true'); else echo('false'); ?>);
+            <?php endif; ?>
 
             $(document).ready( function () {
                 var table_<?= $this->getID(); ?> = $('#<?=$this->getID()?>_resultados').DataTable({
@@ -597,27 +612,42 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     },
                     "aaSorting": [], //Do not sort anything at start, to keep the provided order (only when the user clicks on a column),
                     "columnDefs": [
-                        <?php if($this->is_selector): ?>
-                        { "width": "10%", "targets": 0 },
-                        { "width": "25%", "targets": 1 },
-                        { "width": "<?= $this->show_attendance ? '25' : '35' ?>%", "targets": 2 },
-                        { "width": "10%", "targets": 3 },
-                        { "width": "10%", "targets": 4 },
-                        { "width": "10%", "targets": 5 },
-                        <?php if($this->show_attendance): ?>
-                            { "width": "10%", "targets": 6 },
-                        <?php endif; ?>
+                        <?php
+                        $colIdx = 0;
+                        if($this->is_selector): ?>
+                            { "width": "5%", "targets": <?= $colIdx++ ?> }, // Switch
+                            { "width": "35%", "targets": <?= $colIdx++ ?> }, // Name
+                            <?php if($this->show_attributes_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attributes
+                                <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)): ?>
+                                    { "width": "10%", "targets": <?= $colIdx++ ?> }, // NIF
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Birthdate
+                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php if($this->show_attendance): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attendance
+                            <?php endif; ?>
+                            <?php if($this->show_sacraments_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Sacraments
+                            <?php endif; ?>
+
                         <?php else: ?>
-                        { "width": "30%", "targets": 0 },
-                        { "width": "<?= $this->show_attendance ? '30' : '40' ?>%", "targets": 1 },
-                        { "width": "10%", "targets": 2 },
-                        { "width": "10%", "targets": 3 },
-                        <?php if($this->show_attendance): ?>
-                            { "width": "10%", "targets": 4 },
-                            { "width": "10%", "targets": 5 }
-                        <?php else: ?>
-                            { "width": "10%", "targets": 4 }
-                        <?php endif; ?>
+                            { "width": "40%", "targets": <?= $colIdx++ ?> }, // Name
+                            <?php if($this->show_attributes_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attributes
+                                <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)): ?>
+                                    { "width": "10%", "targets": <?= $colIdx++ ?> }, // NIF
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Birthdate
+                            { "width": "10%", "targets": <?= $colIdx++ ?> }, // Catechism
+                            <?php if($this->show_attendance): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Attendance
+                            <?php endif; ?>
+                            <?php if($this->show_sacraments_feature): ?>
+                                { "width": "10%", "targets": <?= $colIdx++ ?> }, // Sacraments
+                            <?php endif; ?>
                         <?php endif; ?>
                     ]
                 });

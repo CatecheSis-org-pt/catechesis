@@ -448,9 +448,10 @@ $menu->renderHTML();
 
         <?php
         $listWidget->setCatechumensList($catechumens)
-                   ->setupSelector("Presença", "Presente", "Falta")
-                   ->setSelectorFieldName("presenca[]")
+                   ->setupSelector("Presença", "Presente", "Falta", "presenca[]")
                    ->setSelectorSelectedCids($presentCids)
+                    ->showAttributes(false)
+                    ->showSacraments(false)
                    ->renderHTML();
         ?>
 
