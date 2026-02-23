@@ -8,6 +8,7 @@ require_once(__DIR__ . '/core/UserData.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . '/gui/widgets/WidgetManager.php');
 require_once(__DIR__ . "/gui/widgets/configuration_panels/CatechumensEvaluationActivationPanel/CatechumensEvaluationActivationPanelWidget.php");
+require_once(__DIR__ . '/gui/widgets/CatechumensList/CatechumensListWidget.php');
 require_once(__DIR__ . '/core/catechist_belongings.php');
 require_once(__DIR__ . '/core/DataValidationUtils.php');
 require_once(__DIR__ . '/core/log_functions.php');
@@ -23,6 +24,7 @@ use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
 use catechesis\gui\CatechumensEvaluationActivationPanelWidget;
+use catechesis\gui\CatechumensListWidget;
 use catechesis\UserData;
 use catechesis\Utils;
 
@@ -33,6 +35,9 @@ $pageUI = new WidgetManager();
 // Instantiate the widgets used in this page and register them in the manager
 $menu = new MainNavbar(null, MENU_OPTION::CATECHESIS);
 $pageUI->addWidget($menu);
+
+$listaWidget = new CatechumensListWidget("lista_aproveitamento");
+$pageUI->addWidget($listaWidget);
 
 ?>
 <!DOCTYPE html>
@@ -362,109 +367,24 @@ $menu->renderHTML();
 
         if(count($result2) >= 1)
         {
-        ?>
-            <div class="row" style="margin-top:20px; "></div>
-              <div class="page-header" style="position:relative; z-index:2;">
-                <h1><small><span class="numero_resultados"></span> catequizandos</small></h1>
-              </div>
-              <div class="row" style="margin-top:20px; "></div>
+            $listaWidget->setCatechumensList($result2)
+                ->setEntitiesName("catequizando")
+                ->showAttributes(false)
+                ->showSacraments(false)
+                ->showCatechism(false)
+                ->showAttendance(true, $ano_lectivo);
 
-              <?php
-                if($periodo_activo)
-                {
-                ?>
-                      <div class="no-print">
-                      <div class="col-xs-12">
-                      <table class="table table-hover">
-                      <thead>
-                        <tr>
-                            <th><input type="checkbox" class="checkbox-geral" checked> <span> Todos </span></th>
-                        </tr>
-                      </thead>
-                     </table>
-                    </div>
-                    </div>
-            <?php
-                }
-                else
-                {
-                    echo("<div class=\"no-print alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a> O período de avaliação encontra-se encerrado. </div>");
-                }
-            ?>
-
-              <div class="row" style="margin-top:20px; "></div>
-
-          <!-- Resultados -->
-          <div class="only-print" style="margin-top: -100px; position:relative; z-index:1;"></div>
-          <div class="col-xs-12" style="page-break-after: always;">
-                <table class="table table-hover resultados">
-                  <thead>
-                    <tr>
-                        <th style="background-color: transparent;">
-                            <div class="only-print" style="opacity:0;">
-                            <img src="<?= UserData::getParishLogoQueryURL() ?>" style="height: 50px;">
-                            <h3>Aproveitamento dos catequizandos</h3>
-                            <div class="row" style="margin-bottom:0px; "></div>
-                        </div>
-                    Aproveitamento</th>
-                        <th>Nome</th>
-                        <th>Data nascimento</th>
-                        <th>Presenças</th>
-                    </tr>
-                  </thead>
-                  <tfoot class="only-print">
-                    <tr>
-                        <td colspan="4"><?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_PARISH_CUSTOM_TABLE_FOOTER); ?></td>
-                    </tr>
-                  </tfoot>
-                  <tbody data-link="row" class="rowlink">
-
-        <?php
-            foreach($result2 as $row2)
+            if($periodo_activo)
             {
-                $foto = Utils::sanitizeOutput($row2['foto']);
-                $passa = intval($row2['passa']);
-                $cid = intval($row2['cid']);
+                $selectedCids = array_filter(array_map(function($row) {
+                    return intval($row['passa']) != -1 ? intval($row['cid']) : null;
+                }, $result2));
 
-                $stats = getCatechumenAttendanceStats($cid, $ano_lectivo, $catecismo, $turma);
-                $percentage = $stats['percentage'];
-                $attended = $stats['attended'];
-                $totalSessions = $stats['total'];
-
-                echo("<tr class='"); if($passa==-1) echo("danger"); else echo("success"); echo("'>\n");
-                    if($periodo_activo)
-                    {	echo("<td><input type=\"checkbox\" class=\"my-checkbox\" name=\"catequizando[]\" value='$cid' "); if($passa!=-1) echo("checked"); echo("></td>"); }
-                    else if($passa!=-1)
-                        echo('<td><span class="label label-success">Transita</span></td>');
-                    else
-                        echo('<td><span class="label label-danger">Reprovado</span></td>');
-                    echo("\t<td ");
-                        echo("data-container=\"body\" data-toggle=\"popover\" data-placement=\"top\" data-content=\"<img src='");
-                            if($foto && $foto!="")
-                                echo("resources/catechumenPhoto.php?foto_name=$foto");
-                            else
-                                echo("img/default-user-icon-profile.png");
-                        echo("' style='height:133px; widht:100px;'>\"");
-                        echo("><a href=\"mostrarFicha.php?cid=" . $row2['cid'] . "\" target=\"_blank\"></a>" . Utils::sanitizeOutput($row2['nome']) . "</td>\n");
-                    
-                    echo("\t<td>" . date( "d-m-Y", strtotime($row2['data_nasc'])) . "</td>\n");
-
-                    echo("\t<td style=\"width: 20%; min-width: 150px; vertical-align: middle;\">\n");
-                    $progressBarClass = ($percentage < 50.0) ? "progress-bar-danger" : "";
-                    echo("\t\t<div class=\"progress\" style=\"margin-bottom: 0; height: 15px; position: relative; width: 60%; float: left; margin-right: 5px;\">\n");
-                    echo("\t\t\t<div class=\"progress-bar $progressBarClass\" role=\"progressbar\" aria-valuenow=\"$attended\" aria-valuemin=\"0\" aria-valuemax=\"$totalSessions\" style=\"width: $percentage%;\">\n");
-                    echo("\t\t\t</div>\n");
-                    echo("\t\t</div>\n");
-                    echo("\t\t<span style=\"font-size: 11px; font-weight: bold;\">$attended / $totalSessions</span>\n");
-                    echo("\t</td>\n");
-
-                echo("</tr>\n");
+                $listaWidget->setupSelector("Aproveitamento", "Transita", "Reprova", "catequizando[]")
+                    ->setSelectorSelectedCids($selectedCids);
             }
-            ?>
-            </tbody>
-            </table>
-          </div>
-        <?php
+
+            $listaWidget->renderHTML();
         }
         else
         {
@@ -514,99 +434,6 @@ $menu->renderHTML();
 
 
 <?php $pageUI->renderJS(); ?>
-<script src="js/rowlink.js"></script>
-<script src="js/bootstrap-switch.js"></script>
-
-<script>
-	
-	var els = document.getElementsByClassName("resultados");
-	var els2 = document.getElementsByClassName("numero_resultados");
-	var i = 0;
-	
-
-	Array.prototype.forEach.call(els, function(el) {
-	    
-	    var numero = el.getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
-	    els2[i].innerHTML = numero;
-	    
-	    i++;
-	});
-
-</script>
-
-
-
-
-
-<script>
-$(function () {
-  $('[data-toggle="popover"]').popover({ trigger: "hover", 
-                                          html: true,
-                                          /*content: function () {
-                                            return '<img src="'+$(this).data('img') + '" />';
-                                          },*/
-                                          delay: { "show": 500, "hide": 100 }
-                                        });
-})
-</script>
-
-
-
-
-
-<script>
-function mudaSwitch(linha, state)
-{
-	if(state)
-	{
-		linha.className = "success";
-	}
-	else
-	{
-		linha.className = "danger";
-	}
-}
-
-</script>
-
-
-<?php
-
-if($periodo_activo)
-{
-?>
-
-    <script>
-        $(function () {
-            $("[class='my-checkbox']").bootstrapSwitch({size: 'mini',
-                onText: 'Transita',
-                offText: 'Reprova',
-                onColor: 'success',
-                offColor: 'danger'
-            });
-        });
-
-        $('input[class="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
-            mudaSwitch(this.closest('tr'), state);
-        });
-
-        $(function () {
-            $("[class='checkbox-geral']").bootstrapSwitch({size: 'mini',
-                                                        onText: 'Transita',
-                                                        offText: 'Reprova',
-                                                        onColor: 'success',
-                                                        offColor: 'danger'
-                                                        });
-        });
-
-        $('input[class="checkbox-geral"]').on('switchChange.bootstrapSwitch', function(event, state) {
-            $('input[class="my-checkbox"]').bootstrapSwitch('state', state, false);
-        });
-    </script>
-
-<?php
-}
-?>
 
 </body>
 </html>

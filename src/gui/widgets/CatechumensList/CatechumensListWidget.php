@@ -269,6 +269,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             if(isset($this->additional_toolbar_buttons))
                 echo($this->additional_toolbar_buttons);
             ?>
+            <?php if(!$this->is_selector): ?>
             <button type="button" onclick="window.print()" class="btn btn-default no-print"><span class="glyphicon glyphicon-print"></span> Imprimir</button>
             <div class="btn-group">
                 <button type="button" onclick="" class="btn btn-default dropdown-toggle no-print" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-export"></span> Exportar <span class="caret"></span></button>
@@ -277,6 +278,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     <li><a href="#" onclick="download_results('<?=$this->getID()?>', 'pdf');"><img src="img/pdf_icon.png" style="width: 10%; height: 10%;"/> Como PDF (.pdf) <span style="margin-right: 20px;"></span></a></li>
                 </ul>
             </div>
+            <?php endif; ?>
             <?php if($this->show_attributes_feature): ?>
                 <button type="button" onclick="show_hide_catechumen_attributes('<?=$this->getID()?>')" class="btn btn-default no-print" id="<?=$this->getID()?>_botao_atributos"><span class="glyphicon glyphicon-eye-open"></span> Mostrar atributos</button>
             <?php endif; ?>
@@ -296,6 +298,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             <?php endif; ?>
         </div>
 
+        <?php if(!$this->is_selector): ?>
         <form target="_blank" action="transferirResultadosPesquisa.php" method="post" id="<?=$this->getID()?>_transferir_form" name="<?=$this->getID()?>_transferir_form">
             <input type="hidden" name="file_type" id="<?=$this->getID()?>_transferir_tipo" value="xls">
             <input type="hidden" name="entity_name" id="<?=$this->getID()?>_entity_name" value="<?= $this->entities_name ?>">
@@ -307,6 +310,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             <?php
             }?>
         </form>
+        <?php endif; ?>
 
 
         <!-- Cabecalho com Num Resultados -->
@@ -608,6 +612,13 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 }
             }
             <?php endif; ?>
+
+            $(function () {
+                $('[data-toggle="popover"]').popover({ trigger: "hover",
+                    html: true,
+                    delay: { "show": 500, "hide": 100 }
+                });
+            });
 
             // Initialize variables defined in the common JS code for this widget instance
             <?php if($this->show_attributes_feature): ?>
