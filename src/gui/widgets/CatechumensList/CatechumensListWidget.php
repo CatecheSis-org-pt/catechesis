@@ -201,6 +201,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
     public function renderGridViewHTML()
     {
+        $cardsPerPage = 12;
+        $totalCards = count($this->catechumens_list);
+        $totalPages = ceil($totalCards / $cardsPerPage);
         ?>
         <div class="panel panel-default catechumens-ground-plane" id="<?=$this->getID()?>_catechist_groups_panel">
             <div class="panel-body">
@@ -212,10 +215,17 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 <?php
                 $cardCounter = 0;
                 $rowCounter = 0;
+                $pageCounter = 0;
                 foreach($this->catechumens_list as $row)
                 {
                     $foto = Utils::sanitizeOutput($row['foto']);
                     $cid = intval($row['cid']);
+
+                    if($cardCounter % $cardsPerPage == 0)
+                    {
+                        $pageCounter++;
+                        echo('<div class="catechumens-grid-page" data-page="' . $pageCounter . '" ' . ($pageCounter > 1 ? 'style="display:none;"' : '') . '>');
+                    }
 
                     if($cardCounter % 4 == 0)
                     {
@@ -246,10 +256,25 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     </div>
                 </div>
                 <?php
-                    if($cardCounter % 4 == 0)
+                    if($cardCounter % 4 == 0 || $cardCounter == $totalCards)
+                        echo("</div>");
+                    
+                    if($cardCounter % $cardsPerPage == 0 || $cardCounter == $totalCards)
                         echo("</div>");
                 }
                 ?>
+                
+                <?php if($totalPages > 1): ?>
+                <div class="row text-center no-print">
+                    <ul class="pagination pagination-sm catechumens-grid-pagination" id="<?= $this->getID() ?>_pagination">
+                        <li class="disabled"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'prev'); return false;">&laquo;</a></li>
+                        <?php for($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="<?= ($i == 1 ? 'active' : '') ?>"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', <?= $i ?>); return false;"><?= $i ?></a></li>
+                        <?php endfor; ?>
+                        <li><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'next'); return false;">&raquo;</a></li>
+                    </ul>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     <?php
@@ -612,6 +637,36 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 }
             }
             <?php endif; ?>
+
+            function change_grid_page(widgetId, target) {
+                var pagination = $('#' + widgetId + '_pagination');
+                var currentPage = pagination.find('li.active').find('a').text();
+                var totalPages = pagination.find('li').length - 2;
+
+                var targetPage = target;
+                if (target === 'prev') {
+                    targetPage = parseInt(currentPage) - 1;
+                } else if (target === 'next') {
+                    targetPage = parseInt(currentPage) + 1;
+                }
+
+                if (targetPage < 1 || targetPage > totalPages) {
+                    return;
+                }
+
+                // Update active page in pagination
+                pagination.find('li').removeClass('active');
+                pagination.find('li').eq(targetPage).addClass('active');
+
+                // Update disabled state for prev/next
+                pagination.find('li:first-child').toggleClass('disabled', targetPage === 1);
+                pagination.find('li:last-child').toggleClass('disabled', targetPage === totalPages);
+
+                // Show target page and hide others
+                var widgetPanel = $('#' + widgetId + '_catechist_groups_panel');
+                widgetPanel.find('.catechumens-grid-page').hide();
+                widgetPanel.find('.catechumens-grid-page[data-page="' + targetPage + '"]').show();
+            }
 
             $(function () {
                 $('[data-toggle="popover"]').popover({ trigger: "hover",

@@ -73,3 +73,27 @@
     width: 200px;
     margin-top: 10px;
 }
+
+.catechumens-grid-pagination {
+    margin-top: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.catechumens-grid-pagination > li > a {
+    background-color: #f8f8f8;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.catechumens-grid-pagination > li.active > a,
+.catechumens-grid-pagination > li.active > a:hover {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    color: #fff;
+}
+
+.catechumens-grid-pagination > li.disabled > a {
+    color: #ccc;
+    cursor: not-allowed;
+}
