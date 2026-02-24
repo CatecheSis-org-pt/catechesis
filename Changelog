@@ -6,6 +6,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 #### Novidades:
 - Nova funcionalidade de marcação de presenças dos catequizandos nas sessões de catequese;
+- Nova vista de cartões "Quem é quem" para listagens de cateqquizandos e para marcação de presenças;
 - Novo gráfico com estatísticas de assiduidade dos grupos de catequese, acessível no menu _Estatísticas_;
 - A assiduidade de cada catequizando é agora mostrada no respetivo _Arquivo_, na tabela do percurso catequético, e também na página de registo de aproveitamento dos catequizandos (para apoio à decisão);
 - As folhas de presenças podem agora ser impressas pré-preenchidas com as presenças marcadas no sistema até à data, ou completamente vazias;
