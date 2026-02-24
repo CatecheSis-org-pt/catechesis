@@ -14,6 +14,7 @@ services:
     volumes:
       - ../src:/var/www/html
       - ../catechesis_data:/home/catechesis_data
+      - ../tools:/var/www/tools
     links:
       - db
     networks:
