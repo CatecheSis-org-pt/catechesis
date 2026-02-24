@@ -179,7 +179,7 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 <li role="presentation" class="" data-toggle="tooltip" data-placement="top" title='Vista de cartões "Quem é quem"'><a href="#<?=$this->getID()?>_tabGrid" aria-controls="<?=$this->getID()?>_tabGrid" role="tab" data-toggle="tab"><i class="fas fa-id-card-alt"></i></a></li>
             </ul>
 
-            <div class="tab-content">
+            <div class="tab-content" style="padding-top:60px;">
                 <!-- List view -->
                 <div role="tabpanel" class="tab-pane active" id="<?=$this->getID()?>_tabList">
                 <?php
@@ -205,13 +205,13 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
         $totalCards = count($this->catechumens_list);
         $totalPages = ceil($totalCards / $cardsPerPage);
         ?>
+        <?php if($this->is_selector): ?>
+        <div class="alert alert-info text-center">
+            <i class="fas fa-hand-pointer"></i> Clique nos cartões para os levantar ou baixar. Marque catequizandos levantando os respetivos cartões, e desmarque baixando os cartões.
+        </div>
+        <?php endif; ?>
         <div class="panel panel-default catechumens-ground-plane" id="<?=$this->getID()?>_catechist_groups_panel">
             <div class="panel-body">
-                <?php if($this->is_selector): ?>
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-hand-pointer"></i> Clique nos cartões para os levantar ou baixar. Marque catequizandos levantando os respetivos cartões, e desmarque baixando os cartões.
-                    </div>
-                <?php endif; ?>
                 <?php
                 $cardCounter = 0;
                 $rowCounter = 0;
@@ -263,20 +263,19 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                         echo("</div>");
                 }
                 ?>
-                
-                <?php if($totalPages > 1): ?>
-                <div class="row text-center no-print">
-                    <ul class="pagination pagination-sm catechumens-grid-pagination" id="<?= $this->getID() ?>_pagination">
-                        <li class="disabled"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'prev'); return false;">&laquo;</a></li>
-                        <?php for($i = 1; $i <= $totalPages; $i++): ?>
-                            <li class="<?= ($i == 1 ? 'active' : '') ?>"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', <?= $i ?>); return false;"><?= $i ?></a></li>
-                        <?php endfor; ?>
-                        <li><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'next'); return false;">&raquo;</a></li>
-                    </ul>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
+        <?php if($totalPages > 1): ?>
+        <div class="row text-center no-print">
+            <ul class="pagination pagination-sm catechumens-grid-pagination" id="<?= $this->getID() ?>_pagination">
+                <li class="disabled"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'prev'); return false;">&laquo;</a></li>
+                <?php for($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="<?= ($i == 1 ? 'active' : '') ?>"><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', <?= $i ?>); return false;"><?= $i ?></a></li>
+                <?php endfor; ?>
+                <li><a href="#" onclick="change_grid_page('<?= $this->getID() ?>', 'next'); return false;">&raquo;</a></li>
+            </ul>
+        </div>
+        <?php endif; ?>
     <?php
     }
 
