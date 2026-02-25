@@ -1,0 +1,59 @@
+.news-widget-container {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.news-widget-container h1 {
+    color: #008fcf;
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.news-content h2, .news-content h3 {
+    font-weight: bold;
+    font-size: x-large;
+    margin-bottom: 20px;
+    color: #008fcf;
+    /*color: #145594;*/
+}
+
+
+
+.news-content a::before {
+    font-family: "Font Awesome 5 Free", sans-serif; /* Specify the Font Awesome font */
+    content: '\f35d'; /* Unicode for the external link icon */
+    font-weight: 900; /* Use the solid style of icons */
+    color: currentColor; /* Use the link's text color */
+}
+
+
+.news-block {
+    margin-bottom: 120px;
+}
+
+.news-block-left {
+    margin-bottom: 120px;
+    padding-right: 20%;
+}
+
+.news-block-right {
+    margin-bottom: 120px;
+    /*float: right;*/
+    text-align: right;
+    /*width: 70%;*/
+    padding-left: 20%;
+    /*width: calc(100% - 20px); */ /* Take full width minus left padding */
+}
+
+
+.center-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically if needed */
+
+}
+
+.news-content img {
+    max-width: 100%; /* Responsive */
+    height: auto; /* Maintain aspect ratio */
+}

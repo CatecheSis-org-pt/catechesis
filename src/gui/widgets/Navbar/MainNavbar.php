@@ -8,6 +8,7 @@ require_once(__DIR__ . '/../../../authentication/Authenticator.php');
 require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../AboutDialog/AboutDialogWidget.php');
 require_once(__DIR__ . '/../UpdateDialog/UpdateDialogWidget.php');
+require_once(__DIR__ . '/../NewFeaturesDialog/NewFeaturesDialogWidget.php');
 
 namespace catechesis\gui\MainNavbar;
 abstract class MENU_OPTION
@@ -41,6 +42,7 @@ class MainNavbar extends Widget
     private /*bool*/                $allowsSiblingEnrollment = False;       // Whether the option 'enroll a sibling' should be enabled in invoking page
     private /*AboutDialogWidget*/   $aboutDialog = null;                    // The dialog window about CatecheSis
     private /*UpdateDialogWidget*/  $updateDialog = null;                   // The update notification window
+    private /*NewFeaturesDialogWidget*/  $newFeaturesDialog = null;                   // The new features notification window
 
 
     public function __construct(string $id = null, int $menuOption, bool $allowsSiblingEnrollment=False)
@@ -70,6 +72,12 @@ class MainNavbar extends Widget
         foreach($this->updateDialog->getJSDependencies() as $path)
             $this->addJSDependency($path);
 
+        $this->newFeaturesDialog = new NewFeaturesDialogWidget("newFeatures");
+        foreach($this->newFeaturesDialog->getCSSDependencies() as $path)
+            $this->addCSSDependency($path);
+        foreach($this->newFeaturesDialog->getJSDependencies() as $path)
+            $this->addJSDependency($path);
+
         $this->menuOption = $menuOption;
         $this->allowsSiblingEnrollment = $allowsSiblingEnrollment;
     }
@@ -91,6 +99,7 @@ class MainNavbar extends Widget
     {
         $this->aboutDialog->renderJS();
         $this->updateDialog->renderJS();
+        $this->newFeaturesDialog->renderJS();
         ?>
         <script>
         $(function() {
@@ -298,5 +307,8 @@ class MainNavbar extends Widget
         {
             $this->updateDialog->renderHTML();
         }
+
+        // FIXME
+        $this->newFeaturesDialog->renderHTML();
     }
 }

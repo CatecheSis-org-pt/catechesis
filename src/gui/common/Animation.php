@@ -9,6 +9,7 @@ abstract class Animation
 {
     const NONE = null;
     const FADE_IN_DOWN = "animate__fadeInDown";
+    const FADE_IN_DOWN_FASTER = "animate__fadeInDown animate__faster";
     const FADE_OUT_UP = "animate__fadeOutUp";
     const BACK_IN_DOWN = "animate__backInDown animate__faster";
     const BACK_OUT_UP = "animate__backOutUp animate__faster";
