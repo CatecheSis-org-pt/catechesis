@@ -16,6 +16,10 @@ use catechesis\Utils;
 
 class NewFeaturesDialogWidget extends ModalDialogWidget
 {
+    private /*bool*/ $hasNewsToShow = false;
+
+    private $versionsWithNews = array();
+
     public function __construct(string $id = null)
     {
         parent::__construct($id);
@@ -25,6 +29,35 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
         $this->addButton(new Button("Fechar", ButtonType::PRIMARY));
         $this->setEntryAnimation(Animation::TADA);
         $this->addCSSDependency("gui/widgets/NewFeaturesDialog/NewFeatureDialogWidget.css");
+
+        $lastSeenVersion = Authenticator::getLastSeenVersion();
+
+        if($lastSeenVersion != constant('VERSION_STRING'))
+        {
+            // Dynamically build the version history from the files in help/onboarding/
+            $versionHistory = $this->discoverVersionHistory();
+
+            // Check which versions are new to the user and have news files
+            foreach ($versionHistory as $version) {
+                // Only consider versions newer than the last seen version
+                // If lastSeenVersion is null or empty, it means the user never saw any version (first login)
+                if (empty($lastSeenVersion) || version_compare($version, $lastSeenVersion, '>')) {
+                    $this->versionsWithNews[] = $version;
+                } else {
+                    // Since versionHistory is in inverse chronological order,
+                    // once we hit a version that is NOT newer than lastSeenVersion,
+                    // we can stop (assuming versions are correctly ordered)
+                    break;
+                }
+            }
+        }
+
+        $this->hasNewsToShow = !empty($this->versionsWithNews);
+
+        if ($this->hasNewsToShow)
+        {
+            Authenticator::updateLastSeenVersion();
+        }
     }
 
 
@@ -44,6 +77,11 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
      */
     protected function renderBodyContents()
     {
+        // Only render the widget if there are actually news to show
+        if($this->hasNewsToShow)
+        {
+            $latestVersion = $this->versionsWithNews[0];
+            $otherVersions = array_slice($this->versionsWithNews, 1);
         ?>
         <div style="overflow: hidden;">
             <div class="container col-xs-12 news-widget-container">
@@ -60,8 +98,23 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
                     </div>
 
                     <?php
-                    include( CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v2.4.0.php");
+                    include( CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$latestVersion}.php");
                     ?>
+
+                    <?php if (!empty($otherVersions)): ?>
+                        <div style="margin-bottom: 60px;"></div>
+
+                        <h2 style="text-align: center">Mas espere, há mais!</h2>
+                        <p style="text-align: center">Parece que já não acedia ao CatecheSis há algum tempo...<br>Aqui estão mais algumas novidades de atualizações anteriores que poderão ter-lhe escapado:</p>
+
+                        <div style="margin-bottom: 60px;"></div>
+
+                        <?php
+                        foreach ($otherVersions as $version) {
+                            include( CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$version}.php");
+                        }
+                        ?>
+                    <?php endif; ?>
                 </div>
 
 
@@ -72,6 +125,7 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
             <div class="clearfix"></div>
         </div>
         <?php
+        }
     }
 
 
@@ -81,6 +135,10 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
     public function renderJS()
     {
         parent::renderJS();
+
+        // Only render the widget if there are actually news to show
+        if($this->hasNewsToShow)
+        {
         ?>
         <script type="text/javascript">
             $(function() {
@@ -88,5 +146,44 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
             });
         </script>
         <?php
+        }
+    }
+
+
+    /**
+     * Discovers all versions that have an onboarding news file,
+     * in inverse chronological order.
+     * @return array
+     */
+    private function discoverVersionHistory()
+    {
+        $versions = array();
+        $directory = CATECHESIS_ROOT_DIRECTORY . "help/onboarding/";
+
+        if (is_dir($directory)) {
+            $files = glob($directory . "v*.php");
+            foreach ($files as $file) {
+                $filename = basename($file);
+                // Extract version from v<version>.php
+                if (preg_match('/^v(.+)\.php$/', $filename, $matches)) {
+                    $versions[] = $matches[1];
+                }
+            }
+        }
+
+        // Sort versions in descending order
+        usort($versions, 'version_compare');
+        return array_reverse($versions);
+    }
+
+
+    /**
+     * Checks whether a file with news (onboarding information) exists for the given version (e.g. v2.4.0)
+     * @param string $version
+     * @return bool
+     */
+    private function existsNewsForVersion(string $version)
+    {
+        return file_exists(CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$version}.php");
     }
 }

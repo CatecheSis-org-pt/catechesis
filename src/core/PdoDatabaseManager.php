@@ -2915,7 +2915,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $result = [];
         try
         {
-            $sql = "SELECT nome, admin, u.estado AS u_estado, c.estado AS c_estado FROM utilizador u LEFT OUTER JOIN catequista c ON(u.username=c.username) WHERE u.username COLLATE utf8_bin = :username COLLATE utf8_bin;";
+            $sql = "SELECT nome, admin, u.estado AS u_estado, c.estado AS c_estado, ultima_versao_vista FROM utilizador u LEFT OUTER JOIN catequista c ON(u.username=c.username) WHERE u.username COLLATE utf8_bin = :username COLLATE utf8_bin;";
 
             $stm = $this->_connection->prepare($sql);
             $stm->bindParam(":username", $username);
@@ -2930,6 +2930,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                     $result['catechist_status'] = $row['c_estado'];  //Active/inactive catechist
                 else
                     $result['catechist_status'] = -1;                //User is not a catechist
+                $result['last_seen_version'] = $row['ultima_versao_vista'];  // The CatecheSis version from the last login
             }
             else
                 throw new Exception("Falha ao obter os dados da conta de utilizador.");
@@ -3127,6 +3128,34 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         }
     }
 
+
+    public function updateUserLastSeenVersion(string $username, string $lastSeenVersion)
+    {
+        if(!$this->connectAsNeeded(DatabaseAccessMode::USER_MANAGEMENT))
+            throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
+
+        $mynull = NULL;
+
+        try
+        {
+            $sql = "UPDATE utilizador SET ultima_versao_vista=:versao WHERE username=:username;";
+
+            $stm = $this->_connection->prepare($sql);
+
+            $stm->bindParam(":username", $username);
+            if(isset($lastSeenVersion))
+                $stm->bindParam(":versao", $lastSeenVersion);
+            else
+                $stm->bindParam(":versao", $mynull, PDO::PARAM_NULL);
+
+            return $stm->execute();
+        }
+        catch (PDOException $e)
+        {
+            //echo $e->getMessage();
+            throw new Exception("Falha interna ao tentar aceder à base de dados.");
+        }
+    }
 
     /**
      * Activates or blocks a user account.

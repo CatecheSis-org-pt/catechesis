@@ -37,8 +37,9 @@ CREATE TABLE utilizador(
 	nome		VARCHAR(255) NOT NULL,
 	admin		TINYINT NOT NULL,		# 0=nao, 1=sim
 	estado		TINYINT NOT NULL,		# 0=inactivo, 1=activo
-	tel		INT,
+	tel		    INT,
 	email		VARCHAR(255),
+    ultima_versao_vista   VARCHAR(20), # Ultima versao do CatecheSis que o utilizador visualizou
 	
 	PRIMARY KEY (username)
 )

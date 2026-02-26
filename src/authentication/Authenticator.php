@@ -8,6 +8,7 @@ require_once(__DIR__ . '/../core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/../core/database_cleanup.php');
 require_once(__DIR__ . '/../core/check_for_updates.php');
+require_once(__DIR__ . "/../core/version_info.php");
 
 
 use Exception;
@@ -132,6 +133,9 @@ class Authenticator
                 $_SESSION['nome_utilizador'] = Utils::sanitizeOutput($userAccount['name']);
                 $_SESSION['catequista'] = $userAccount['catechist_status'];
                 $_SESSION['admin'] = $userAccount['admin'];
+                $_SESSION['last_seen_version'] = $userAccount['last_seen_version'];
+
+                $db->updateUserLastSeenVersion($username, constant("VERSION_STRING"));
 
                 if ($userAccount['admin'])
                 {
@@ -241,5 +245,28 @@ class Authenticator
     public static function isInactiveCatechist()
     {
         return isset($_SESSION['catequista']) && $_SESSION['catequista']==0;
+    }
+
+    /**
+     * Returns the last CatecheSis version that the user has seen,
+     * i.e. the version that was in use on his/her last login.
+     * @return string
+     */
+    public static function getLastSeenVersion()
+    {
+        return $_SESSION['last_seen_version'];
+    }
+
+    /**
+     * Updates the last CatecheSis version that the user has seen,
+     * i.e. the version that was in use on his/her last login.
+     * @return void
+     * @throws Exception
+     */
+    public static function updateLastSeenVersion($username=null)
+    {
+        $_SESSION['last_seen_version'] = constant("VERSION_STRING");
+        $db = new PdoDatabaseManager();
+        $db->updateUserLastSeenVersion($username ?? Authenticator::getUsername(), constant("VERSION_STRING"));
     }
 }

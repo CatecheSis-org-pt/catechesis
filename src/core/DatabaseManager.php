@@ -131,6 +131,7 @@ interface DatabaseManager
     public function createUserAccount(string $username, string $name, string $password, bool $isAdmin,                  // Creates a new user/catechist account
                                       bool $isCatechist, bool $isCatechistActive=true, $phone=null, $email=null);
     public function updateUserAccountDetails(string $username, string $name, $phone, $email);                           // Updates a user's account name, phone and e-mail
+    public function updateUserLastSeenVersion(string $username, string $lastSeenVersion);                              // Updates a user's last seen CatecheSis version
     public function changeUserAccountStatus(string $username, bool $active);                                            // Activates or blocks a user account
     public function activateUserAccount(string $username);                                                              // Activates a user account
     public function blockUserAccount(string $username);                                                                 // Blocks a user account

@@ -26,7 +26,7 @@ use catechesis\Authenticator;
 
     <h3>Modo "Quem é quem" 🤩</h3>
 
-    <p>Veja os seus catequizandos como cartões animados em qualquer listagem ou resultado de pesquisa.</p>
+    <p>Veja os seus catequizandos como cartões animados em qualquer listagem ou resultado de pesquisa!</p>
     <video src="help/onboarding/img/quem_e_quem.m4v" style="width: 100%;" autoplay loop muted></video>
 
     <p>Memorize mais facilmente nomes e caras, ou registe as presenças e o aproveitamento dos catequizandos simplesmente levantando e baixando cartões! 😎</p>
@@ -52,6 +52,10 @@ use catechesis\Authenticator;
             <div style="margin-bottom: 40px;"></div>
             <p>... e redefina dias ou horários para grupos específicos, na página de <a href="gerirGrupos.php" target="_blank">Gestão de grupos</a>.</p>
             <img class="img-responsive" src="help/onboarding/img/horario_catequese_especifico.png"/>
+
+            <div style="margin-bottom: 40px;"></div>
+            <p>Esta definição influencia o cálculo das datas nas folhas de presenças.</p>
+
 
         </div>
         <?php
