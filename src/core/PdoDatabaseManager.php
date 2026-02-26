@@ -12,6 +12,7 @@ require_once(__DIR__ . "/domain/VirtualRoom.php");
 require_once(__DIR__ . "/domain/EnrollmentOrder.php");
 require_once(__DIR__ . '/../authentication/ulogin/config/all.inc.php');
 require_once(__DIR__ . '/../authentication/ulogin/main.inc.php');
+require_once(__DIR__ . '/../core/version_info.php');
 
 
 use core\domain\EnrollmentStatus;
@@ -159,6 +160,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function createUserAccount(string $username, string $name, string $password, bool $isAdmin, bool $isCatechist,
                                       bool $isCatechistActive=true, $phone=null, $email=null);
     public function updateUserAccountDetails(string $username, string $name, $phone, $email);
+    public function updateUserLastSeenVersion(string $username, string $lastSeenVersion);
     public function changeUserAccountStatus(string $username, bool $active);
     public function activateUserAccount(string $username);
     public function blockUserAccount(string $username);
@@ -3011,7 +3013,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         try
         {
-            $sql = "INSERT INTO utilizador(username, nome, admin, tel, email, estado) VALUES(:un, :nome, :admin, :tel, :email, 1);";
+            $sql = "INSERT INTO utilizador(username, nome, admin, tel, email, estado, ultima_versao_vista) VALUES(:un, :nome, :admin, :tel, :email, 1, :version);";
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":un", $username);
@@ -3025,7 +3027,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":email", $email);
             else
                 $stm->bindParam(":email", $mynull, PDO::PARAM_NULL);
-
+            $stm->bindParam(":version", constant('VERSION_STRING'));
 
             if($stm->execute())
             {
