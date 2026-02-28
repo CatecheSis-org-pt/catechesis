@@ -38,16 +38,17 @@ function upgrade_sql_file()
   #Hack: Remove strings that are unsupported by schemalex
   sed -i 's/DELIMITER ;//' "$dstDirectory/previous_db.sql"
   sed -i 's/DELIMITER ;//' "$dstDirectory/new_db.sql"
-  sed -i 's/data/batata/' "$dstDirectory/previous_db.sql"
-  sed -i 's/data/batata/' "$dstDirectory/new_db.sql"
+  sed -i 's/data/batata/g' "$dstDirectory/previous_db.sql"
+  sed -i 's/data/batata/g' "$dstDirectory/new_db.sql"
 
   #Run diff with schemalex
   #go run /mnt/linux-data/goncalo/Experiencias/Schemalex/schemalex/cmd/schemalex/schemalex.go -o $dstDirectory/db_upgrade_construtor.sql $dstDirectory/previous_db.sql "Base de dados/construtor.sql"
   ./schemalex -o "$dstDirectory/$2" "$dstDirectory/previous_db.sql" "$dstDirectory/new_db.sql"
 
+  echo "DEBUG replacing batata"
   #Hack: Restore removed strings
-  #sed -i '1s/^/DELIMITER ;\n/' "$dstDirectory/$2"    # Do not add DELIMITER because it is not supported by the updater running in PHP
-  sed -i 's/batata/data/' "$dstDirectory/$2"
+  #sed -i `1s/^/DELIMITER ;\n/' "$dstDirectory/$2"    # Do not add DELIMITER because it is not supported by the updater running in PHP
+  sed -i 's/batata/data/g' "$dstDirectory/$2"
 
 
   #Cleanup temporary files
