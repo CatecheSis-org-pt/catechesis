@@ -31,6 +31,10 @@
     margin-bottom: 120px;
 }
 
+.news-block-left, .news-block-right {
+    opacity: 0;
+}
+
 .news-block-left {
     margin-bottom: 120px;
     padding-right: 20%;

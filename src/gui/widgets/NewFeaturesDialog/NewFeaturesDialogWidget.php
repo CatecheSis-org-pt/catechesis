@@ -142,7 +142,33 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
         ?>
         <script type="text/javascript">
             $(function() {
-                $('#<?= $this->getID() ?>').modal('show');
+                var modal = $('#<?= $this->getID() ?>');
+                modal.modal('show');
+
+                // Animation on scroll logic
+                var container = modal.find('.news-widget-container');
+                var observerOptions = {
+                    root: container[0],
+                    threshold: 0.1
+                };
+
+                var observer = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            var element = $(entry.target);
+                            var animation = element.data('animation');
+                            if (animation) {
+                                element.addClass('animate__animated animate__faster ' + animation);
+                            }
+                            element.css('opacity', '1');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+
+                container.find('.news-block-left, .news-block-right').each(function() {
+                    observer.observe(this);
+                });
             });
         </script>
         <?php

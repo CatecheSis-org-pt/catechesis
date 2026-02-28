@@ -3,7 +3,7 @@ require_once(CATECHESIS_ROOT_DIRECTORY . "authentication/Authenticator.php");
 use catechesis\Authenticator;
 ?>
 
-<div class="news-block-left">
+<div class="news-block-left" data-animation="animate__slideInRight">
 
     <h3>Registo de presenças ✅ </h3>
 
@@ -22,7 +22,7 @@ use catechesis\Authenticator;
 
 <div style="margin-bottom: 40px;"></div>
 
-<div class="news-block-right">
+<div class="news-block-right" data-animation="animate__slideInLeft">
 
     <h3>Modo "Quem é quem" 🤩</h3>
 
@@ -41,7 +41,7 @@ use catechesis\Authenticator;
     if(Authenticator::isAdmin())
     {
         ?>
-        <div class="news-block-left">
+        <div class="news-block-left" data-animation="animate__slideInRight">
 
             <h3>Catequese a horas 🕜</h3>
 
