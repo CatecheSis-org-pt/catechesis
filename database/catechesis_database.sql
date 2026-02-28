@@ -15,7 +15,7 @@ CREATE TABLE familiar(
 	
 	PRIMARY KEY (fid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 	
 DROP TABLE IF EXISTS casados;
@@ -28,7 +28,7 @@ CREATE TABLE casados(
 	FOREIGN KEY (fid1) REFERENCES familiar(fid) ON DELETE CASCADE,
 	FOREIGN KEY (fid2) REFERENCES familiar(fid) ON DELETE CASCADE
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 
 DROP TABLE IF EXISTS utilizador;
@@ -43,7 +43,7 @@ CREATE TABLE utilizador(
 	
 	PRIMARY KEY (username)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS registosLog;
@@ -57,7 +57,7 @@ CREATE TABLE registosLog(
 	FOREIGN KEY (username) REFERENCES utilizador(username)
 	
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 	
 
@@ -92,9 +92,9 @@ CREATE TABLE catequizando(
 	FOREIGN KEY (criado_por) REFERENCES utilizador(username),
 	FOREIGN KEY (lastLSN_ficha) REFERENCES registosLog(LSN) ON DELETE SET NULL,
 	FOREIGN KEY (lastLSN_arquivo) REFERENCES registosLog(LSN) ON DELETE SET NULL,
-    FOREIGN KEY (lastLSN_autorizacoes) REFERENCES registosLog(LSN) ON DELETE SET NULL
+	FOREIGN KEY (lastLSN_autorizacoes) REFERENCES registosLog(LSN) ON DELETE SET NULL
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 	
 	
@@ -108,8 +108,7 @@ CREATE TABLE baptismo(
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
-
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS primeiraComunhao;
@@ -122,7 +121,7 @@ CREATE TABLE primeiraComunhao(
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS profissaoFe;
@@ -135,7 +134,7 @@ CREATE TABLE profissaoFe(
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS confirmacao;
@@ -148,7 +147,7 @@ CREATE TABLE confirmacao(
 	PRIMARY KEY (cid),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -161,7 +160,7 @@ CREATE TABLE escolaridade(
 	PRIMARY KEY (cid, ano_lectivo),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS autorizacaoSaidaMenores;
@@ -174,7 +173,7 @@ CREATE TABLE autorizacaoSaidaMenores(
 	FOREIGN KEY (cid) REFERENCES catequizando(cid) ON DELETE CASCADE,
 	FOREIGN KEY (fid) REFERENCES familiar(fid) ON DELETE CASCADE
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS grupo;
@@ -189,7 +188,7 @@ CREATE TABLE grupo(
 	
 	PRIMARY KEY (ano_catecismo, turma, ano_lectivo)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS pertence;
@@ -204,7 +203,7 @@ CREATE TABLE pertence(
 	FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (cid) REFERENCES catequizando(cid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;	
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 	
 	
 
@@ -218,7 +217,7 @@ CREATE TABLE catequista(
 	PRIMARY KEY (username),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS lecciona;
@@ -232,7 +231,7 @@ CREATE TABLE lecciona(
 	FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (username) REFERENCES catequista(username)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS inscreve;
@@ -248,7 +247,7 @@ CREATE TABLE inscreve(
 	FOREIGN KEY (cid, ano_catecismo, turma, ano_lectivo) REFERENCES pertence(cid, ano_catecismo, turma, ano_lectivo),
 	FOREIGN KEY (username) REFERENCES utilizador(username)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -260,9 +259,9 @@ CREATE TABLE sessao_catequese(
     ano_lectivo	    INT,
 
     PRIMARY KEY (data, ano_catecismo, turma, ano_lectivo),
+    KEY `ano_catecismo` (`ano_catecismo`, `turma`, `ano_lectivo`),
     FOREIGN KEY (ano_catecismo, turma, ano_lectivo) REFERENCES grupo(ano_catecismo, turma, ano_lectivo)
-)
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS presenca;
@@ -273,15 +272,15 @@ CREATE TABLE presenca(
     ano_lectivo	    INT,
     cid             INT,
     presenca        TINYINT,   # 0=falta; 1=presente
-    marcada_por     VARCHAR(20) NOT NULL,
+    marcada_por     VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 
     PRIMARY KEY (data, ano_catecismo, turma, ano_lectivo, cid),
+    KEY `data` (`data`, `ano_catecismo`, `turma`, `ano_lectivo`),
     FOREIGN KEY (data, ano_catecismo, turma, ano_lectivo) REFERENCES
         sessao_catequese(data, ano_catecismo, turma, ano_lectivo),
     FOREIGN KEY (cid) REFERENCES catequizando(cid),
     FOREIGN KEY (marcada_por) REFERENCES utilizador(username)
-)
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS cod_postais_paroquia;
@@ -290,7 +289,7 @@ CREATE TABLE cod_postais_paroquia(
 	
 	PRIMARY KEY (codigo)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS configuracoes;
@@ -300,7 +299,7 @@ CREATE TABLE configuracoes(
 	
 	PRIMARY KEY (chave)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS catequese_virtual;
@@ -315,7 +314,7 @@ CREATE TABLE catequese_virtual(
 	PRIMARY KEY (data, ano_catecismo, turma),
 	FOREIGN KEY(ultima_modificacao_user) REFERENCES utilizador(username) ON DELETE SET NULL
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS catequese_virtual_lock;
@@ -330,7 +329,7 @@ CREATE TABLE catequese_virtual_lock
     PRIMARY KEY (data, ano_catecismo, turma, lock_user),
     FOREIGN KEY (lock_user) REFERENCES utilizador(username) ON DELETE CASCADE
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 DROP TABLE IF EXISTS pedidoRenovacaoMatricula;
@@ -352,7 +351,7 @@ CREATE TABLE pedidoRenovacaoMatricula
 
     PRIMARY KEY (rid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 
@@ -407,7 +406,7 @@ CREATE TABLE pedidoInscricao
 
     PRIMARY KEY (iid)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 # Table for secureimage to store CAPTCHAs
@@ -424,7 +423,7 @@ CREATE TABLE captcha_codes
     PRIMARY KEY(id, namespace),
     INDEX(created)
 )
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 #ativa a verificacao das chaves estrangeiras
