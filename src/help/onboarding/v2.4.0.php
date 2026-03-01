@@ -1,5 +1,5 @@
 <?php
-require_once(CATECHESIS_ROOT_DIRECTORY . "authentication/Authenticator.php");
+require_once(__DIR__ . "/../../authentication/Authenticator.php");
 use catechesis\Authenticator;
 ?>
 

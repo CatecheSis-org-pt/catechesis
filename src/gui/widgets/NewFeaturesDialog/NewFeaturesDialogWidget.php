@@ -98,7 +98,7 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
                     </div>
 
                     <?php
-                    include( CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$latestVersion}.php");
+                    include( __DIR__ . "/../../../help/onboarding/v{$latestVersion}.php");
                     ?>
 
                     <?php if (!empty($otherVersions)): ?>
@@ -111,7 +111,7 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
 
                         <?php
                         foreach ($otherVersions as $version) {
-                            include( CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$version}.php");
+                            include( __DIR__ . "/../../../help/onboarding/v{$version}.php");
                         }
                         ?>
                     <?php endif; ?>
@@ -184,7 +184,7 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
     private function discoverVersionHistory()
     {
         $versions = array();
-        $directory = CATECHESIS_ROOT_DIRECTORY . "help/onboarding/";
+        $directory = __DIR__ . "/../../../help/onboarding/";
 
         if (is_dir($directory)) {
             $files = glob($directory . "v*.php");
@@ -210,6 +210,6 @@ class NewFeaturesDialogWidget extends ModalDialogWidget
      */
     private function existsNewsForVersion(string $version)
     {
-        return file_exists(CATECHESIS_ROOT_DIRECTORY . "help/onboarding/v{$version}.php");
+        return file_exists(__DIR__ . "/../../../help/onboarding/v{$version}.php");
     }
 }
