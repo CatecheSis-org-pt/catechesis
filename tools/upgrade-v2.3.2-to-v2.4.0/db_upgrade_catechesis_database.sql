@@ -26,6 +26,7 @@ ALTER TABLE `catequese_virtual_lock` ENGINE=InnoDB;
 ALTER TABLE `pedidoRenovacaoMatricula` ENGINE=InnoDB;
 ALTER TABLE `pedidoInscricao` ENGINE=InnoDB;
 ALTER TABLE `captcha_codes` ENGINE=InnoDB;
+ALTER TABLE `salaCatequeseVirtual` ENGINE=InnoDB;
 
 ALTER TABLE `grupo` MODIFY `ano_catecismo` TINYINT NOT NULL;
 ALTER TABLE `grupo` MODIFY `turma` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
