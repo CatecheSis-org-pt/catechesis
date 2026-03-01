@@ -156,10 +156,9 @@ function run_sql_script(string $db_host, string $db_name, string $username, stri
     {
         $connection = new PDO("mysql:host=" . $db_host . ";dbname=" . $db_name . ";charset=utf8", $username, $password, array(PDO::ATTR_EMULATE_PREPARES => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
         $query = file_get_contents($scriptFilePath);
-        $stmt = $connection->prepare($query);
-        $res = $stmt->execute();
+        $res = $connection->exec($query);
         $connection = null;
-        return $res;
+        return $res !== false;
     }
     catch (PDOException $e)
     {
