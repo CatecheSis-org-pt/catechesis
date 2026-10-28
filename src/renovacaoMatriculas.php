@@ -165,8 +165,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="escolher")
 //Guardar alteracoes
 if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
 {
- 	$catequizandos_renovam = $_POST['catequizando'];	    //Lista de cid de catequizandos que renovam matricula
- 	$pagamentos = $_POST['pagamentos'];						//Lista de cid de catequizandos que pagaram a matricula
+ 	$catequizandos_renovam = isset($_POST['catequizando']) ? $_POST['catequizando'] : array();	    //Lista de cid de catequizandos que renovam matricula
+ 	$pagamentos = isset($_POST['pagamentos']) ? $_POST['pagamentos'] : array();						//Lista de cid de catequizandos que pagaram a matricula
 
 	$ano_prec = intval(Utils::sanitizeInput($_POST['ano_prec']));
 	$cat_prec = intval(Utils::sanitizeInput($_POST['cat_prec']));
@@ -177,8 +177,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST['op']=="guardar" )
 	$cat_mat_rp = intval(Utils::sanitizeInput($_POST['cat_mat_rp']));
 	$turma_mat_rp = Utils::sanitizeInput($_POST['turma_mat_rp']);
 
-    $pedidos_processa = $_POST['pedidoProcessado'];         //Lista de rid de pedidos que foram marcados como processados
-    $pedidos_desprocessa = $_POST['pedidoNaoProcessado'];   //Lista de rid de pedidos que foram desmarcados do estado de processados
+    $pedidos_processa = isset($_POST['pedidoProcessado']) ? $_POST['pedidoProcessado'] : array();         //Lista de rid de pedidos que foram marcados como processados
+    $pedidos_desprocessa = isset($_POST['pedidoNaoProcessado']) ? $_POST['pedidoNaoProcessado'] : array();   //Lista de rid de pedidos que foram desmarcados do estado de processados
 
 
 
