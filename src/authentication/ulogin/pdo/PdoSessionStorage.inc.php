@@ -1,6 +1,6 @@
 <?php
 
-class ulPdoSessionStorage
+class ulPdoSessionStorage implements SessionHandlerInterface
 {
 	private $lifetime;
 	private $max_execution_time;
@@ -108,23 +108,8 @@ class ulPdoSessionStorage
 		$this->lifetime = get_cfg_var('session.gc_maxlifetime');
 		$this->max_execution_time = ini_get('max_execution_time');
 
-		// In newer PHP versions, objects are destroyed before
-		// session data is written, so normally we wouldn't be able to
-		// use $db_link when our write() method is called at the end of a script.
-		// Registering session_write_close() as a shutdown
-		// function will call write() before object destruction, which
-		// takes care of our problem.
-		register_shutdown_function('session_write_close');
-
 		// Register session storage handlers
-		session_set_save_handler(
-			array(&$this, 'open'),
-			array(&$this, 'close'),
-			array(&$this, 'read'),
-			array(&$this, 'write'),
-			array(&$this, 'destroy'),
-			array(&$this, 'gc')
-		);
+		session_set_save_handler($this, true);
 	}
 
 	public function __destruct()
@@ -132,11 +117,13 @@ class ulPdoSessionStorage
 		$this->close();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function open($save_path, $id)
 	{
 		return true;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function close()
 	{
 		// Unlock all records owned by us
@@ -149,10 +136,11 @@ class ulPdoSessionStorage
 		return true;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
 		if ($this->Lock($id) != true)
-			return false;
+			return '';
 
 		// Even if we don't have data, we need to return an empty string
 		$data = '';
@@ -172,18 +160,23 @@ class ulPdoSessionStorage
 		))
 		{
 			ul_db_fail('Session management error.');
-			return false;
+			return '';
 		}
 
 		if (!ulPdoDb::Fetch($stmt))
 		{
-			ul_fail('Error reading session.');
-			return false;
+			return '';
 		}
 
-		return $data;
+		if (is_resource($data))
+		{
+			$data = stream_get_contents($data);
+		}
+
+		return ($data !== null && $data !== false) ? (string)$data : '';
 	}
 
+	#[\ReturnTypeWillChange]
 	public function write($id, $data)
 	{
 		if ($this->Lock($id) != true)
@@ -209,6 +202,7 @@ class ulPdoSessionStorage
         return true;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function destroy($id)
 	{
 		$stmt = ulPdoDb::Prepare('session', 'DELETE FROM ul_sessions WHERE id=?');
@@ -220,24 +214,28 @@ class ulPdoSessionStorage
 			)
 		);
 
-		return $ret;
+		return $ret ? true : false;
 	}
 
-	public function gc()
+	#[\ReturnTypeWillChange]
+	public function gc($max_lifetime = 0)
 	{
 		$now = ulUtils::nowstring();
 
 		// Delete old sessions
 		$stmt = ulPdoDb::Prepare('session', 'DELETE FROM ul_sessions WHERE session_expires<=?');
-		ulPdoDb::BindExec(
+		if (!ulPdoDb::BindExec(
 			$stmt,
 			NULL,		// output
 			array(		// input
 				&$now, 'str'
 			)
-		);
+		))
+		{
+			return false;
+		}
 
-		return true;
+		return $stmt ? $stmt->rowCount() : 0;
 	}
 }
 

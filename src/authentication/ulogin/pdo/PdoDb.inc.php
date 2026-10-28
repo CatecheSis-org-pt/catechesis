@@ -118,14 +118,13 @@ class ulPdoDb
 		if (!isset(self::$preparedStmts[$query]) || ($forcePrepare == true))
 		{
 			$stmt = self::$dbcon->prepare($query);
-			if (self::$dbcon->errorCode() == '23000')
-			{
-				return self::Error(self::$dbcon->errorInfo());
-			}
-			else if (self::$dbcon->errorCode() != '00000')
+			if ($stmt === false)
 			{
 				self::Error(self::$dbcon->errorInfo());
-				ul_db_fail();
+				if (self::$dbcon->errorCode() != '23000')
+				{
+					ul_db_fail();
+				}
 				return false;
 			}
 
@@ -170,6 +169,8 @@ class ulPdoDb
 		if (!$stmt->execute())
 			return self::Error($stmt->errorInfo());
 
+		self::$errorCode = '00000';
+		self::$errorMsg = '';
 		return true;
 	}
 
