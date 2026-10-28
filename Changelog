@@ -1,6 +1,15 @@
 # Changelog
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
+## [Versão 2.5.0] - 2026-10-28
+
+#### Atualizações de segurança:
+
+- O CatecheSis suporta agora oficialmente o PHP 8.5. 
+Versões de PHP obsoletas (em particular 7.x) deixam de ser suportadas e poderão não funcionar em futuras versões do CatecheSis;
+
+**Depois desta atualização do CatecheSis, atualize o seu servidor PHP** para mitigar as recentes falhas de segurança (CVE-2026-109618 e CVE-2026-109619) identificadas nas versões 5.4–8.5 do PHP.
+
 
 ## [Versão 2.4.0] - 2026-02-28
 
