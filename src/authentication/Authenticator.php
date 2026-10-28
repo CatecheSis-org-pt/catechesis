@@ -8,6 +8,7 @@ require_once(__DIR__ . '/../core/config/catechesis_config.inc.php');
 require_once(__DIR__ . '/../core/PdoDatabaseManager.php');
 require_once(__DIR__ . '/../core/database_cleanup.php');
 require_once(__DIR__ . '/../core/check_for_updates.php');
+require_once(__DIR__ . '/../core/check_unsupported_php_version.php');
 require_once(__DIR__ . "/../core/version_info.php");
 
 
@@ -69,6 +70,8 @@ class Authenticator
         unset($_SESSION['nome_utilizador']);
         unset($_SESSION['admin']);
         unset($_SESSION['catequista']);
+        unset($_SESSION['SHOW_UNSUPPORTED_PHP_WARNING']);
+        unset($_SESSION['IS_PHP_VERSION_UNSUPPORTED']);
 
         Authenticator::denyAccess();
     }
@@ -141,6 +144,7 @@ class Authenticator
                 {
                     database_cleanup();     // Executes periodic log cleanup, if necessary
                     check_for_updates();    // Checks for updates (if some conditions are met)
+                    check_unsupported_php_version(); // Checks if the server runs an unsupported PHP version
                 }
             }
             else

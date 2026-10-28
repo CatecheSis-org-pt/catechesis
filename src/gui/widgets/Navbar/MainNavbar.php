@@ -9,6 +9,7 @@ require_once(__DIR__ . '/../../../core/Utils.php');
 require_once(__DIR__ . '/../AboutDialog/AboutDialogWidget.php');
 require_once(__DIR__ . '/../UpdateDialog/UpdateDialogWidget.php');
 require_once(__DIR__ . '/../NewFeaturesDialog/NewFeaturesDialogWidget.php');
+require_once(__DIR__ . '/../UnsupportedPhpVersionDialog/UnsupportedPhpVersionDialogWidget.php');
 
 namespace catechesis\gui\MainNavbar;
 abstract class MENU_OPTION
@@ -43,6 +44,7 @@ class MainNavbar extends Widget
     private /*AboutDialogWidget*/   $aboutDialog = null;                    // The dialog window about CatecheSis
     private /*UpdateDialogWidget*/  $updateDialog = null;                   // The update notification window
     private /*NewFeaturesDialogWidget*/  $newFeaturesDialog = null;                   // The new features notification window
+    private /*UnsupportedPhpVersionDialogWidget*/ $unsupportedPhpVersionDialog = null; // The unsupported PHP version notification window
 
 
     public function __construct(string $id = null, int $menuOption, bool $allowsSiblingEnrollment=False)
@@ -78,6 +80,12 @@ class MainNavbar extends Widget
         foreach($this->newFeaturesDialog->getJSDependencies() as $path)
             $this->addJSDependency($path);
 
+        $this->unsupportedPhpVersionDialog = new UnsupportedPhpVersionDialogWidget("unsupportedPhpVersion");
+        foreach($this->unsupportedPhpVersionDialog->getCSSDependencies() as $path)
+            $this->addCSSDependency($path);
+        foreach($this->unsupportedPhpVersionDialog->getJSDependencies() as $path)
+            $this->addJSDependency($path);
+
         $this->menuOption = $menuOption;
         $this->allowsSiblingEnrollment = $allowsSiblingEnrollment;
     }
@@ -93,6 +101,7 @@ class MainNavbar extends Widget
         <link rel="shortcut icon" href="img/favicon.png" type="image/png">
         <link rel="icon" href="img/favicon.png" type="image/png">
         <?php
+        $this->unsupportedPhpVersionDialog->renderCSS();
     }
 
     public function renderJS()
@@ -100,6 +109,7 @@ class MainNavbar extends Widget
         $this->aboutDialog->renderJS();
         $this->updateDialog->renderJS();
         $this->newFeaturesDialog->renderJS();
+        $this->unsupportedPhpVersionDialog->renderJS();
         ?>
         <script>
         $(function() {
@@ -258,7 +268,18 @@ class MainNavbar extends Widget
                     <ul class="nav navbar-nav navbar-right">
 
                         <?php
-                        if($_SESSION['IS_UPDATE_AVAILABLE'])
+                        if(!empty($_SESSION['IS_PHP_VERSION_UNSUPPORTED']))
+                        {
+                        ?>
+                        <!-- Unsupported PHP version -->
+                        <li class="dropdown"><a href="#" data-toggle="modal" data-target="#unsupportedPhpVersion" href="#"><i style="color: #d9534f;" class="fas fa-exclamation-triangle animated animate__animated animate__heartBeat animate__repeat-3 animate__delay-2s"></i></a>
+                        </li>
+                        <?php
+                        }
+                        ?>
+
+                        <?php
+                        if(!empty($_SESSION['IS_UPDATE_AVAILABLE']))
                         {
                         ?>
                         <!-- Updates available -->
@@ -310,5 +331,7 @@ class MainNavbar extends Widget
 
         // FIXME
         $this->newFeaturesDialog->renderHTML();
+
+        $this->unsupportedPhpVersionDialog->renderHTML();
     }
 }

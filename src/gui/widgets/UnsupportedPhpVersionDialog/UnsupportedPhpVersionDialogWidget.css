@@ -1,0 +1,7 @@
+.unsupported-php-version-dialog .modal-content,
+.unsupported-php-version-dialog .modal-header,
+.unsupported-php-version-dialog .modal-body,
+.unsupported-php-version-dialog .modal-footer,
+.unsupported-php-version-dialog .panel-body {
+    background-color: #f2dede;
+}
