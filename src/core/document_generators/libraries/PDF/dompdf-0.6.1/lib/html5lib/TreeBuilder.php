@@ -75,6 +75,7 @@ class HTML5_TreeBuilder {
 
     private $pendingTableCharacters;
     private $pendingTableCharactersDirty;
+    private $pendingTableCharactersNull;
 
     // Tree construction modes
     const INITIAL           = 0;

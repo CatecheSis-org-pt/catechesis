@@ -154,6 +154,7 @@ class PHPExcel_Calculation
      * @var PHPExcel_CalcEngine_Logger
      *
      */
+    private $_debugLog;
     private $debugLog;
 
     /**
@@ -3212,7 +3213,7 @@ class PHPExcel_Calculation
                     }
                 }
                 $d = $stack->last(2);
-                if (preg_match('/^'.self::CALCULATION_REGEXP_FUNCTION.'$/i', $d['value'], $matches)) {    //    Did this parenthesis just close a function?
+                if ($d !== null && isset($d['value']) && preg_match('/^'.self::CALCULATION_REGEXP_FUNCTION.'$/i', $d['value'], $matches)) {    //    Did this parenthesis just close a function?
                     $functionName = $matches[1];                                        //    Get the function name
 //echo 'Closed Function is '.$functionName, PHP_EOL;
                     $d = $stack->pop();
@@ -3300,7 +3301,7 @@ class PHPExcel_Calculation
                 }
                 // make sure there was a function
                 $d = $stack->last(2);
-                if (!preg_match('/^'.self::CALCULATION_REGEXP_FUNCTION.'$/i', $d['value'], $matches)) {
+                if ($d === null || !isset($d['value']) || !preg_match('/^'.self::CALCULATION_REGEXP_FUNCTION.'$/i', $d['value'], $matches)) {
                     return $this->raiseFormulaError("Formula Error: Unexpected ,");
                 }
                 $d = $stack->pop();
@@ -3346,7 +3347,7 @@ class PHPExcel_Calculation
 
                     //    If the last entry on the stack was a : operator, then we have a cell range reference
                     $testPrevOp = $stack->last(1);
-                    if ($testPrevOp['value'] == ':') {
+                    if ($testPrevOp !== null && isset($testPrevOp['value']) && $testPrevOp['value'] == ':') {
                         //    If we have a worksheet reference, then we're playing with a 3D reference
                         if ($matches[2] == '') {
                             //    Otherwise, we 'inherit' the worksheet reference from the start cell reference
@@ -3367,7 +3368,7 @@ class PHPExcel_Calculation
 //                    echo 'Element is a Variable, Constant, String, Number or Boolean<br />';
                     //    If the last entry on the stack was a : operator, then we may have a row or column range reference
                     $testPrevOp = $stack->last(1);
-                    if ($testPrevOp['value'] == ':') {
+                    if ($testPrevOp !== null && isset($testPrevOp['value']) && $testPrevOp['value'] == ':') {
                         $startRowColRef = $output[count($output)-1]['value'];
                         $rangeWS1 = '';
                         if (strpos('!', $startRowColRef) !== false) {

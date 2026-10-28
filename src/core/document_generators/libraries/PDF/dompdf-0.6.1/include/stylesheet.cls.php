@@ -1098,8 +1098,10 @@ class Stylesheet {
             case ":even":
             case ":first":
               $key = $page_selector;
+              break;
               
-            default: continue;
+            default:
+              break 2;
           }
 
           // Store the style for later...

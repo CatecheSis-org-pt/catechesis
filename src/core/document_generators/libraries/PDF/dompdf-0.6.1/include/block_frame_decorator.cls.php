@@ -104,7 +104,7 @@ class Block_Frame_Decorator extends Frame_Decorator {
 
       // Handle line breaks
       if ( $frame->get_node()->nodeName === "br" ) {
-        $this->maximize_line_height( $style->length_in_pt($style->line_height), $frame );
+        $this->maximize_line_height( $style->get_line_height(), $frame );
         $this->add_line(true);
       }
 
@@ -145,7 +145,8 @@ class Block_Frame_Decorator extends Frame_Decorator {
     // End debugging
 
     $line = $this->_line_boxes[$this->_cl];
-    if ( $line->left + $line->w + $line->right + $w > $this->get_containing_block("w")) {
+    $cb_w = $this->get_containing_block("w");
+    if ( is_numeric($cb_w) && ($line->left + $line->w + $line->right + $w > $cb_w) ) {
       $this->add_line();
     }
 

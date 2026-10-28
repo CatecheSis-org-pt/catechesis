@@ -80,7 +80,7 @@ class Table_Cell_Frame_Reflower extends Block_Frame_Reflower {
     // Set the containing blocks and reflow each child
     foreach ( $this->_frame->get_children() as $child ) {
       
-      if ( $page->is_full() )
+      if ( $page && $page->is_full() )
         break;
     
       $child->set_containing_block($content_x, $content_y, $cb_w, $h);
@@ -97,12 +97,16 @@ class Table_Cell_Frame_Reflower extends Block_Frame_Reflower {
 
     $this->_frame->set_content_height($this->_calculate_content_height());
 
-    $height = max($style_height, $this->_frame->get_content_height());
+    if ($style_height === "auto") {
+      $height = $this->_frame->get_content_height();
+    } else {
+      $height = max((float)$style_height, $this->_frame->get_content_height());
+    }
 
     // Let the cellmap know our height
     $cell_height = $height / count($cells["rows"]);
 
-    if ($style_height <= $height)
+    if ($style_height === "auto" || $style_height <= $height)
       $cell_height += $top_space + $bottom_space;
 
     foreach ($cells["rows"] as $i)

@@ -35,6 +35,9 @@ class Text_Frame_Reflower extends Frame_Reflower {
     //$text = $this->_frame->get_text();
 //     if ( $this->_block_parent->get_current_line_box->w == 0 )
 //       $text = ltrim($text, " \n\r\t");
+    if ($text === null) {
+      return "";
+    }
     return preg_replace(self::$_whitespace_pattern, " ", $text);
   }
 
@@ -312,10 +315,12 @@ class Text_Frame_Reflower extends Frame_Reflower {
   function reflow(Block_Frame_Decorator $block = null) {
     $frame = $this->_frame;
     $page = $frame->get_root();
-    $page->check_forced_page_break($this->_frame);
+    if ( $page ) {
+      $page->check_forced_page_break($this->_frame);
     
-    if ( $page->is_full() )
-      return;
+      if ( $page->is_full() )
+        return;
+    }
 
     $this->_block_parent = /*isset($block) ? $block : */$frame->find_block_parent();
 
@@ -372,8 +377,9 @@ class Text_Frame_Reflower extends Frame_Reflower {
       /*foreach($words as &$word) {
         $word = Font_Metrics::get_text_width($word, $font, $size, $word_spacing, $char_spacing);
       }*/
-      array_walk($words, create_function('&$val,$str',
-                                         '$val = Font_Metrics::get_text_width($str, "'.addslashes($font).'", '.$size.', '.$word_spacing.', '.$char_spacing.');'));
+      array_walk($words, function(&$val, $str) use ($font, $size, $word_spacing, $char_spacing) {
+        $val = Font_Metrics::get_text_width($str, $font, $size, $word_spacing, $char_spacing);
+      });
       arsort($words);
       $min = reset($words);
       break;
@@ -383,8 +389,9 @@ class Text_Frame_Reflower extends Frame_Reflower {
       /*foreach($words as &$word) {
         $word = Font_Metrics::get_text_width($word, $font, $size, $word_spacing, $char_spacing);
       }*/
-      array_walk($lines, create_function('&$val,$str',
-                                         '$val = Font_Metrics::get_text_width($str, "'.addslashes($font).'", '.$size.', '.$word_spacing.', '.$char_spacing.');'));
+      array_walk($lines, function(&$val, $str) use ($font, $size, $word_spacing, $char_spacing) {
+        $val = Font_Metrics::get_text_width($str, $font, $size, $word_spacing, $char_spacing);
+      });
 
       arsort($lines);
       $min = reset($lines);
@@ -414,8 +421,9 @@ class Text_Frame_Reflower extends Frame_Reflower {
       /*foreach($words as &$word) {
         $word = Font_Metrics::get_text_width($word, $font, $size, $word_spacing, $char_spacing);
       }*/
-      array_walk($lines, create_function('&$val,$str',
-                                         '$val = Font_Metrics::get_text_width($str, "'.$font.'", '.$size.', '.$word_spacing.', '.$char_spacing.');'));
+      array_walk($lines, function(&$val, $str) use ($font, $size, $word_spacing, $char_spacing) {
+        $val = Font_Metrics::get_text_width($str, $font, $size, $word_spacing, $char_spacing);
+      });
       arsort($lines);
       reset($lines);
       $str = key($lines);

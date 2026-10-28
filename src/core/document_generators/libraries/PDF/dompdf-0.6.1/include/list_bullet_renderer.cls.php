@@ -117,7 +117,7 @@ class List_Bullet_Renderer extends Abstract_Renderer {
   function render(Frame $frame) {
     $style = $frame->get_style();
     $font_size = $style->get_font_size();
-    $line_height = $style->length_in_pt($style->line_height, $frame->get_containing_block("w"));
+    $line_height = $style->get_line_height();
 
     $this->_set_opacity( $frame->get_opacity( $style->opacity ) );
 
@@ -221,7 +221,7 @@ class List_Bullet_Renderer extends Abstract_Renderer {
         $x -= Font_Metrics::get_text_width($text, $font_family, $font_size, $spacing);
         
         // Take line-height into account
-        $line_height = $style->line_height;
+        $line_height = $style->get_line_height();
         $y += ($line_height - $font_size) / 4; // FIXME I thought it should be 2, but 4 gives better results
         
         $this->_canvas->text($x, $y, $text,

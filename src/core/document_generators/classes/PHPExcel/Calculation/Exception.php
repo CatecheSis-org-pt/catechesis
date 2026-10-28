@@ -36,8 +36,11 @@ class PHPExcel_Calculation_Exception extends PHPExcel_Exception
      * @param mixed $line
      * @param mixed $context
      */
-    public static function errorHandlerCallback($code, $string, $file, $line, $context)
+    public static function errorHandlerCallback($code, $string, $file = null, $line = null, $context = null)
     {
+        if ($code === E_DEPRECATED || $code === E_USER_DEPRECATED || !(error_reporting() & $code)) {
+            return false;
+        }
         $e = new self($string, $code);
         $e->line = $line;
         $e->file = $file;

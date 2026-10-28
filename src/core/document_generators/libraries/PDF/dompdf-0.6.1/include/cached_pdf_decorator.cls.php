@@ -28,7 +28,7 @@ class Cached_PDF_Decorator extends CPDF_Adapter implements Canvas {
   protected $_current_page_id;
   protected $_fonts;  // fonts used in this document
   
-  function __construct($paper = "letter", $orientation = "portrait", DOMPDF $dompdf) {
+  function __construct($paper = "letter", $orientation = "portrait", DOMPDF $dompdf = null) {
     $this->_fonts = array();
   }
 

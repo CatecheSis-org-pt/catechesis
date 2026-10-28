@@ -321,12 +321,12 @@ class Table_Frame_Reflower extends Frame_Reflower {
 
       } else if ( isset($cb["w"]) ) {
 
-        if ( mb_strpos($min_height, "%") !== false )
+        if ( is_string($min_height) && mb_strpos($min_height, "%") !== false )
           $min_height = 0;
         else
           $min_height = $style->length_in_pt($min_height, $cb["w"]);
 
-        if ( mb_strpos($max_height, "%") !== false )
+        if ( is_string($max_height) && mb_strpos($max_height, "%") !== false )
           $max_height = "none";
         else
           $max_height = $style->length_in_pt($max_height, $cb["w"]);

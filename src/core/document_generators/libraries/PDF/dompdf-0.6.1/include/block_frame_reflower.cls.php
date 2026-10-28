@@ -334,7 +334,7 @@ class Block_Frame_Reflower extends Frame_Reflower {
     else {
 
       // Expand the height if overflow is visible 
-      if ( $height === "auto" && $content_height > $height /* && $style->overflow === "visible" */) {
+      if ( $height === "auto" ) {
         $height = $content_height;
       }
 
@@ -355,14 +355,14 @@ class Block_Frame_Reflower extends Frame_Reflower {
         }
         else if ( isset($cb["w"]) ) {
 
-          if ( mb_strpos($min_height, "%") !== false ) {
+          if ( is_string($min_height) && mb_strpos($min_height, "%") !== false ) {
             $min_height = 0;
           }
           else {
             $min_height = $style->length_in_pt($min_height, $cb["w"]);
           }
 
-          if ( mb_strpos($max_height, "%") !== false ) {
+          if ( is_string($max_height) && mb_strpos($max_height, "%") !== false ) {
             $max_height = "none";
           }
           else {
@@ -398,6 +398,9 @@ class Block_Frame_Reflower extends Frame_Reflower {
     $style = $this->_frame->get_style();
     $w = $this->_frame->get_containing_block("w");
     $width = $style->length_in_pt($style->width, $w);
+    if ( $width === "auto" ) {
+      $width = $w;
+    }
     
     switch ($style->text_align) {
       default:
@@ -536,10 +539,10 @@ class Block_Frame_Reflower extends Frame_Reflower {
         $align = $frame->get_parent()->get_style()->vertical_align;
         
         if ( !isset($canvas) ) {
-          $canvas = $frame->get_root()->get_dompdf()->get_canvas();
+          $canvas = $frame->get_dompdf() ? $frame->get_dompdf()->get_canvas() : null;
         }
         
-        $baseline = $canvas->get_font_baseline($style->font_family, $style->font_size);
+        $baseline = $canvas ? $canvas->get_font_baseline($style->font_family, $style->font_size) : 0;
         $y_offset = 0;
         
         switch ($align) {

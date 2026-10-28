@@ -91,9 +91,12 @@ abstract class Frame_Reflower {
     
     if ( $n ) {
       $n_style = $n->get_style();
-      $b = max($b, $n_style->length_in_pt($n_style->margin_top, $cb["h"]));
-      $n_style->margin_top = "0pt";
-      $style->margin_bottom = $b."pt";
+      $n_margin = $n_style->length_in_pt($n_style->margin_top, $cb["h"]);
+      if ( is_numeric($n_margin) ) {
+        $b = max($b, $n_margin);
+        $n_style->margin_top = "0pt";
+        $style->margin_bottom = $b."pt";
+      }
     }
 
     // Collapse our first child's margin
@@ -233,8 +236,9 @@ abstract class Frame_Reflower {
 
     // Convert escaped hex characters into ascii characters (e.g. \A => newline)
     $string = preg_replace_callback("/\\\\([0-9a-fA-F]{0,6})/",
-                                    create_function('$matches',
-                                                    'return unichr(hexdec($matches[1]));'),
+                                    function($matches) {
+                                      return unichr(hexdec($matches[1]));
+                                    },
                                     $string);
     return $string;
   }

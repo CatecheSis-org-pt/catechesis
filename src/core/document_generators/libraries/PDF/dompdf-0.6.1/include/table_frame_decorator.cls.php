@@ -74,7 +74,7 @@ class Table_Frame_Decorator extends Frame_Decorator {
     parent::__construct($frame, $dompdf);
     $this->_cellmap = new Cellmap($this);
     
-    if ( $frame->get_style()->table_layout === "fixed" ) {
+    if ( $frame->get_style() && $frame->get_style()->table_layout === "fixed" ) {
       $this->_cellmap->set_layout_fixed(true);
     }
     

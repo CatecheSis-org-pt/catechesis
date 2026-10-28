@@ -21,7 +21,7 @@
  * @package dompdf
  */
 interface Canvas {
-  function __construct($paper = "letter", $orientation = "portrait", DOMPDF $dompdf);
+  function __construct($paper = "letter", $orientation = "portrait", DOMPDF $dompdf = null);
 
   /**
    * @return DOMPDF

@@ -3839,7 +3839,7 @@ EOT;
    * @param bool     $is_mask true if the image is a mask
    * @param bool     $mask    true if the image is masked
    */
-  function addImagePng($file, $x, $y, $w = 0.0, $h = 0.0, &$img, $is_mask = false, $mask = null) {
+  function addImagePng($file, $x, $y, $w = 0.0, $h = 0.0, &$img = null, $is_mask = false, $mask = null) {
     if (!function_exists("imagepng")) {
       throw new Exception("The PHP GD extension is required, but is not installed.");
     }
@@ -4123,7 +4123,7 @@ EOT;
   /**
    * add a PNG image into the document, from a memory buffer of the file
    */
-  function addPngFromBuf($file, $x, $y, $w = 0.0, $h = 0.0, &$data, $is_mask = false, $mask = null) {
+  function addPngFromBuf($file, $x, $y, $w = 0.0, $h = 0.0, &$data = null, $is_mask = false, $mask = null) {
     if ( isset($this->imagelist[$file]) ) {
       $data = null;
       $info['width'] = $this->imagelist[$file]['w'];
@@ -4435,7 +4435,7 @@ EOT;
   /**
    * common code used by the two JPEG adding functions
    */
-  private function addJpegImage_common(&$data, $x, $y, $w = 0, $h = 0, $imageWidth, $imageHeight, $channels = 3, $imgname) {
+  private function addJpegImage_common(&$data, $x, $y, $w = 0, $h = 0, $imageWidth = 0, $imageHeight = 0, $channels = 3, $imgname = '') {
     if ( $this->image_iscached($imgname) ) {
       $label = $this->imagelist[$imgname]['label'];
       //debugpng

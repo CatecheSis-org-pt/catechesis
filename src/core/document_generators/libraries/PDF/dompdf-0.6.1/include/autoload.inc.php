@@ -68,19 +68,8 @@ if ( function_exists("spl_autoload_register") ) {
     }
     
     // Be polite and ensure that userland autoload gets retained
-    if ( function_exists("__autoload") ) {
+    if ( PHP_VERSION_ID < 80000 && function_exists("__autoload") ) {
       spl_autoload_register("__autoload");
     }
-  }
-}
-
-else if ( !function_exists("__autoload") ) {
-  /**
-   * Default __autoload() function
-   *
-   * @param string $class
-   */
-  function __autoload($class) {
-    DOMPDF_autoload($class);
   }
 }

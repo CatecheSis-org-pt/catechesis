@@ -43,21 +43,11 @@ class Text_Frame_Decorator extends Frame_Decorator {
   function get_text_spacing() { return $this->_text_spacing; }
       
   function get_text() {
-    // FIXME: this should be in a child class (and is incorrect)
-//    if ( $this->_frame->get_style()->content !== "normal" ) {
-//      $this->_frame->get_node()->data = $this->_frame->get_style()->content;
-//      $this->_frame->get_style()->content = "normal";
-//    }
-
-//      pre_r("---");
-//      $style = $this->_frame->get_style();
-//      var_dump($text = $this->_frame->get_node()->data);
-//      var_dump($asc = utf8_decode($text));
-//      for ($i = 0; $i < strlen($asc); $i++)
-//        pre_r("$i: " . $asc[$i] . " - " . ord($asc[$i]));
-//      pre_r("width: " . Font_Metrics::get_text_width($text, $style->font_family, $style->font_size));
-
-    return $this->_frame->get_node()->data;
+    $node = $this->_frame->get_node();
+    if (isset($node->data)) {
+      return $node->data;
+    }
+    return $node->nodeValue ?? "";
   }
 
   //........................................................................
@@ -78,16 +68,7 @@ class Text_Frame_Decorator extends Frame_Decorator {
     $font = $style->font_family;
     $size = $style->font_size;
 
-    /*
-    pre_r('-----');
-    pre_r($style->line_height);
-    pre_r($style->font_size);
-    pre_r(Font_Metrics::get_font_height($font, $size));
-    pre_r(($style->line_height / $size) * Font_Metrics::get_font_height($font, $size));
-    */
-
-    return ($style->line_height / ( $size > 0 ? $size : 1 )) * Font_Metrics::get_font_height($font, $size);
-    
+    return ($style->get_line_height() / ( $size > 0 ? $size : 1 )) * Font_Metrics::get_font_height($font, $size);
   }
 
   function get_padding_box() {
@@ -165,7 +146,11 @@ class Text_Frame_Decorator extends Frame_Decorator {
   //........................................................................
 
   function set_text($text) {
-    $this->_frame->get_node()->data = $text;
+    $node = $this->_frame->get_node();
+    if (isset($node->data) || property_exists($node, 'data')) {
+      $node->data = $text;
+    }
+    $node->nodeValue = $text;
   }
 
 }

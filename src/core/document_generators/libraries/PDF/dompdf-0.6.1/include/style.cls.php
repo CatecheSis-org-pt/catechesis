@@ -451,6 +451,10 @@ class Style {
     $ret = 0;
     foreach ($length as $l) {
 
+      if ( $l === null ) {
+        continue;
+      }
+
       if ( $l === "auto" ) {
         return "auto";
       }
@@ -939,7 +943,7 @@ class Style {
    * @return float
    */
   function get_line_height() {
-    $line_height = $this->_props["line_height"];
+    $line_height = isset($this->_props["line_height"]) ? $this->_props["line_height"] : self::$_defaults["line_height"];
     
     if ( $line_height === "normal" ) {
       return self::$default_line_height * $this->get_font_size();
@@ -1272,10 +1276,20 @@ class Style {
       return $this->_computed_border_radius;
     }
     
-    $rTL = $this->__get("border_top_left_radius");
-    $rTR = $this->__get("border_top_right_radius");
-    $rBL = $this->__get("border_bottom_left_radius");
-    $rBR = $this->__get("border_bottom_right_radius");
+    if ( empty($this->_has_border_radius) ) {
+      return $this->_computed_border_radius = array(
+        0, 0, 0, 0,
+        "top-left"     => 0, 
+        "top-right"    => 0, 
+        "bottom-right" => 0, 
+        "bottom-left"  => 0, 
+      );
+    }
+    
+    $rTL = (float)$this->__get("border_top_left_radius");
+    $rTR = (float)$this->__get("border_top_right_radius");
+    $rBL = (float)$this->__get("border_bottom_left_radius");
+    $rBR = (float)$this->__get("border_bottom_right_radius");
     
     if ( $rTL + $rTR + $rBL + $rBR == 0 ) {
       return $this->_computed_border_radius = array(
@@ -1287,10 +1301,13 @@ class Style {
       );
     }
     
-    $t = $this->__get("border_top_width");
-    $r = $this->__get("border_right_width");
-    $b = $this->__get("border_bottom_width");
-    $l = $this->__get("border_left_width");
+    $t = (float)$this->__get("border_top_width");
+    $r = (float)$this->__get("border_right_width");
+    $b = (float)$this->__get("border_bottom_width");
+    $l = (float)$this->__get("border_left_width");
+    
+    $w = (float)$w;
+    $h = (float)$h;
     
     $rTL = min($rTL, $h - $rBL - $t/2 - $b/2, $w - $rTR - $l/2 - $r/2);
     $rTR = min($rTR, $h - $rBR - $t/2 - $b/2, $w - $rTL - $l/2 - $r/2);

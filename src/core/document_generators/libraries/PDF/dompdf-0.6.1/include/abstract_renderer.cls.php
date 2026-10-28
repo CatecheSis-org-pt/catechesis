@@ -672,7 +672,7 @@ abstract class Abstract_Renderer {
     }
   }
   // Draws a solid, dotted, or dashed line, observing the border radius
-  protected function _border_line($x, $y, $length, $color, $widths, $side, $corner_style = "bevel", $pattern_name, $r1 = 0, $r2 = 0) {
+  protected function _border_line($x, $y, $length, $color, $widths, $side, $corner_style = "bevel", $pattern_name = "solid", $r1 = 0, $r2 = 0) {
     list($top, $right, $bottom, $left) = $widths;
     
     $width = $$side;
