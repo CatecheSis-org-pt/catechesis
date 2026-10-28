@@ -8,6 +8,7 @@ require_once(__DIR__ . '/core/Utils.php');
 require_once(__DIR__ . '/core/log_functions.php');
 require_once(__DIR__ . "/core/PdoDatabaseManager.php");
 require_once(__DIR__ . "/gui/widgets/WidgetManager.php");
+require_once(__DIR__ . "/gui/widgets/configuration_panels/UnsupportedPhpVersionPanel/UnsupportedPhpVersionPanelWidget.php");
 require_once(__DIR__ . "/gui/widgets/configuration_panels/UserAccountConfigurationPanel/UserAccountConfigurationPanelWidget.php");
 require_once(__DIR__ . "/gui/widgets/configuration_panels/OnlineEnrollmentsActivationPanel/OnlineEnrollmentsActivationPanelWidget.php");
 require_once(__DIR__ . "/gui/widgets/configuration_panels/CatechumensEvaluationActivationPanel/CatechumensEvaluationActivationPanelWidget.php");
@@ -26,6 +27,7 @@ use catechesis\Utils;
 use catechesis\gui\WidgetManager;
 use catechesis\gui\MainNavbar;
 use catechesis\gui\MainNavbar\MENU_OPTION;
+use catechesis\gui\UnsupportedPhpVersionPanelWidget;
 use catechesis\gui\UserAccountConfigurationPanelWidget;
 use catechesis\gui\OnlineEnrollmentsActivationPanelWidget;
 use catechesis\gui\CatechumensEvaluationActivationPanelWidget;
@@ -46,7 +48,15 @@ $pageUI->addWidget($menu);
 $settingsPanels = array(); //Array to store all the panels, to process and render them later
 
 // Instantiate the widgets used in this page and register them in the manager and in the array
-$configurationWidgets = array(
+$configurationWidgets = array();
+
+$unsupportedPhpVersionPanel = new UnsupportedPhpVersionPanelWidget();
+if($unsupportedPhpVersionPanel->isUnsupported())
+{
+    $configurationWidgets[] = $unsupportedPhpVersionPanel;
+}
+
+$configurationWidgets = array_merge($configurationWidgets, array(
                             new UserAccountConfigurationPanelWidget(),
                             new OnlineEnrollmentsActivationPanelWidget(),
                             new OptionalFieldsConfigurationPanelWidget(),
@@ -56,7 +66,7 @@ $configurationWidgets = array(
                             new FrontPageCustomizationPanelWidget(),
                             new ParishSettingsPanelWidget(),
                             new GDPRParishSettingsPanelWidget()
-                        );
+                        ));
 
 $settingsPanels = array(); //Array to store all the panels, to process and render them later
 

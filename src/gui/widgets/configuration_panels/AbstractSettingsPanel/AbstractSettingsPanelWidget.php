@@ -2,6 +2,7 @@
 
 namespace catechesis\gui;
 
+require_once(__DIR__ . '/../../Widget.php');
 
 use catechesis\Authenticator;
 
