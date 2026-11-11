@@ -35,13 +35,22 @@ function data_valida(data)
     return (pattern.test(data));
 }
 
-function nif_valido(nif)
+function nif_valido(nif, allowEscapeNif = false)
 {
     // Remove espaços e caracteres não numéricos
     nif = (nif || "").toString().replace(/\D/g, '');
 
+    if (allowEscapeNif && nif === "000000000") {
+        return true;
+    }
+
     // Verifica se o NIF tem 9 dígitos
     if (nif.length !== 9) {
+        return false;
+    }
+
+    // O primeiro dígito não pode ser 0
+    if (nif[0] === '0') {
         return false;
     }
 

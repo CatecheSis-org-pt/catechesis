@@ -64,15 +64,25 @@ class DataValidationUtils
     /**
      * Checks if a given string represents a valid Portuguese fiscal number.
      * @param string $nif
+     * @param bool $allowEscapeNif Whether '000000000' is accepted as a valid escape NIF
      * @return bool
      */
-    public static function validateNIF(string $nif)
+    public static function validateNIF(string $nif, bool $allowEscapeNif = false)
     {
         // Remove spaces and non-numeric characters
         $nif = preg_replace('/\D/', '', $nif);
 
+        if ($allowEscapeNif && $nif === "000000000") {
+            return true;
+        }
+
         // Check it has 9 digits
         if (strlen($nif) !== 9) {
+            return false;
+        }
+
+        // Portuguese NIFs do not start with 0
+        if ($nif[0] === '0') {
             return false;
         }
 

@@ -961,7 +961,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $stm->bindParam(":nome", $name);
             $stm->bindParam(":data_nasc", $birthdate);
             $stm->bindParam(":local_nasc", $birthplace);
-            if(isset($nif) && $nif!=="" && nif!==0)
+            if(isset($nif) && $nif!=="" && $nif!=="000000000" && $nif!==0 && $nif!=="0")
                 $stm->bindParam(":nif", $nif, PDO::PARAM_INT);
             else
                 $stm->bindParam(":nif", $mynull, PDO::PARAM_NULL);
@@ -1051,7 +1051,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $stm->bindParam(":nome", $name);
             $stm->bindParam(":data_nasc", $birthdate);
             $stm->bindParam(":local_nasc", $birthplace);
-            if(isset($nif))
+            if(isset($nif) && $nif!=="" && $nif!=="000000000" && $nif!==0 && $nif!=="0")
                 $stm->bindParam(":nif", $nif, PDO::PARAM_INT);
             else
                 $stm->bindParam(":nif", $mynull, PDO::PARAM_NULL);

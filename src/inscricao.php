@@ -567,7 +567,10 @@ $menu->renderHTML();
         <div class="col-xs-2">
             <div id="nif_div">
                 <label for="nif">NIF:</label>
-                <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $nif . '');} else {echo('');} ?>" required>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $nif . '');} else {echo('');} ?>" required>
+                    <span class="input-group-addon"><a href="javascript:void(0);" onclick="preencher_nif_desconhecido();" data-toggle="tooltip" data-container="body" data-placement="top" title='Preencher "000 000 000". Utilizar excecionalmente caso esteja a editar uma ficha existente e não saiba o NIF do catequizando.'><span class="fas fa-user-times"></span></a></span>
+                </div>
                 <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
             <div class="clearfix"></div>
@@ -1237,13 +1240,32 @@ function data_valida(data)
 	return (pattern.test(data));
 }
 
+function preencher_nif_desconhecido()
+{
+    var nifElem = document.getElementById('nif');
+    if(nifElem) {
+        nifElem.value = '000000000';
+        verifica_nif();
+    }
+}
+
 function nif_valido(nif)
 {
     // Remove espaços e caracteres não numéricos
     nif = (nif || "").toString().replace(/\D/g, '');
 
+    // Aceita 000000000 como mecanismo de escape quando não se sabe o NIF
+    if (nif === "000000000") {
+        return true;
+    }
+
     // Verifica se o NIF tem 9 dígitos
     if (nif.length !== 9) {
+        return false;
+    }
+
+    // O primeiro dígito não pode ser 0
+    if (nif[0] === '0') {
         return false;
     }
 
@@ -1469,6 +1491,8 @@ $(document).ready(function()
     $("#quer_inscrever2").click(function(){
         $("#quer_inscrever_collapse").collapse('show');
     });
+
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 });
 
 
