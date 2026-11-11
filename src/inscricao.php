@@ -37,7 +37,7 @@ $db = new PdoDatabaseManager();
 <head>
   <title>
   	<?php
-    if($_REQUEST['modo']=='editar')
+    if(isset($_REQUEST['modo']) && $_REQUEST['modo']=='editar')
         echo("Editar ficha");
     else
         echo('Inscrição na catequese');
@@ -61,15 +61,197 @@ $menu->renderHTML();
 
 	<?php
 
-    if($_REQUEST['modo']=='editar')
+    $cid = null;
+    $nome = "";
+    $data_nasc = "";
+    $local_nasc = "";
+    $num_irmaos = "0";
+    $morada = "";
+    $cod_postal = "";
+    $telefone = "";
+    $telemovel = "";
+    $nif = "";
+    $escuteiro = "Nao";
+    $enc_edu = "Mae";
+    $outro_enc_edu_quem = "";
+    $nome_enc_edu = "";
+    $prof_enc_edu = "";
+    $pai = "";
+    $prof_pai = "";
+    $mae = "";
+    $prof_mae = "";
+    $casados = "Nao";
+    $casados_como = "";
+    $email = "";
+    $autorizacao = "";
+    $RGPD_assinado = "";
+    $foto = "";
+    $foto_data_base64 = "";
+
+    if(isset($_REQUEST['modo']) && $_REQUEST['modo']=='editar')
     {
         echo("<h2>Editar ficha</h2>");
 
-        if(!Authenticator::isAdmin() && !catechumen_belongs_to_catechist($_SESSION['cid'], Authenticator::getUsername()))
+        $cid = isset($_REQUEST['cid']) ? intval(Utils::sanitizeInput($_REQUEST['cid'])) : 0;
+
+        if(!$cid || $cid <= 0)
+        {
+            echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não foi especificado nenhum catequizando para editar.</div>");
+            echo("</div></body></html>");
+            die();
+        }
+
+        if(!Authenticator::isAdmin() && !catechumen_belongs_to_catechist($cid, Authenticator::getUsername()))
         {
             echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder a este recurso.</div>");
             echo("</div></body></html>");
             die();
+        }
+
+        $catechumen = null;
+        try
+        {
+            $catechumen = $db->getCatechumenById($cid);
+        }
+        catch(Exception $e)
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+            echo("</div></body></html>");
+            die();
+        }
+
+        if(!$catechumen)
+        {
+            echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Falha ao tentar aceder à ficha do catequizando.</div>");
+            echo("</div></body></html>");
+            die();
+        }
+
+        $nome = Utils::sanitizeOutput($catechumen['nome']);
+        $data_nasc = $catechumen['data_nasc'] ? date("d-m-Y", strtotime($catechumen['data_nasc'])) : "";
+        $nif = intval($catechumen['nif']);
+        if ($nif == 0) $nif = "";
+        $local_nasc = Utils::sanitizeOutput($catechumen['local_nasc']);
+        $num_irmaos = intval($catechumen['num_irmaos']);
+        $escuteiro = Utils::sanitizeOutput($catechumen['escuteiro']);
+        $autorizacao = Utils::sanitizeOutput($catechumen['autorizou_fotos']);
+        $foto = Utils::sanitizeOutput($catechumen['foto']);
+
+        $fid_pai = (isset($catechumen['pai'])) ? intval($catechumen['pai']) : null;
+        $fid_mae = (isset($catechumen['mae'])) ? intval($catechumen['mae']) : null;
+        $fid_ee = intval($catechumen['enc_edu']);
+        $enc_edu_quem = Utils::sanitizeOutput($catechumen['enc_edu_quem']);
+
+        if(!is_null($fid_pai))
+        {
+            try
+            {
+                $father = $db->getFamilyMember($fid_pai);
+                if($father)
+                {
+                    $pai = Utils::sanitizeOutput($father['nome']);
+                    $prof_pai = Utils::sanitizeOutput($father['prof']);
+                }
+            }
+            catch(Exception $e)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                echo("</div></body></html>");
+                die();
+            }
+        }
+
+        if(!is_null($fid_mae))
+        {
+            try
+            {
+                $mother = $db->getFamilyMember($fid_mae);
+                if($mother)
+                {
+                    $mae = Utils::sanitizeOutput($mother['nome']);
+                    $prof_mae = Utils::sanitizeOutput($mother['prof']);
+                }
+            }
+            catch(Exception $e)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                echo("</div></body></html>");
+                die();
+            }
+        }
+
+        if(!is_null($fid_mae) && !is_null($fid_pai))
+        {
+            try
+            {
+                $marriage = $db->getMarriageInformation($fid_mae, $fid_pai);
+                if($marriage)
+                {
+                    $casados = "Sim";
+                    $casados_como = Utils::sanitizeOutput($marriage['como']);
+                }
+                else
+                {
+                    $casados = "Não";
+                }
+            }
+            catch(Exception $e)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                echo("</div></body></html>");
+                die();
+            }
+        }
+
+        if($fid_ee)
+        {
+            try
+            {
+                $responsible = $db->getFamilyMember($fid_ee);
+                if($responsible)
+                {
+                    $nome_ee = Utils::sanitizeOutput($responsible['nome']);
+                    $prof_ee = Utils::sanitizeOutput($responsible['prof']);
+                    $morada = Utils::sanitizeOutput($responsible['morada']);
+                    $cod_postal = Utils::sanitizeOutput($responsible['cod_postal']);
+                    $telefone = Utils::sanitizeOutput($responsible['telefone']);
+                    $telemovel = Utils::sanitizeOutput($responsible['telemovel']);
+                    $email = Utils::sanitizeOutput($responsible['email']);
+                    $rgpd_val = intval($responsible['RGPD_assinado']);
+                    $RGPD_assinado = (!is_null($rgpd_val) && $rgpd_val == 1);
+                }
+            }
+            catch(Exception $e)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                echo("</div></body></html>");
+                die();
+            }
+        }
+
+        if($fid_ee == $fid_pai && !is_null($fid_pai))
+        {
+            $enc_edu = "Pai";
+            $nome_enc_edu = "";
+            $prof_enc_edu = "";
+        }
+        else if($fid_ee == $fid_mae && !is_null($fid_mae))
+        {
+            $enc_edu = "Mae";
+            $nome_enc_edu = "";
+            $prof_enc_edu = "";
+        }
+        else
+        {
+            $enc_edu = "Outro";
+            $outro_enc_edu_quem = $enc_edu_quem;
+            $nome_enc_edu = isset($nome_ee) ? $nome_ee : "";
+            $prof_enc_edu = isset($prof_ee) ? $prof_ee : "";
+        }
+
+        if($foto != "" && file_exists(UserData::getCatechumensPhotosFolder() . '/' . $foto))
+        {
+            $foto_data_base64 = base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $foto));
         }
     }
     else
@@ -82,6 +264,183 @@ $menu->renderHTML();
             echo("</div></body></html>");
             die();
         }
+
+        if(isset($_REQUEST['modo']) && $_REQUEST['modo']=='regresso')
+        {
+            $nome = isset($_SESSION['nome']) ? $_SESSION['nome'] : "";
+            $data_nasc = isset($_SESSION['data_nasc']) ? $_SESSION['data_nasc'] : "";
+            $local_nasc = isset($_SESSION['local_nasc']) ? $_SESSION['local_nasc'] : "";
+            $num_irmaos = isset($_SESSION['num_irmaos']) ? $_SESSION['num_irmaos'] : "0";
+            $morada = isset($_SESSION['morada']) ? $_SESSION['morada'] : "";
+            $cod_postal = isset($_SESSION['cod_postal']) ? $_SESSION['cod_postal'] : "";
+            $telefone = isset($_SESSION['telefone']) ? $_SESSION['telefone'] : "";
+            $telemovel = isset($_SESSION['telemovel']) ? $_SESSION['telemovel'] : "";
+            $nif = isset($_SESSION['nif']) ? $_SESSION['nif'] : "";
+            $escuteiro = isset($_SESSION['escuteiro']) ? $_SESSION['escuteiro'] : "Nao";
+            $enc_edu = isset($_SESSION['enc_edu']) ? $_SESSION['enc_edu'] : "Mae";
+            $outro_enc_edu_quem = isset($_SESSION['outro_enc_edu_quem']) ? $_SESSION['outro_enc_edu_quem'] : "";
+            $nome_enc_edu = isset($_SESSION['nome_enc_edu']) ? $_SESSION['nome_enc_edu'] : "";
+            $prof_enc_edu = isset($_SESSION['prof_enc_edu']) ? $_SESSION['prof_enc_edu'] : "";
+            $pai = isset($_SESSION['pai']) ? $_SESSION['pai'] : "";
+            $prof_pai = isset($_SESSION['prof_pai']) ? $_SESSION['prof_pai'] : "";
+            $mae = isset($_SESSION['mae']) ? $_SESSION['mae'] : "";
+            $prof_mae = isset($_SESSION['prof_mae']) ? $_SESSION['prof_mae'] : "";
+            $casados = isset($_SESSION['casados']) ? $_SESSION['casados'] : "Nao";
+            $casados_como = isset($_SESSION['casados_como']) ? $_SESSION['casados_como'] : "igreja";
+            $email = isset($_SESSION['email']) ? $_SESSION['email'] : "";
+            $autorizacao = isset($_SESSION['autorizacao']) ? $_SESSION['autorizacao'] : "";
+            $RGPD_assinado = isset($_SESSION['RGPD_assinado']) ? $_SESSION['RGPD_assinado'] : "";
+            $foto = isset($_SESSION['foto']) ? $_SESSION['foto'] : (isset($_SESSION['foto_cam']) ? $_SESSION['foto_cam'] : "");
+            if($foto != "" && file_exists(UserData::getCatechumensPhotosFolder() . '/' . $foto))
+            {
+                $foto_data_base64 = base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $foto));
+            }
+        }
+        else if(isset($_REQUEST['modo']) && $_REQUEST['modo']=='irmao')
+        {
+            $cid = isset($_REQUEST['cid']) ? intval(Utils::sanitizeInput($_REQUEST['cid'])) : 0;
+
+            if(!$cid || $cid <= 0)
+            {
+                echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não foi especificado nenhum catequizando para copiar os dados do irmão.</div>");
+                echo("</div></body></html>");
+                die();
+            }
+
+            $catechumen = null;
+            try
+            {
+                $catechumen = $db->getCatechumenById($cid);
+            }
+            catch(Exception $e)
+            {
+                echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                echo("</div></body></html>");
+                die();
+            }
+
+            if(!$catechumen)
+            {
+                echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Falha ao tentar aceder à ficha do catequizando.</div>");
+                echo("</div></body></html>");
+                die();
+            }
+
+            $num_irmaos = intval($catechumen['num_irmaos']);
+            $autorizacao = Utils::sanitizeOutput($catechumen['autorizou_fotos']);
+
+            $fid_pai = (isset($catechumen['pai'])) ? intval($catechumen['pai']) : null;
+            $fid_mae = (isset($catechumen['mae'])) ? intval($catechumen['mae']) : null;
+            $fid_ee = intval($catechumen['enc_edu']);
+            $enc_edu_quem = Utils::sanitizeOutput($catechumen['enc_edu_quem']);
+
+            if(!is_null($fid_pai))
+            {
+                try
+                {
+                    $father = $db->getFamilyMember($fid_pai);
+                    if($father)
+                    {
+                        $pai = Utils::sanitizeOutput($father['nome']);
+                        $prof_pai = Utils::sanitizeOutput($father['prof']);
+                    }
+                }
+                catch(Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                    echo("</div></body></html>");
+                    die();
+                }
+            }
+
+            if(!is_null($fid_mae))
+            {
+                try
+                {
+                    $mother = $db->getFamilyMember($fid_mae);
+                    if($mother)
+                    {
+                        $mae = Utils::sanitizeOutput($mother['nome']);
+                        $prof_mae = Utils::sanitizeOutput($mother['prof']);
+                    }
+                }
+                catch(Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                    echo("</div></body></html>");
+                    die();
+                }
+            }
+
+            if(!is_null($fid_mae) && !is_null($fid_pai))
+            {
+                try
+                {
+                    $marriage = $db->getMarriageInformation($fid_mae, $fid_pai);
+                    if($marriage)
+                    {
+                        $casados = "Sim";
+                        $casados_como = Utils::sanitizeOutput($marriage['como']);
+                    }
+                    else
+                    {
+                        $casados = "Não";
+                    }
+                }
+                catch(Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                    echo("</div></body></html>");
+                    die();
+                }
+            }
+
+            if($fid_ee)
+            {
+                try
+                {
+                    $responsible = $db->getFamilyMember($fid_ee);
+                    if($responsible)
+                    {
+                        $nome_ee = Utils::sanitizeOutput($responsible['nome']);
+                        $prof_ee = Utils::sanitizeOutput($responsible['prof']);
+                        $morada = Utils::sanitizeOutput($responsible['morada']);
+                        $cod_postal = Utils::sanitizeOutput($responsible['cod_postal']);
+                        $telefone = Utils::sanitizeOutput($responsible['telefone']);
+                        $telemovel = Utils::sanitizeOutput($responsible['telemovel']);
+                        $email = Utils::sanitizeOutput($responsible['email']);
+                        $rgpd_val = intval($responsible['RGPD_assinado']);
+                        $RGPD_assinado = (!is_null($rgpd_val) && $rgpd_val == 1);
+                    }
+                }
+                catch(Exception $e)
+                {
+                    echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> " . $e->getMessage() . "</div>");
+                    echo("</div></body></html>");
+                    die();
+                }
+            }
+
+            if($fid_ee == $fid_pai && !is_null($fid_pai))
+            {
+                $enc_edu = "Pai";
+                $nome_enc_edu = "";
+                $prof_enc_edu = "";
+            }
+            else if($fid_ee == $fid_mae && !is_null($fid_mae))
+            {
+                $enc_edu = "Mae";
+                $nome_enc_edu = "";
+                $prof_enc_edu = "";
+            }
+            else if($fid_ee)
+            {
+                $enc_edu = "Outro";
+                $outro_enc_edu_quem = $enc_edu_quem;
+                $nome_enc_edu = isset($nome_ee) ? $nome_ee : "";
+                $prof_enc_edu = isset($prof_ee) ? $prof_ee : "";
+            }
+        }
     }
   	?>
 
@@ -89,7 +448,7 @@ $menu->renderHTML();
   <div class="container">
 
 
-<form role="form" onsubmit="return validar();" action="processarInscricao.php<?php if($_REQUEST['modo']=='editar'){ echo('?modo=editar');}?>" method="post">
+<form role="form" onsubmit="return validar();" action="processarInscricao.php<?php if(isset($_REQUEST['modo']) && $_REQUEST['modo']=='editar'){ echo('?modo=editar&cid=' . $cid);}?>" method="post">
 
   <div class="panel panel-default" id="painel_ficha">
    <div class="panel-body">
@@ -97,13 +456,13 @@ $menu->renderHTML();
 
 
   <div class="img-thumbnail pull-right" id="div_camara">
-  	<img src="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo("resources/catechumenPhoto.php?foto_name=" . $_SESSION['foto'] ); else echo("img/default-user-icon-profile.png");?>" class=""  alt="Foto do catequizando" width="240" height="240">
+  	<img src="<?php if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo("resources/catechumenPhoto.php?foto_name=" . $foto ); else echo("img/default-user-icon-profile.png");?>" class=""  alt="Foto do catequizando" width="240" height="240">
   </div>
   <div class="clearfix" style="margin-bottom: 10px;"></div>
 
   <div class="btn-group pull-right">
-  	<button type="button" class="btn btn-default" id="btn_cancelar" onclick="cancela_camara()" style="display:none;"><span class="glyphicon glyphicon-remove-circle"></span> <?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo("Repor"); else echo("Cancelar");?></button>
-  	<button type="button" class="btn btn-default" id="btn_limpa" onclick="limpa_foto()" style="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(''); else echo('display:none;')?>"><span class="glyphicon glyphicon-trash"></span> Remover foto</button>
+  	<button type="button" class="btn btn-default" id="btn_cancelar" onclick="cancela_camara()" style="display:none;"><span class="glyphicon glyphicon-remove-circle"></span> <?php if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo("Repor"); else echo("Cancelar");?></button>
+  	<button type="button" class="btn btn-default" id="btn_limpa" onclick="limpa_foto()" style="<?php if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo(''); else echo('display:none;')?>"><span class="glyphicon glyphicon-trash"></span> Remover foto</button>
     <button type="button" class="btn btn-default" id="btn_configurar" onclick="Webcam.configure()" style="display:none;"><span class="glyphicon glyphicon-wrench"></span> Configurar</button>
   	<button type="button" class="btn btn-default" id="btn_reiniciar" onclick="reiniciar_camara()" style="display:none;"><span class="glyphicon glyphicon-repeat"></span> Reiniciar</button>
   	<button type="button" class="btn btn-default" id="btn_foto" onclick="prepara_camara()"><span class="glyphicon glyphicon-camera"></span> Tirar foto</button>
@@ -121,7 +480,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-6">
       <label for="nome">Nome:</label>
-      <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" onchange="verifica_catequizando_inscrito()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nome'] . '');} else {echo('');} ?>" required>
+      <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" onchange="verifica_catequizando_inscrito()" value="<?php  if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar')){ echo('' . $nome . '');} else {echo('');} ?>" required>
       <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
     </div>
     </div>
@@ -133,7 +492,7 @@ $menu->renderHTML();
      <div class="input-append date" id="data_nasc_div" data-date="" data-date-format="dd-mm-yyyy">
       <label for="data_nasc">Nasceu a:</label>
       <!--<div class="input-group">-->
-      <input class="form-control" id="data_nasc" name="data_nasc" size="16" type="text" onclick="verifica_data_nasc()" onchange="verifica_data_nasc()" placeholder="dd-mm-aaaa" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['data_nasc'] . '');} else {echo('');} ?>"  required>
+      <input class="form-control" id="data_nasc" name="data_nasc" size="16" type="text" onclick="verifica_data_nasc()" onchange="verifica_data_nasc()" placeholder="dd-mm-aaaa" value="<?php  if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar')){ echo('' . $data_nasc . '');} else {echo('');} ?>"  required>
       <!--<span class="input-group-addon glyphicon glyphicon-calendar" id="sizing-addon2"></span>
       </div>-->
       <span id="erro_nasc_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
@@ -146,7 +505,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-3">
       <label for="localidade">Em:</label>
-      <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" list="locais_nascimento" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['local_nasc'] . '');} else {echo('');} ?>" required>
+      <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" list="locais_nascimento" value="<?php  if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar')){ echo('' . $local_nasc . '');} else {echo('');} ?>" required>
     </div>
     </div>
 
@@ -155,7 +514,7 @@ $menu->renderHTML();
     <div class="col-xs-1">
     <div id="num_irmaos_div">
       <label for="num_irmaos">Irmãos:</label>
-      <input type="number" min=0 class="form-control" id="num_irmaos" name="num_irmaos" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['num_irmaos'] . '');} else {echo('0');} ?>">
+      <input type="number" min=0 class="form-control" id="num_irmaos" name="num_irmaos" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $num_irmaos . '');} else {echo('0');} ?>">
     </div>
     </div>   
     <div class="clearfix"></div>
@@ -167,7 +526,7 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-12">
       <label for="morada">Morada:</label>
-      <input type="text" class="form-control" id="morada" name="morada" placeholder="Morada do encarregado de educação" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['morada'] . '');} else {echo('');} ?>" required>
+      <input type="text" class="form-control" id="morada" name="morada" placeholder="Morada do encarregado de educação" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $morada . '');} else {echo('');} ?>" required>
     </div>
     </div>
 
@@ -180,7 +539,7 @@ $menu->renderHTML();
         <div class="col-xs-4">
             <div id="codigo_postal_div">
                 <label for="codigo_postal">Código postal:</label>
-                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['cod_postal'] . '');} else {echo('');} ?>" required>
+                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $cod_postal . '');} else {echo('');} ?>" required>
                 <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
         </div>
@@ -189,7 +548,7 @@ $menu->renderHTML();
         <div class="col-xs-2">
             <div id="telefone_div">
               <label for="tel">Telefone:</label>
-              <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone'] . '');} else {echo('');} ?>">
+              <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone . '');} else {echo('');} ?>">
               <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
         </div>
@@ -198,7 +557,7 @@ $menu->renderHTML();
         <div class="col-xs-2">
             <div id="telemovel_div">
               <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-              <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel'] . '');} else {echo('');} ?>">
+              <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel . '');} else {echo('');} ?>">
               <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
         </div>
@@ -208,7 +567,7 @@ $menu->renderHTML();
         <div class="col-xs-2">
             <div id="nif_div">
                 <label for="nif">NIF:</label>
-                <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nif'] . '');} else {echo('');} ?>" required>
+                <input type="text" class="form-control" id="nif" name="nif" placeholder="NIF do catequizando" onclick="verifica_nif()" onchange="verifica_nif()" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $nif . '');} else {echo('');} ?>" required>
                 <span id="erro_nif_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
             <div class="clearfix"></div>
@@ -224,8 +583,8 @@ $menu->renderHTML();
     <div class="col-xs-8">
     <div class="row" style="margin-top:20px; "></div>
     	<label for="e_escuteiro">É escuteiro(a):</label>
-    	<label class="radio-inline"><input type="radio" name="escuteiro" value="Sim" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && ($_SESSION['escuteiro']=='Sim' || $_SESSION['escuteiro']==1)){ echo('checked');} ?>>Sim</label>
-	<label class="radio-inline"><input type="radio" name="escuteiro" value="Nao" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['escuteiro']!='Sim' && $_SESSION['escuteiro']!=1)){ echo('checked');} ?>>Não</label>
+    	<label class="radio-inline"><input type="radio" name="escuteiro" value="Sim" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && ($escuteiro=='Sim' || $escuteiro==1)){ echo('checked');} ?>>Sim</label>
+	<label class="radio-inline"><input type="radio" name="escuteiro" value="Nao" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $escuteiro!='Sim' && $escuteiro!=1)){ echo('checked');} ?>>Não</label>
     </div>
     <div class="clearfix"></div>
     </div>
@@ -323,19 +682,19 @@ $menu->renderHTML();
     <div class="col-xs-8">
         <div class="row" style="margin-top:20px; "></div>
     	<label for="encarregado educacao">Encarregado de educação:</label>
-    	<label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Pai'){ echo('checked');} ?>>Pai</label>
-	    <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Mae')){ echo('checked');} ?>>Mãe</label>
-	    <label class="radio-inline"><input type="radio" id="enc_edu3" name="enc_edu" value="Outro" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Outro'){ echo('checked');} ?>>Outro</label>
+    	<label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Pai'){ echo('checked');} ?>>Pai</label>
+	    <label class="radio-inline"><input type="radio" id="enc_edu2" name="enc_edu" value="Mae" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if((!isset($_REQUEST['modo']) || !in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) || ((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Mae')){ echo('checked');} ?>>Mãe</label>
+	    <label class="radio-inline"><input type="radio" id="enc_edu3" name="enc_edu" value="Outro" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Outro'){ echo('checked');} ?>>Outro</label>
     </div>
     <div class="clearfix"></div>
     </div>
 
 
     <!--outro encarregado educacao quem-->
-    <div class="form-group collapse <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && $_SESSION['enc_edu']=='Outro'){ echo('in');} ?>" id="encarregado_educacao_collapse">
+    <div class="form-group collapse <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Outro'){ echo('in');} ?>" id="encarregado_educacao_collapse">
     <div class="col-xs-2">
       <label for="outro_enc_edu_quem"> Parentesco:</label>
-      <input type="text" class="form-control" id="outro_enc_edu_quem" name="outro_enc_edu_quem" placeholder="Ex: Avó" list="parentesco" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['outro_enc_edu_quem'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="outro_enc_edu_quem" name="outro_enc_edu_quem" placeholder="Ex: Avó" list="parentesco" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $outro_enc_edu_quem . '');} else {echo('');} ?>">
     </div>
     <datalist id='parentesco'>
     	<option value='Avô'>
@@ -347,13 +706,13 @@ $menu->renderHTML();
     <!--outro encarregado educacao nome-->
     <div class="col-xs-6">
       <label for="nome_end_edu"> Nome:</label>
-      <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" list="familiares" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['nome_enc_edu'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $nome_enc_edu . '');} else {echo('');} ?>">
     </div>
 
    <!--outro encarregado educacao profissao-->
     <div class="col-xs-4">
       <label for="prof_enc_edu"> Profissão:</label>
-      <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" list="profissoes" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_enc_edu'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $prof_enc_edu . '');} else {echo('');} ?>">
     </div>
     </div>
     <div class="clearfix"></div>
@@ -368,13 +727,13 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-8">
       <label for="pai">Pai:</label>
-      <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai" list="familiares" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['pai'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $pai . '');} else {echo('');} ?>">
     </div>
 
     <!--profissao pai-->
     <div class="col-xs-4">
       <label for="prof_pai">Profissão:</label>
-      <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" list="profissoes" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_pai'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_pai . '');} else {echo('');} ?>">
     </div>
     </div>
 
@@ -384,13 +743,13 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-8">
       <label for="mae">Mãe:</label>
-      <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" list="familiares" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['mae'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $mae . '');} else {echo('');} ?>">
     </div>
 
     <!--profissao mae-->
     <div class="col-xs-4">
       <label for="prof_mae">Profissão:</label>
-      <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" list="profissoes" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_mae'] . '');} else {echo('');} ?>">
+      <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_mae . '');} else {echo('');} ?>">
     </div>
     <div class="clearfix"></div>
     </div>
@@ -401,20 +760,20 @@ $menu->renderHTML();
     <div class="form-group">
     <div class="col-xs-8">
     	<label for="casados">Casados:</label>
-    	<label class="radio-inline"><input type="radio" id="casados1" name="casados" value="Sim" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados']=='Sim'){ echo('checked');} ?>>Sim</label>
-	<label class="radio-inline"><input type="radio" id="casados2" name="casados" value="Nao" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='irmao' && $_REQUEST['modo']!='editar') || (($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados']!='Sim')){ echo('checked');} ?>>Não</label>
+    	<label class="radio-inline"><input type="radio" id="casados1" name="casados" value="Sim" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados=='Sim'){ echo('checked');} ?>>Sim</label>
+	<label class="radio-inline"><input type="radio" id="casados2" name="casados" value="Nao" <?php  if((!isset($_REQUEST['modo']) || !in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) || ((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados!='Sim')){ echo('checked');} ?>>Não</label>
     </div>
     <div class="clearfix"></div>
     </div>
 
 
      <!--casados como-->
-    <div class="form-group collapse <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados']=='Sim'){ echo('in');} ?>" id="casados_como">
+    <div class="form-group collapse <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados=='Sim'){ echo('in');} ?>" id="casados_como">
     <div class="col-xs-8">
     	<label for="casados_como">Se respondeu <i>Sim</i> indique:</label>
-    	<label class="radio-inline"><input type="radio" name="casados_como" value="igreja" <?php  if(($_REQUEST['modo']!='regresso' && $_REQUEST['modo']!='irmao' &&  $_REQUEST['modo']=='editar') || ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados_como']=='igreja'){ echo('checked');} ?>>Igreja</label>
-	<label class="radio-inline"><input type="radio" name="casados_como" value="civil"  <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados_como']=='civil'){ echo('checked');} ?>>Civil</label>
-	<label class="radio-inline"><input type="radio" name="casados_como" value="uniao de facto" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='editar') && $_SESSION['casados_como']=='uniao de facto'){ echo('checked');} ?> >União de facto</label>
+    	<label class="radio-inline"><input type="radio" name="casados_como" value="igreja" <?php  if((!isset($_REQUEST['modo']) || !in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) || ((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados_como=='igreja')){ echo('checked');} ?>>Igreja</label>
+	<label class="radio-inline"><input type="radio" name="casados_como" value="civil"  <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados_como=='civil'){ echo('checked');} ?>>Civil</label>
+	<label class="radio-inline"><input type="radio" name="casados_como" value="uniao de facto" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados_como=='uniao de facto'){ echo('checked');} ?> >União de facto</label>
     </div>
     <div class="clearfix"></div>
     </div>
@@ -424,8 +783,8 @@ $menu->renderHTML();
      <!--email-->  
     <div class="form-group">
     <div class="col-xs-12">
-      <label for="email">Para que seja informado de notícias e actividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.<br>E-mail:</label>
-      <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['email'] . '');} else {echo('');} ?>">
+      <label for="email">Para que seja informado de notícias e atividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.<br>E-mail:</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $email . '');} else {echo('');} ?>">
     </div>
     <div class="clearfix"></div>
     </div>
@@ -434,22 +793,22 @@ $menu->renderHTML();
 
     <!--autoriza fotografias-->
     <div class="checkbox">
-      <label><input id="autorizacao" name="autorizacao" type="checkbox" <?php 	if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao') && ($_SESSION['autorizacao']=='on' || $_SESSION['autorizacao']==1)){ echo("checked");}?> > Autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das actividades catequéticas.</label>
+      <label><input id="autorizacao" name="autorizacao" type="checkbox" <?php 	if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['editar', 'regresso', 'irmao']) && ($autorizacao=='on' || $autorizacao==1 || $autorizacao=='Sim' || $autorizacao===true)){ echo("checked");}?> > Autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das actividades catequéticas.</label>
     </div>
     <!--<div class="row" style="margin-bottom:60px; "></div>-->
 
    <!--Consentimento tratamento de dados (RGPD)-->
    <div class="checkbox">
-       <label><input id="consentimento_rgpd" name="consentimento_rgpd" type="checkbox" <?php 	if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='irmao') && ($_SESSION['RGPD_assinado']=='on' || $_SESSION['RGPD_assinado']==1)){ echo("checked");}?> > Assinou e entregou o consentimento de tratamento de dados (RGPD).</label>
+       <label><input id="consentimento_rgpd" name="consentimento_rgpd" type="checkbox" <?php 	if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['editar', 'regresso', 'irmao']) && ($RGPD_assinado=='on' || $RGPD_assinado==1 || $RGPD_assinado===true)){ echo("checked");}?> > Assinou e entregou o consentimento de tratamento de dados (RGPD).</label>
    </div>
    <div class="row" style="margin-bottom:60px; "></div>
 
 
     <!-- fotografia tirada com webcam -->
-    <input type="hidden" id="foto_data" name="foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $_SESSION['foto'])));?>">
-    <input type="hidden" id="original_foto_data" name="original_foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(base64_encode(file_get_contents(UserData::getCatechumensPhotosFolder() . '/' . $_SESSION['foto'])));?>">
-        <input type="hidden" id="debug_foto" name="debug_foto" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo($_SESSION['foto']);?>">
-        <input type="hidden" id="debug_base64" name="debug_base64" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo(base64_encode('abcd'));?>">
+    <input type="hidden" id="foto_data" name="foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto_data_base64!="") echo($foto_data_base64);?>">
+    <input type="hidden" id="original_foto_data" name="original_foto_data" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto_data_base64!="") echo($foto_data_base64);?>">
+        <input type="hidden" id="debug_foto" name="debug_foto" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo($foto);?>">
+        <input type="hidden" id="debug_base64" name="debug_base64" value="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo(base64_encode('abcd'));?>">
 
 
     </div>
@@ -580,7 +939,7 @@ $menu->renderHTML();
 
 
     <?php 	if($_REQUEST['modo']=='editar')
-  			echo('<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="window.location.assign(\'mostrarFicha.php?cid=' . $_SESSION['cid'] . '\');"> Cancelar</button>');
+  			echo('<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="window.location.assign(\'mostrarFicha.php?cid=' . $cid . '\');"> Cancelar</button>');
   	?>
 
 
@@ -640,12 +999,12 @@ function prepara_camara()
 
 function cancela_camara()
 {
-  	document.getElementById('div_camara').innerHTML = "<img src=\"<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo("resources/catechumenPhoto.php?foto_name=" . $_SESSION['foto'] ); else echo("img/default-user-icon-profile.png");?>\" class=\"\"  alt=\"Foto do catequizando\" width=\"240\" height=\"240\">";
+  	document.getElementById('div_camara').innerHTML = "<img src=\"<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo("resources/catechumenPhoto.php?foto_name=" . $foto ); else echo("img/default-user-icon-profile.png");?>\" class=\"\"  alt=\"Foto do catequizando\" width=\"240\" height=\"240\">";
   	document.getElementById('btn_configurar').style.display="none";
     document.getElementById('btn_cancelar').style.display="none";
     document.getElementById('btn_dispara').style.display="none";
     document.getElementById('btn_reiniciar').style.display="none";
-    document.getElementById('btn_limpa').style.display="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $_SESSION['foto']!="") echo('inline'); else echo('none')?>";
+    document.getElementById('btn_limpa').style.display="<?php if(($_REQUEST['modo']=='editar' || $_REQUEST['modo']=='regresso') && $foto!="") echo('inline'); else echo('none')?>";
     document.getElementById('btn_foto').style.display="inline";
 
     document.getElementById('foto_data').value = document.getElementById('original_foto_data').value;

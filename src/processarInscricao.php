@@ -66,12 +66,13 @@ $menu->renderHTML();
   <?php
 
     $db = new PdoDatabaseManager();
+    $cid = isset($_REQUEST['cid']) ? intval(Utils::sanitizeInput($_REQUEST['cid'])) : 0;
 
 	if($_REQUEST['modo']=="editar")
 	{
 		echo("<h2>Actualização de dados</h2>");
 
-        if(!Authenticator::isAdmin() && !catechumen_belongs_to_catechist($_SESSION['cid'], Authenticator::getUsername()))
+        if(!Authenticator::isAdmin() && !catechumen_belongs_to_catechist($cid, Authenticator::getUsername()))
         {
             echo("<div class=\"alert alert-danger\"><strong>Erro!</strong> Não tem permissões para aceder a este recurso.</div>");
             echo("</div></body></html>");
@@ -95,10 +96,11 @@ $menu->renderHTML();
 	//Funcao para criar link de retorno em caso de erro
 	function abortar()
 	{
+		global $cid;
 		if($_REQUEST['modo']=="editar")
 		{
-			echo("<p><a href=\"inscricao.php?modo=editar\">Regressar à edição da ficha</a></p>");
-			echo("<p><a href=\"mostrarFicha.php?cid=" . $_SESSION['cid'] . "\">Cancelar edição</a></p>");		
+			echo("<p><a href=\"inscricao.php?modo=editar" . ($cid ? "&cid=" . $cid : "") . "\">Regressar à edição da ficha</a></p>");
+			echo("<p><a href=\"mostrarFicha.php?cid=" . $cid . "\">Cancelar edição</a></p>");		
 		
 		}
 		else
@@ -199,41 +201,44 @@ $menu->renderHTML();
 	  	
 	  		
 	  	//Guarda valores originais para poder regressar
-	  	$_SESSION['num_irmaos'] = $num_irmaos;
-	  	$_SESSION['morada'] = $morada;
-		$_SESSION['cod_postal'] = $codigo_postal;
-		$_SESSION['telefone'] = $telefone;
-		$_SESSION['telemovel'] = $telemovel;
-		$_SESSION['enc_edu'] = $enc_edu;
-		$_SESSION['outro_enc_edu_quem'] = $outro_enc_edu_quem;
-		$_SESSION['nome_enc_edu'] = $outro_enc_edu_nome;
-		$_SESSION['prof_enc_edu'] = $outro_enc_edu_prof;
-		$_SESSION['pai'] = $pai;
-		$_SESSION['prof_pai'] = $prof_pai;
-		$_SESSION['mae'] = $mae;
-		$_SESSION['prof_mae'] = $prof_mae;
-		$_SESSION['casados'] = $casados;
-		$_SESSION['casados_como'] = $casados_como;
-		$_SESSION['email'] = $email;
-		
-		$_SESSION['nome'] = $nome;
-        $_SESSION['data_nasc'] = $data_nasc;
-        $_SESSION['nif'] = $nif;
-		$_SESSION['local_nasc'] = $local_nasc;
-		$_SESSION['escuteiro'] = $escuteiro;
-		$_SESSION['baptizado'] = $baptizado;
-		$_SESSION['paroquia_baptismo'] = $paroquia_baptismo;
-		$_SESSION['data_baptismo'] = $data_baptismo;
-		$_SESSION['comunhao'] = $comunhao;
-		$_SESSION['paroquia_comunhao'] = $paroquia_comunhao;
-		$_SESSION['data_comunhao'] = $data_comunhao;
-		
-		$_SESSION['foto_cam'] = $foto_cam;
+        if($_REQUEST['modo']!="editar")
+        {
+            $_SESSION['num_irmaos'] = $num_irmaos;
+            $_SESSION['morada'] = $morada;
+            $_SESSION['cod_postal'] = $codigo_postal;
+            $_SESSION['telefone'] = $telefone;
+            $_SESSION['telemovel'] = $telemovel;
+            $_SESSION['enc_edu'] = $enc_edu;
+            $_SESSION['outro_enc_edu_quem'] = $outro_enc_edu_quem;
+            $_SESSION['nome_enc_edu'] = $outro_enc_edu_nome;
+            $_SESSION['prof_enc_edu'] = $outro_enc_edu_prof;
+            $_SESSION['pai'] = $pai;
+            $_SESSION['prof_pai'] = $prof_pai;
+            $_SESSION['mae'] = $mae;
+            $_SESSION['prof_mae'] = $prof_mae;
+            $_SESSION['casados'] = $casados;
+            $_SESSION['casados_como'] = $casados_como;
+            $_SESSION['email'] = $email;
 
-		$_SESSION['quer_inscrever'] = $quer_inscrever;
-		$_SESSION['catecismo'] = $catecismo;
-		$_SESSION['turma'] = $turma;
-		$_SESSION['pago'] = $pago;
+            $_SESSION['nome'] = $nome;
+            $_SESSION['data_nasc'] = $data_nasc;
+            $_SESSION['nif'] = $nif;
+            $_SESSION['local_nasc'] = $local_nasc;
+            $_SESSION['escuteiro'] = $escuteiro;
+            $_SESSION['baptizado'] = $baptizado;
+            $_SESSION['paroquia_baptismo'] = $paroquia_baptismo;
+            $_SESSION['data_baptismo'] = $data_baptismo;
+            $_SESSION['comunhao'] = $comunhao;
+            $_SESSION['paroquia_comunhao'] = $paroquia_comunhao;
+            $_SESSION['data_comunhao'] = $data_comunhao;
+
+            $_SESSION['foto_cam'] = $foto_cam;
+
+            $_SESSION['quer_inscrever'] = $quer_inscrever;
+            $_SESSION['catecismo'] = $catecismo;
+            $_SESSION['turma'] = $turma;
+            $_SESSION['pago'] = $pago;
+        }
  		
 		
 	  	
@@ -400,8 +405,7 @@ $menu->renderHTML();
 			//Modo edicao - obter dados do catequizando
 			try
             {
-                $request_cid = intval($_SESSION['cid']);
-                $result = $db->getCatechumenById($request_cid);
+                $result = $db->getCatechumenById($cid);
 
 				if(isset($result))
                 {
@@ -470,7 +474,7 @@ $menu->renderHTML();
 					{
 						if($db->updateFamilyMemberJob($fid_pai, $prof_pai))
 						{
-                            catechumenFileLog($_SESSION['cid'], "Actualizados dados do pai do catequizando com id=" . $_SESSION['cid'] . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+                            catechumenFileLog($cid, "Actualizados dados do pai do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                             echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Os dados do pai foram automaticamente actualizados nas fichas de todos os filhos.</div>");
 						}
 						else
@@ -494,7 +498,7 @@ $menu->renderHTML();
             {
 				if($db->updateFamilyMemberName($fid_pai, $pai) && $db->updateFamilyMemberJob($fid_pai, $prof_pai))
 				{
-				    catechumenFileLog($_SESSION['cid'], "Actualizados dados do pai do catequizando com id=" . $_SESSION['cid'] . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+				    catechumenFileLog($cid, "Actualizados dados do pai do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
 				    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados do pai foram automaticamente actualizados nas fichas de todos os filhos.</div>");
 				}
 				else
@@ -512,7 +516,7 @@ $menu->renderHTML();
 		else if($_REQUEST['modo']=="editar" && (!$pai || $pai=="") && $fid_pai_old)	//Modo edicao - apagou pai
 		{
 			$fid_pai = NULL;
-			catechumenFileLog($_SESSION['cid'], "Removidos dados do pai do catequizando com id=" . $_SESSION['cid'] . ".");
+			catechumenFileLog($cid, "Removidos dados do pai do catequizando com id=" . $cid . ".");
 		}
 		
 		
@@ -563,7 +567,7 @@ $menu->renderHTML();
 					{
 						if($db->updateFamilyMemberJob($fid_mae, $prof_mae))
 						{
-                            catechumenFileLog($_SESSION['cid'], "Actualizados dados da mãe do catequizando com id=" . $_SESSION['cid'] . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+                            catechumenFileLog($cid, "Actualizados dados da mãe do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                             echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Os dados da mãe foram automaticamente actualizados nas fichas de todos os filhos.</div>");
 						}else
                         {
@@ -586,7 +590,7 @@ $menu->renderHTML();
             {
 				if($db->updateFamilyMemberName($fid_mae, $mae) && $db->updateFamilyMemberJob($fid_mae, $prof_mae))
 				{
-				    catechumenFileLog($_SESSION['cid'], "Actualizados dados da mãe do catequizando com id=" . $_SESSION['cid'] . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+				    catechumenFileLog($cid, "Actualizados dados da mãe do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
 				    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados da mãe foram automaticamente actualizados nas fichas de todos os filhos.</div>");
 				}
 				else
@@ -604,7 +608,7 @@ $menu->renderHTML();
 		else if($_REQUEST['modo']=="editar" && (!$mae || $mae=="") && $fid_mae_old)	//Modo edicao - apagou mae
 		{
 			$fid_mae = NULL;
-			catechumenFileLog($_SESSION['cid'], "Removidos dados da mãe do catequizando com id=" . $_SESSION['cid'] . ".");
+			catechumenFileLog($cid, "Removidos dados da mãe do catequizando com id=" . $cid . ".");
 		}
 		
 		
@@ -648,7 +652,7 @@ $menu->renderHTML();
                 {
                     if ($marriageAction == "remove")
                     {
-                        catechumenFileLog($_SESSION['cid'], "Removido registo de casamento dos pais do catequizando com id=" . $_SESSION['cid'] . " (familiares com ID " . $fid_pai_old . " e " . $fid_mae_old . "). As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+                        catechumenFileLog($cid, "Removido registo de casamento dos pais do catequizando com id=" . $cid . " (familiares com ID " . $fid_pai_old . " e " . $fid_mae_old . "). As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                         echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Registo de casamento eliminado.</div>");
                     }
                 }
@@ -675,12 +679,11 @@ $menu->renderHTML();
                 {
                     if($marriageAction == "add")
                     {
-                        catechumenFileLog($_SESSION['cid'], "Adicionado registo de casamento dos familiares com ID " . $fid_mae . " e " . $fid_pai . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
-                        //Note: $_SESSION['cid'] is not defined when we are making or approving a new enrollment, so this log message will not be linked to the catechumen file.
+                        catechumenFileLog($cid, "Adicionado registo de casamento dos familiares com ID " . $fid_mae . " e " . $fid_pai . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                     }
                     else
                     {
-                        catechumenFileLog($_SESSION['cid'], "Modificado o tipo de registo de casamento dos familiares com ID " . $fid_mae . " e " . $fid_pai . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+                        catechumenFileLog($cid, "Modificado o tipo de registo de casamento dos familiares com ID " . $fid_mae . " e " . $fid_pai . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                         echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Modificado o tipo de registo de casamento.</div>");
                     }
                 }
@@ -791,7 +794,7 @@ $menu->renderHTML();
 					    		echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Os dados do encarregado de educação foram automaticamente actualizados nas fichas de todos os filhos e educandos.</div>");
 					    	
 					    		if($_REQUEST['modo']=="editar")
-					    			catechumenFileLog($_SESSION['cid'], "Actualizados dados do encarregado de educação do catequizando com id=" . $_SESSION['cid'] . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
+					    			catechumenFileLog($cid, "Actualizados dados do encarregado de educação do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                         }
 					}
 					else
@@ -820,12 +823,10 @@ $menu->renderHTML();
 			if($_REQUEST['modo']=="editar")
             {
                 //Atualizar ficha
-                if($db->updateCatechumen($_SESSION['cid'], $nome, $data_nasc, $local_nasc, $nif, $fid_pai, $fid_mae, $fid_ee,
+                if($db->updateCatechumen($cid, $nome, $data_nasc, $local_nasc, $nif, $fid_pai, $fid_mae, $fid_ee,
                                         $outro_enc_edu_quem, $foto_cam, $num_irmaos, $escuteiro, $autorizacao_fotos))
                 {
-                    $cid = $_SESSION['cid'];
-
-                    catechumenFileLog($_SESSION['cid'], "Actualizada ficha do catequizando com id=" . $_SESSION['cid'] . ".");
+                    catechumenFileLog($cid, "Actualizada ficha do catequizando com id=" . $cid . ".");
                     echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Ficha de $nome actualizada!</div>");
                 }
                 else
@@ -1117,7 +1118,7 @@ $menu->renderHTML();
 		echo("<p><a href=\"inscricao.php\">Inscrever um novo catequizando</a></p>");
 
 		//Sugerir inscrever um irmao
-		echo("<p>Talvez queira <a href=\"inscricao.php?modo=irmao\">inscrever um irmão</a> deste catequizando.</p>");
+		echo("<p>Talvez queira <a href=\"inscricao.php?modo=irmao&cid=" . $cid . "\">inscrever um irmão</a> deste catequizando.</p>");
 	}
 	
 	//Link para a ficha

@@ -162,7 +162,9 @@ $menu->renderHTML();
             $catechumen = $db->getCatechumenById($cid);
 
             $nome = Utils::sanitizeOutput($catechumen['nome']);
+            $data_nasc_row = $catechumen['data_nasc'];
             $data_nasc = Utils::sanitizeOutput($catechumen['data_nasc']);
+            $data_nasc = $data_nasc ? date("d-m-Y", strtotime($data_nasc)) : "";
             $nif = intval($catechumen['nif']);
             $local_nasc = Utils::sanitizeOutput($catechumen['local_nasc']);
             $num_irmaos = intval($catechumen['num_irmaos']);
@@ -246,7 +248,6 @@ $menu->renderHTML();
                 }
 			}
 
-
 			
 			
 			//Obter dados do encarregado educacao
@@ -295,63 +296,6 @@ $menu->renderHTML();
 			
 			//Libertar recursos
 			$result = NULL;
-			
-			
-			//Passar dados para esta sessao
-			
-			$_SESSION['nome'] = $nome;
-			$_SESSION['data_nasc_row'] = $data_nasc;
-            $_SESSION['data_nasc'] = $data_nasc = date( "d-m-Y", strtotime($data_nasc));
-            $_SESSION['nif'] = $nif;
-			$_SESSION['local_nasc'] = $local_nasc;
-			$_SESSION['num_irmaos'] = $num_irmaos;
-			$_SESSION['escuteiro'] = $escuteiro;
-			$_SESSION['autorizacao'] = $autorizacao_fotos;
-			$_SESSION['fid_pai'] = $fid_pai;
-			$_SESSION['fid_mae'] = $fid_mae;
-			$_SESSION['fid_ee'] = $fid_ee;
-			$_SESSION['enc_edu_quem'] = $_SESSION['outro_enc_edu_quem'] = $enc_edu_quem;
-			$_SESSION['foto'] = $foto;
-			
-			$_SESSION['nome_pai'] = $_SESSION['pai'] = $nome_pai;
-			$_SESSION['prof_pai'] = $prof_pai;
-		
-			$_SESSION['nome_mae'] = $_SESSION['mae'] = $nome_mae;
-			$_SESSION['prof_mae'] = $prof_mae;
-			
-			$_SESSION['casados'] = $casados;
-			$_SESSION['casados_como'] = $casados_como;
-		
-			$_SESSION['nome_ee'] = $nome_ee;
-			$_SESSION['prof_ee'] = $_SESSION['prof_enc_edu'] = $prof_ee;
-			$_SESSION['morada'] = $morada;
-			$_SESSION['codigo_postal'] = $_SESSION['cod_postal'] = $codigo_postal;
-			$_SESSION['telefone'] = $telefone;
-			$_SESSION['telemovel'] = $telemovel;
-			$_SESSION['email'] = $email;
-            $_SESSION['RGPD_assinado'] = $rgpd_ee;
-
-			$_SESSION['cid'] = $cid;
-			
-			//Para compatibilidade com o codigo inscricao.php:
-			if($fid_ee==$fid_pai)
-			{
-				$_SESSION['enc_edu'] = "Pai";
-				$_SESSION['nome_enc_edu'] = "";
-				$_SESSION['prof_enc_edu'] = "";
-			}
-			else if($fid_ee==$fid_mae)
-			{
-				$_SESSION['enc_edu'] = "Mae";
-				$_SESSION['nome_enc_edu'] = "";
-				$_SESSION['prof_enc_edu'] = "";
-			}
-			else
-			{
-				$_SESSION['enc_edu'] = "Outro";
-				$_SESSION['nome_enc_edu'] = $nome_ee;
-				$_SESSION['prof_enc_edu'] = $prof_ee;
-			}
 		}
 		else
 		{
@@ -386,9 +330,9 @@ $menu->renderHTML();
   <div class="row" style="margin-top:20px; "></div>
     
   <ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a href="mostrarFicha.php?cid=<?php echo('' . $_SESSION['cid'] . ''); ?>">Ficha</a></li>
-  <li role="presentation"><a href="mostrarArquivo.php?cid=<?php echo('' . $_SESSION['cid'] . ''); ?>">Arquivo</a></li>
-  <li role="presentation"><a href="mostrarAutorizacoes.php?cid=<?php echo('' . $_SESSION['cid'] . ''); ?>">Autorizações</a></li>
+  <li role="presentation" class="active"><a href="mostrarFicha.php?cid=<?php echo('' . $cid . ''); ?>">Ficha</a></li>
+  <li role="presentation"><a href="mostrarArquivo.php?cid=<?php echo('' . $cid . ''); ?>">Arquivo</a></li>
+  <li role="presentation"><a href="mostrarAutorizacoes.php?cid=<?php echo('' . $cid . ''); ?>">Autorizações</a></li>
   </ul>
  
   </div>
@@ -422,7 +366,7 @@ $menu->renderHTML();
 	    <div class="col-xs-6">
 	      <label for="nome">Nome:</label>
 	      <input class="form-control" id="nome" name="nome" size="16" type="text" style="cursor: auto;" 
-	      	<?php if($_SESSION['nome']){ echo("value='" . $_SESSION['nome'] . "'");}?> readonly>
+	      	<?php if($nome){ echo("value='" . $nome . "'");}?> readonly>
 	    </div>
 	    
 	    	    
@@ -431,9 +375,9 @@ $menu->renderHTML();
 	      <label for="data_nasc">Nasceu a:</label>
 	      <input class="form-control" id="data_nasc" name="data_nasc" size="16" type="text" style="cursor: auto;" 
 	      	<?php 
-	      		if($_SESSION['data_nasc_row'])
+	      		if($data_nasc_row)
 	      		{
-	      			 echo("value='" . $_SESSION['data_nasc'] . "'");
+	      			 echo("value='" . $data_nasc . "'");
 	      		}
 	      	?> readonly>
 	     </div>    
@@ -444,7 +388,7 @@ $menu->renderHTML();
 	    <div class="col-xs-3">
 	      <label for="localidade">Em:</label>
 	      <input type="text" class="form-control" id="localidade" name="localidade" style="cursor: auto;" 
-	      	<?php if($_SESSION['local_nasc']){ echo("value='" . $_SESSION['local_nasc'] . "'");}?> readonly>
+	      	<?php if($local_nasc){ echo("value='" . $local_nasc . "'");}?> readonly>
 	    </div>
 	    
 	    
@@ -453,7 +397,7 @@ $menu->renderHTML();
 	    <div id="num_irmaos_div">
 	      <label for="num_irmaos">Irmãos:</label>
 	      <input type="text" min=0 class="form-control" id="num_irmaos" name="num_irmaos" style="cursor: auto;" 
-	      	<?php if($_SESSION['num_irmaos']){ echo("value='" . $_SESSION['num_irmaos'] . "'");} else {echo("value='0'");}?> readonly>
+	      	<?php if($num_irmaos){ echo("value='" . $num_irmaos . "'");} else {echo("value='0'");}?> readonly>
 	    </div>
 	    </div>   
 	    <div class="clearfix"></div>
@@ -466,7 +410,7 @@ $menu->renderHTML();
 	   <div class="form-group">
 	    <div class="col-xs-6">
 	    	<label for="e_escuteiro">É escuteiro(a):</label>
-	    	<span class="input-xlarge uneditable-input"> <?php if($_SESSION['escuteiro']==1){ echo("Sim");} else { echo("Não");}?> </span>
+	    	<span class="input-xlarge uneditable-input"> <?php if($escuteiro==1 || $escuteiro=='Sim'){ echo("Sim");} else { echo("Não");}?> </span>
 	    </div>
 	    <!--<div class="clearfix"></div>-->
 	    </div>
@@ -477,7 +421,7 @@ $menu->renderHTML();
 	    <div class="col-xs-2">
 	    	<label for="idade">Idade:</label><br>
 	    	<span class="input-xlarge uneditable-input">
-	    	<?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
+	    	<?= date_diff(date_create($data_nasc_row), date_create('today'))->y	?> anos
 	    	</span>
 	    </div>
        </div>
@@ -487,7 +431,7 @@ $menu->renderHTML();
        <div class="col-xs-3">
            <label for="nif">NIF:</label>
            <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
-               <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
+               <?php if($nif){ echo("value='" . $nif . "'");}?> readonly>
            <div class="clearfix"></div>
        </div>
        <?php } ?>
@@ -507,7 +451,7 @@ $menu->renderHTML();
 	    <div class="col-xs-12">
 	      <label for="morada">Morada:</label>
 	      <input type="text" class="form-control" id="morada" name="morada"  style="cursor: auto;" 
-	      	<?php if($_SESSION['morada']){ echo("value='" . $_SESSION['morada'] . "'");}?>  readonly>
+	      	<?php if($morada){ echo("value='" . $morada . "'");}?>  readonly>
 	    </div>
 	  
 	    
@@ -518,7 +462,7 @@ $menu->renderHTML();
 	    <div id="codigo_postal_div">
 	      <label for="codigo_postal">Código postal:</label>
 	      <input type="text" class="form-control" id="codigo_postal" name="codigo_postal"  style="cursor: auto;"
-	      	<?php if($_SESSION['codigo_postal']){ echo("value='" . $_SESSION['codigo_postal'] . "'");}?>  readonly>
+	      	<?php if($codigo_postal){ echo("value='" . $codigo_postal . "'");}?>  readonly>
 	    </div>
 	    </div>
 	    
@@ -530,8 +474,8 @@ $menu->renderHTML();
 	      <label for="tel">Telefone:</label>
 	      <div class="input-group">
 	      <input type="tel" class="form-control" id="telefone" name="telefone"  style="cursor: auto;" 
-	      	<?php if($_SESSION['telefone']){ echo("value='" . $_SESSION['telefone'] . "'");}?> readonly>
-	      <span class="input-group-addon no-print"><?php if($_SESSION['telefone']){ echo('<a href="tel:' . $_SESSION['telefone'] . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      	<?php if($telefone){ echo("value='" . $telefone . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone){ echo('<a href="tel:' . $telefone . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    </div>
@@ -544,8 +488,8 @@ $menu->renderHTML();
 	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <div class="input-group">
 	      <input type="tel" class="form-control" id="telemovel" name="telemovel"  style="cursor: auto;" 
-	      	<?php if($_SESSION['telemovel']){ echo("value='" . $_SESSION['telemovel'] . "'");}?> readonly>
-	      	<span class="input-group-addon no-print"><?php if($_SESSION['telemovel']){ echo('<a href="tel:' . $_SESSION['telemovel'] . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      	<?php if($telemovel){ echo("value='" . $telemovel . "'");}?> readonly>
+	      	<span class="input-group-addon no-print"><?php if($telemovel){ echo('<a href="tel:' . $telemovel . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    </div>   
@@ -561,17 +505,17 @@ $menu->renderHTML();
 	    	<label for="encarregado educacao">Encarregado de educação:</label>
 	    	<span class="input-xlarge uneditable-input">  
 	    		<?php 
-	    			if($_SESSION['fid_ee']==$_SESSION['fid_pai'])
+	    			if($fid_ee==$fid_pai)
 	    			{ 
 	    				echo("Pai");
 	    			}
-	    			else if($_SESSION['fid_ee']==$_SESSION['fid_mae'])
+	    			else if($fid_ee==$fid_mae)
 	    			{ 
 	    				echo("Mãe");
 	    			}
 	    			else
 	    			{
-	    				echo("" . $_SESSION['enc_edu_quem'] . "");
+	    				echo("" . $enc_edu_quem . "");
 	    			}
 	    			
 	    		?>
@@ -583,18 +527,18 @@ $menu->renderHTML();
 	    
 	    <?php
 	    	
-	    	if($_SESSION['fid_ee']!=$_SESSION['fid_pai'] && $_SESSION['fid_ee']!=$_SESSION['fid_mae'])
+	    	if($fid_ee!=$fid_pai && $fid_ee!=$fid_mae)
 	    	{
 	    
 	    		echo('<div class="col-xs-8">');
 	    		echo(' <label for="nome_end_edu"> Nome:</label>');
-	    		echo(' <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" style="cursor: auto;" value="' . $_SESSION['nome_ee'] . '" readonly>');
+	    		echo(' <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" style="cursor: auto;" value="' . $nome_ee . '" readonly>');
 		   	echo('</div>');
 		    
 		   
 		   	echo('<div class="col-xs-4">');
 		   	echo('  <label for="prof_enc_edu"> Profissão:</label>');
-		   	echo('  <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" style="cursor: auto;"  value="' . $_SESSION['prof_ee'] . '" readonly>');
+		   	echo('  <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" style="cursor: auto;"  value="' . $prof_ee . '" readonly>');
 		   	echo('</div>');
 		   	echo('<div class="clearfix"></div>');
 	    
@@ -609,8 +553,8 @@ $menu->renderHTML();
 	      <label for="email">E-mail:</label>
 	      <div class="input-group">
 	      <input type="email" class="form-control" id="email" name="email"  style="cursor: auto;" 
-	      	<?php if($_SESSION['email']){ echo("value='" . $_SESSION['email'] . "'");}?> readonly>
-	      	<span class="input-group-addon no-print"><?php if($_SESSION['email']){ echo('<a href="mailto:' . $_SESSION['email'] . '"><span class="glyphicon glyphicon-envelope"></span></a>');}?></span>
+	      	<?php if($email){ echo("value='" . $email . "'");}?> readonly>
+	      	<span class="input-group-addon no-print"><?php if($email){ echo('<a href="mailto:' . $email . '"><span class="glyphicon glyphicon-envelope"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    <div class="clearfix"></div>
@@ -633,14 +577,14 @@ $menu->renderHTML();
 	    <div class="col-xs-8">
 	      <label for="pai">Pai:</label>
 	      <input type="text" class="form-control" id="pai" name="pai"  style="cursor: auto;" 
-	      	<?php if($_SESSION['nome_pai']){ echo("value='" . $_SESSION['nome_pai'] . "'");}?> readonly>
+	      	<?php if($nome_pai){ echo("value='" . $nome_pai . "'");}?> readonly>
 	    </div>
 	    
 	    <!--profissao pai-->
 	    <div class="col-xs-4">
 	      <label for="prof_pai">Profissão:</label>
 	      <input type="text" class="form-control" id="prof_pai" name="prof_pai"  style="cursor: auto;" 
-	      	<?php if($_SESSION['prof_pai']){ echo("value='" . $_SESSION['prof_pai'] . "'");}?> readonly>
+	      	<?php if($prof_pai){ echo("value='" . $prof_pai . "'");}?> readonly>
 	    </div>
 	    </div>
 	    
@@ -651,14 +595,14 @@ $menu->renderHTML();
 	    <div class="col-xs-8">
 	      <label for="mae">Mãe:</label>
 	      <input type="text" class="form-control" id="mae" name="mae"  style="cursor: auto;" 
-	      	<?php if($_SESSION['nome_mae']){ echo("value='" . $_SESSION['nome_mae'] . "'");}?> readonly>
+	      	<?php if($nome_mae){ echo("value='" . $nome_mae . "'");}?> readonly>
 	    </div>
 	    
 	    <!--profissao mae-->
 	    <div class="col-xs-4">
 	      <label for="prof_mae">Profissão:</label>
 	      <input type="text" class="form-control" id="prof_mae" name="prof_mae"  style="cursor: auto;" 
-	      	<?php if($_SESSION['prof_mae']){ echo("value='" . $_SESSION['prof_mae'] . "'");}?> readonly>
+	      	<?php if($prof_mae){ echo("value='" . $prof_mae . "'");}?> readonly>
 	    </div>
 	    <div class="clearfix"></div>
 	    </div>
@@ -671,13 +615,13 @@ $menu->renderHTML();
 	    	<label for="casados">Casados:</label>
 	    	<span class="input-xlarge uneditable-input">
 	    		<?php
-	    		 	if($_SESSION['casados']=="Sim")
+	    		 	if($casados=="Sim")
 	    		 	{
-	    		 		$casados_como = $_SESSION['casados_como'];
-	    		 		if($casados_como=="uniao de facto")
-						$casados_como = "união de facto";
+	    		 		$casados_como_display = $casados_como;
+	    		 		if($casados_como_display=="uniao de facto")
+						$casados_como_display = "união de facto";
 						
-	    		 		echo("Sim, " . $casados_como . "");
+	    		 		echo("Sim, " . $casados_como_display . "");
 	    		 	}
 	    		 	else
 	    		 		echo("Não");
@@ -699,16 +643,16 @@ $menu->renderHTML();
            <?php
 
         //Autorizacao photos
-       	if($_SESSION['autorizacao']==1)
+       	if($autorizacao_fotos==1 || $autorizacao_fotos=='on' || $autorizacao_fotos=='Sim')
        	{
-       		 echo('<span class="text-success"><span class="glyphicon glyphicon-ok"></span> Autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das actividades catequéticas.</span>');
+       		 echo('<span class="text-success"><span class="glyphicon glyphicon-ok"></span> Autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das atividades catequéticas.</span>');
        	}
        	else
-       		echo('<span class="text-danger"><span class="fas fa-ban"></span> NÃO autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das actividades catequéticas.</span>');
+       		echo('<span class="text-danger"><span class="fas fa-ban"></span> NÃO autoriza a utilização e divulgação de fotografias do educando, tiradas no âmbito das atividades catequéticas.</span>');
         echo('<div class="clearfix"></div>');
 
        	//Consentimento RGPD
-        if($_SESSION['RGPD_assinado'])
+        if($rgpd_ee)
         {
             echo('<span class="text-success"><span class="glyphicon glyphicon-ok"></span> Consentimento do tratamento de dados (RGPD) assinado e entregue.</span>');
         }
@@ -828,7 +772,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
 <script>
     function editar()
     {
-        window.location.assign('inscricao.php?modo=editar');
+        window.location.assign('inscricao.php?modo=editar&cid=<?php echo($cid); ?>');
     }
 
 	<?php
@@ -837,7 +781,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
 	?>
   	function eliminar_ficha()
 	{
-		window.location.assign('eliminarFicha.php?cid=<?php echo('' . $_SESSION['cid'] . ''); ?>');
+		window.location.assign('eliminarFicha.php?cid=<?php echo('' . $cid . ''); ?>');
 	}
 	<?php
     }

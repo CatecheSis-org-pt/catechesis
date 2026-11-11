@@ -41,13 +41,14 @@ class MainNavbar extends Widget
 {
     private /*int*/                 $menuOption = MENU_OPTION::NONE;        // The menu tab where the invoking page belongs. One of the constants in MainNavbar::MENU_OPTION
     private /*bool*/                $allowsSiblingEnrollment = False;       // Whether the option 'enroll a sibling' should be enabled in invoking page
+    private /*?int*/                $siblingCatechumenId = null;            // Catechumen id for sibling enrollment
     private /*AboutDialogWidget*/   $aboutDialog = null;                    // The dialog window about CatecheSis
     private /*UpdateDialogWidget*/  $updateDialog = null;                   // The update notification window
     private /*NewFeaturesDialogWidget*/  $newFeaturesDialog = null;                   // The new features notification window
     private /*UnsupportedPhpVersionDialogWidget*/ $unsupportedPhpVersionDialog = null; // The unsupported PHP version notification window
 
 
-    public function __construct(string $id = null, int $menuOption, bool $allowsSiblingEnrollment=False)
+    public function __construct(string $id = null, int $menuOption, bool $allowsSiblingEnrollment=False, ?int $siblingCatechumenId=null)
     {
         parent::__construct($id);
 
@@ -88,6 +89,14 @@ class MainNavbar extends Widget
 
         $this->menuOption = $menuOption;
         $this->allowsSiblingEnrollment = $allowsSiblingEnrollment;
+        if($siblingCatechumenId !== null)
+        {
+            $this->siblingCatechumenId = $siblingCatechumenId;
+        }
+        else if($allowsSiblingEnrollment && isset($_REQUEST['cid']) && intval($_REQUEST['cid']) > 0)
+        {
+            $this->siblingCatechumenId = intval(Utils::sanitizeInput($_REQUEST['cid']));
+        }
     }
 
 
@@ -166,7 +175,7 @@ class MainNavbar extends Widget
                                 <ul class="dropdown-menu">
                                     <li role="presentation" class="dropdown-header"><i class="fas fa-edit"></i> Inscrições e renovações</li>
                                     <li><a href="inscricao.php">Inscrever novo catequizando</a></li>
-                                    <li class="<?php if(!$this->allowsSiblingEnrollment) echo('disabled'); ?>"><a href="<?php if($this->allowsSiblingEnrollment) echo('inscricao.php?modo=irmao'); ?>">Inscrever um irmão deste catequizando</a></li>
+                                    <li class="<?php if(!$this->allowsSiblingEnrollment) echo('disabled'); ?>"><a href="<?php if($this->allowsSiblingEnrollment) echo('inscricao.php?modo=irmao' . ($this->siblingCatechumenId ? '&cid=' . $this->siblingCatechumenId : '')); ?>">Inscrever um irmão deste catequizando</a></li>
                                     <li><a href="renovacaoMatriculas.php">Renovar matrículas <?php if($pendingRenewals > 0) echo("<span class=\"badge\">" . $pendingRenewals . "</span>");?></a></li>
                                     <li class="divider"></li>
                                     <li role="presentation" class="dropdown-header"><i class="fas fa-globe-europe"></i> Inscrições online</li>
