@@ -1,6 +1,14 @@
 # Changelog
 Todas as alterações significativas ao CatecheSis são registadas aqui.
 
+
+## [Versão UNRELEASED] - 2026-11-xx
+
+#### Correções:
+- Corrigido bug na edição de fichas de catequizandos que podia causar mistura de dados quando eram abertas várias fichas em simultâneo em separadores diferentes do navegador;
+
+
+
 ## [Versão 2.5.0] - 2026-10-28
 
 #### Atualizações de segurança:
