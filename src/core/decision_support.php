@@ -347,6 +347,43 @@ use catechesis\Utils;
 	}
 
 
+	// Retorna true se a ficha tem NIF preenchido
+	function hasNif(&$candidato, $nivel)
+	{
+		$catequizando = $candidato['catequizando'];
+		$cleanNif = isset($catequizando['nif']) ? preg_replace('/\D/', '', strval($catequizando['nif'])) : '';
+
+		if($cleanNif === '' || $cleanNif === '0' || $cleanNif === '000000000' || intval($cleanNif) === 0)
+		{
+			reportar($candidato, $nivel, "NIF não preenchido.");
+			return false;
+		}
+		else
+			return true;
+	}
+
+
+	// Retorna true se o NIF é válido (não aceita 000000000)
+	function nifValido(&$candidato, $nivel)
+	{
+		$catequizando = $candidato['catequizando'];
+		$cleanNif = isset($catequizando['nif']) ? preg_replace('/\D/', '', strval($catequizando['nif'])) : '';
+
+		if($cleanNif === '' || $cleanNif === '0' || $cleanNif === '000000000' || intval($cleanNif) === 0)
+		{
+			reportar($candidato, $nivel, "NIF não preenchido.");
+			return false;
+		}
+		else if(!DataValidationUtils::validateNIF(strval($catequizando['nif']), false))
+		{
+			reportar($candidato, $nivel, "NIF inválido.");
+			return false;
+		}
+		else
+			return true;
+	}
+
+
 	// Verifica se a data de nascimento e' valida
 	function dataNascValida(&$candidato, $nivel)
 	{
@@ -453,6 +490,14 @@ use catechesis\Utils;
                     $problema |= !contactosTelefonicosValidos($candidato, RELATORIO::FATAL);
                 else
                     $problema |= true;
+
+                if (Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED))
+                {
+                    if (hasNif($candidato, RELATORIO::FATAL))
+                        $problema |= !nifValido($candidato, RELATORIO::FATAL);
+                    else
+                        $problema |= true;
+                }
 
                 $problema |= !hasInscricoes($candidato, RELATORIO::FATAL);
 
