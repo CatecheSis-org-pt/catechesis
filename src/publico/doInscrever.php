@@ -149,10 +149,16 @@ $navbar->renderHTML();
         $outro_enc_edu_quem = Utils::sanitizeInput($_POST['outro_enc_edu_quem']);
         $outro_enc_edu_nome = Utils::sanitizeInput($_POST['nome_enc_edu']);
         $outro_enc_edu_prof = Utils::sanitizeInput($_POST['prof_enc_edu']);
+        $telefone_enc_edu = Utils::sanitizeInput($_POST['telefone_enc_edu']);
+        $telemovel_enc_edu = Utils::sanitizeInput($_POST['telemovel_enc_edu']);
         $pai = Utils::sanitizeInput($_POST['pai']);
         $prof_pai = Utils::sanitizeInput($_POST['prof_pai']);
+        $telefone_pai = Utils::sanitizeInput($_POST['telefone_pai']);
+        $telemovel_pai = Utils::sanitizeInput($_POST['telemovel_pai']);
         $mae = Utils::sanitizeInput($_POST['mae']);
         $prof_mae = Utils::sanitizeInput($_POST['prof_mae']);
+        $telefone_mae = Utils::sanitizeInput($_POST['telefone_mae']);
+        $telemovel_mae = Utils::sanitizeInput($_POST['telemovel_mae']);
         $casados = Utils::sanitizeInput($_POST['casados']);
         $casados_como = Utils::sanitizeInput($_POST['casados_como']);
 	  	$morada = Utils::sanitizeInput($_POST['morada']);
@@ -212,10 +218,16 @@ $navbar->renderHTML();
         $_SESSION['outro_enc_edu_quem'] = $outro_enc_edu_quem;
         $_SESSION['nome_enc_edu'] = $outro_enc_edu_nome;
         $_SESSION['prof_enc_edu'] = $outro_enc_edu_prof;
+        $_SESSION['telefone_enc_edu'] = $telefone_enc_edu;
+        $_SESSION['telemovel_enc_edu'] = $telemovel_enc_edu;
         $_SESSION['pai'] = $pai;
         $_SESSION['prof_pai'] = $prof_pai;
+        $_SESSION['telefone_pai'] = $telefone_pai;
+        $_SESSION['telemovel_pai'] = $telemovel_pai;
         $_SESSION['mae'] = $mae;
         $_SESSION['prof_mae'] = $prof_mae;
+        $_SESSION['telefone_mae'] = $telefone_mae;
+        $_SESSION['telemovel_mae'] = $telemovel_mae;
         $_SESSION['casados'] = $casados;
         $_SESSION['casados_como'] = $casados_como;
 	  	$_SESSION['morada'] = $morada;
@@ -335,16 +347,58 @@ $navbar->renderHTML();
 	  	}
 
 
-	  	if($telefone!="" && !DataValidationUtils::validatePhoneNumber($telefone, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	if($telefone_pai!="" && !DataValidationUtils::validatePhoneNumber($telefone_pai, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
-	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
 
-	  	if($telemovel!="" && !DataValidationUtils::validatePhoneNumber($telemovel, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	if($telemovel_pai!="" && !DataValidationUtils::validatePhoneNumber($telemovel_pai, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
-	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telefone_mae!="" && !DataValidationUtils::validatePhoneNumber($telefone_mae, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telemovel_mae!="" && !DataValidationUtils::validatePhoneNumber($telemovel_mae, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telefone_enc_edu!="" && !DataValidationUtils::validatePhoneNumber($telefone_enc_edu, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telemovel_enc_edu!="" && !DataValidationUtils::validatePhoneNumber($telemovel_enc_edu, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($enc_edu=="Pai" && (!$telefone_pai || $telefone_pai=="") && (!$telemovel_pai || $telemovel_pai==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
+	  	}
+
+	  	if($enc_edu=="Mae" && (!$telefone_mae || $telefone_mae=="") && (!$telemovel_mae || $telemovel_mae==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
+	  	}
+
+	  	if($enc_edu=="Outro" && (!$telefone_enc_edu || $telefone_enc_edu=="") && (!$telemovel_enc_edu || $telemovel_enc_edu==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
 	  	}
 
 
@@ -452,11 +506,23 @@ $navbar->renderHTML();
             $responsibleIndex = -1;
 
             if ($enc_edu == "Pai")
+            {
                 $responsibleIndex = 0;
+                $telefone = $telefone_pai;
+                $telemovel = $telemovel_pai;
+            }
             else if ($enc_edu == "Mae")
+            {
                 $responsibleIndex = 1;
+                $telefone = $telefone_mae;
+                $telemovel = $telemovel_mae;
+            }
             else //$enc_edu=="Outro"
+            {
                 $responsibleIndex = 2;
+                $telefone = $telefone_enc_edu;
+                $telemovel = $telemovel_enc_edu;
+            }
 
 
             $eid = null;

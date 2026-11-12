@@ -130,6 +130,12 @@ $menu->renderHTML();
 	  	$codigo_postal = Utils::sanitizeInput($_POST['codigo_postal']);
 	  	$telefone = Utils::sanitizeInput($_POST['telefone']);
 	  	$telemovel = Utils::sanitizeInput($_POST['telemovel']);
+	  	$telefone_pai = Utils::sanitizeInput($_POST['telefone_pai']);
+	  	$telemovel_pai = Utils::sanitizeInput($_POST['telemovel_pai']);
+	  	$telefone_mae = Utils::sanitizeInput($_POST['telefone_mae']);
+	  	$telemovel_mae = Utils::sanitizeInput($_POST['telemovel_mae']);
+	  	$telefone_enc_edu = Utils::sanitizeInput($_POST['telefone_enc_edu']);
+	  	$telemovel_enc_edu = Utils::sanitizeInput($_POST['telemovel_enc_edu']);
 	  	$escuteiro = Utils::sanitizeInput($_POST['escuteiro']);
 	  	$baptizado = Utils::sanitizeInput($_POST['baptizado']);
 	  	$paroquia_baptismo = Utils::sanitizeInput($_POST['paroquia_baptismo']);
@@ -208,6 +214,12 @@ $menu->renderHTML();
             $_SESSION['cod_postal'] = $codigo_postal;
             $_SESSION['telefone'] = $telefone;
             $_SESSION['telemovel'] = $telemovel;
+            $_SESSION['telefone_pai'] = $telefone_pai;
+            $_SESSION['telemovel_pai'] = $telemovel_pai;
+            $_SESSION['telefone_mae'] = $telefone_mae;
+            $_SESSION['telemovel_mae'] = $telemovel_mae;
+            $_SESSION['telefone_enc_edu'] = $telefone_enc_edu;
+            $_SESSION['telemovel_enc_edu'] = $telemovel_enc_edu;
             $_SESSION['enc_edu'] = $enc_edu;
             $_SESSION['outro_enc_edu_quem'] = $outro_enc_edu_quem;
             $_SESSION['nome_enc_edu'] = $outro_enc_edu_nome;
@@ -285,16 +297,58 @@ $menu->renderHTML();
 	  	}
 	  	
 	  	
-	  	if($telefone!="" && !DataValidationUtils::validatePhoneNumber($telefone, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	if($telefone_pai!="" && !DataValidationUtils::validatePhoneNumber($telefone_pai, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
-	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
 	  	}
 	  	
-	  	if($telemovel!="" && !DataValidationUtils::validatePhoneNumber($telemovel, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	if($telemovel_pai!="" && !DataValidationUtils::validatePhoneNumber($telemovel_pai, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
 	  	{
-	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
 	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telefone_mae!="" && !DataValidationUtils::validatePhoneNumber($telefone_mae, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+	  	
+	  	if($telemovel_mae!="" && !DataValidationUtils::validatePhoneNumber($telemovel_mae, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telefone_enc_edu!="" && !DataValidationUtils::validatePhoneNumber($telefone_enc_edu, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telefone do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($telemovel_enc_edu!="" && !DataValidationUtils::validatePhoneNumber($telemovel_enc_edu, Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE)))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de telemóvel do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.</div>");
+	  		$inputs_invalidos = true;	  	
+	  	}
+
+	  	if($enc_edu=="Pai" && (!$telefone_pai || $telefone_pai=="") && (!$telemovel_pai || $telemovel_pai==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
+	  	}
+
+	  	if($enc_edu=="Mae" && (!$telefone_mae || $telefone_mae=="") && (!$telemovel_mae || $telemovel_mae==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
+	  	}
+
+	  	if($enc_edu=="Outro" && (!$telefone_enc_edu || $telefone_enc_edu=="") && (!$telemovel_enc_edu || $telemovel_enc_edu==""))
+	  	{
+	  		echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.</div>");
+	  		$inputs_invalidos = true;
 	  	}
 	  	
 	  	
@@ -448,7 +502,9 @@ $menu->renderHTML();
 			{
 				try
                 {
-                    $fid_pai = $db->createFamilyMember($pai, $prof_pai);
+                    $fid_pai = $db->createFamilyMember($pai, $prof_pai, null, null,
+                        ($telefone_pai && $telefone_pai!=0)?$telefone_pai:null,
+                        ($telemovel_pai && $telemovel_pai!="" && $telemovel_pai!=0)?$telemovel_pai:null);
 				}
                 catch (Exception $e)
                 {
@@ -463,16 +519,21 @@ $menu->renderHTML();
 
 			    $fid_pai = $result[0]["fid"]; 	//Obter id do pai
                 $prof_pai_old = $result[0]["prof"];	//Obter profissao do pai
+                $telefone_pai_old = $result[0]["telefone"];
+                $telemovel_pai_old = $result[0]["telemovel"];
 		
 				echo("<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Aviso!</strong> O pai já existia na base de dados. Isto é normal se estiver a registar um irmão de um catequizando ou a actualizar uma ficha.</div>");
 				
 			
 				//Dados existentes desactualizados (actualizar)
-				if($prof_pai_old!=$prof_pai)
+				if($prof_pai_old!=$prof_pai || $telefone_pai_old!=$telefone_pai || $telemovel_pai_old!=$telemovel_pai)
 				{
 					try
 					{
-						if($db->updateFamilyMemberJob($fid_pai, $prof_pai))
+						if($db->updateFamilyMemberAllFields($fid_pai, $pai, $prof_pai, $result[0]["morada"], $result[0]["cod_postal"],
+                            ($telefone_pai && $telefone_pai!=0)?$telefone_pai:null,
+                            ($telemovel_pai && $telemovel_pai!="" && $telemovel_pai!=0)?$telemovel_pai:null,
+                            $result[0]["email"], ($result[0]["RGPD_assinado"] == 1)))
 						{
                             catechumenFileLog($cid, "Actualizados dados do pai do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                             echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Os dados do pai foram automaticamente actualizados nas fichas de todos os filhos.</div>");
@@ -496,7 +557,11 @@ $menu->renderHTML();
 		{
 			try
             {
-				if($db->updateFamilyMemberName($fid_pai, $pai) && $db->updateFamilyMemberJob($fid_pai, $prof_pai))
+                $father_current = $db->getFamilyMember($fid_pai);
+				if($db->updateFamilyMemberAllFields($fid_pai, $pai, $prof_pai, $father_current["morada"], $father_current["cod_postal"],
+                    ($telefone_pai && $telefone_pai!=0)?$telefone_pai:null,
+                    ($telemovel_pai && $telemovel_pai!="" && $telemovel_pai!=0)?$telemovel_pai:null,
+                    $father_current["email"], ($father_current["RGPD_assinado"] == 1)))
 				{
 				    catechumenFileLog($cid, "Actualizados dados do pai do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
 				    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados do pai foram automaticamente actualizados nas fichas de todos os filhos.</div>");
@@ -541,7 +606,9 @@ $menu->renderHTML();
 			{
 				try
                 {
-                    $fid_mae = $db->createFamilyMember($mae, $prof_mae);
+                    $fid_mae = $db->createFamilyMember($mae, $prof_mae, null, null,
+                        ($telefone_mae && $telefone_mae!=0)?$telefone_mae:null,
+                        ($telemovel_mae && $telemovel_mae!="" && $telemovel_mae!=0)?$telemovel_mae:null);
 				}
                 catch (Exception $e)
                 {
@@ -556,20 +623,26 @@ $menu->renderHTML();
 
                 $fid_mae = $result[0]["fid"]; 	    //Obter id da mae
                 $prof_mae_old = $result[0]["prof"];	//Obter profissao da mae
+                $telefone_mae_old = $result[0]["telefone"];
+                $telemovel_mae_old = $result[0]["telemovel"];
 		
 				echo("<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Aviso!</strong> A mãe já existia na base de dados. Isto é normal se estiver a registar um irmão de um catequizando ou a actualizar uma ficha.</div>");
 				
 			
 				//Dados existentes desactualizados (actualizar)
-				if($prof_mae_old!=$prof_mae)
+				if($prof_mae_old!=$prof_mae || $telefone_mae_old!=$telefone_mae || $telemovel_mae_old!=$telemovel_mae)
 				{
 					try
 					{
-						if($db->updateFamilyMemberJob($fid_mae, $prof_mae))
+						if($db->updateFamilyMemberAllFields($fid_mae, $mae, $prof_mae, $result[0]["morada"], $result[0]["cod_postal"],
+                            ($telefone_mae && $telefone_mae!=0)?$telefone_mae:null,
+                            ($telemovel_mae && $telemovel_mae!="" && $telemovel_mae!=0)?$telemovel_mae:null,
+                            $result[0]["email"], ($result[0]["RGPD_assinado"] == 1)))
 						{
                             catechumenFileLog($cid, "Actualizados dados da mãe do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
                             echo("<div class=\"alert alert-info\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Info!</strong> Os dados da mãe foram automaticamente actualizados nas fichas de todos os filhos.</div>");
-						}else
+						}
+						else
                         {
                             echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> Falha ao actualizar dados da mãe.</div>");
                             abortar();
@@ -588,7 +661,11 @@ $menu->renderHTML();
 		{
 			try
             {
-				if($db->updateFamilyMemberName($fid_mae, $mae) && $db->updateFamilyMemberJob($fid_mae, $prof_mae))
+                $mother_current = $db->getFamilyMember($fid_mae);
+				if($db->updateFamilyMemberAllFields($fid_mae, $mae, $prof_mae, $mother_current["morada"], $mother_current["cod_postal"],
+                    ($telefone_mae && $telefone_mae!=0)?$telefone_mae:null,
+                    ($telemovel_mae && $telemovel_mae!="" && $telemovel_mae!=0)?$telemovel_mae:null,
+                    $mother_current["email"], ($mother_current["RGPD_assinado"] == 1)))
 				{
 				    catechumenFileLog($cid, "Actualizados dados da mãe do catequizando com id=" . $cid . ". As fichas de todos os seus filhos / educandos foram também actualizadas.", true); //Pode afectar fichas de irmaos
 				    echo("<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Sucesso!</strong> Os dados da mãe foram automaticamente actualizados nas fichas de todos os filhos.</div>");
@@ -705,21 +782,29 @@ $menu->renderHTML();
 		//Decidir quem e' o encarregado de educacao
 		$nome_ee = NULL;
 		$prof_ee = NULL;
+		$telefone_ee = NULL;
+		$telemovel_ee = NULL;
 
 		if($enc_edu=="Pai")
 		{
 			$nome_ee = $pai;
 			$prof_ee = $prof_pai;
+			$telefone_ee = $telefone_pai;
+			$telemovel_ee = $telemovel_pai;
 		}
 		else if($enc_edu=="Mae")
 		{
 			$nome_ee = $mae;
 			$prof_ee = $prof_mae;
+			$telefone_ee = $telefone_mae;
+			$telemovel_ee = $telemovel_mae;
 		}
 		else //$enc_edu=="Outro"
 		{
 			$nome_ee = $outro_enc_edu_nome;
 			$prof_ee = $outro_enc_edu_prof;
+			$telefone_ee = $telefone_enc_edu;
+			$telemovel_ee = $telemovel_enc_edu;
 		}
 		
 		
@@ -743,8 +828,8 @@ $menu->renderHTML();
 			try
             {
                 $fid_ee = $db->createFamilyMember($nome_ee, $prof_ee, $morada, $codigo_postal,
-                                            ($telefone && $telefone!=0)?$telefone:null,
-                                          ($telemovel && $telemovel!="" && $telemovel!=0)?$telemovel:null,
+                                            ($telefone_ee && $telefone_ee!=0)?$telefone_ee:null,
+                                          ($telemovel_ee && $telemovel_ee!="" && $telemovel_ee!=0)?$telemovel_ee:null,
                                              ($email && $email!="")?$email:null,
                                                     $rgpd_ee);
 			}
@@ -779,15 +864,18 @@ $menu->renderHTML();
                 ($prof_outro_old!=$prof_ee) ||
 				($morada_old!=$morada) ||
 				($cod_postal_old!=$codigo_postal) ||
-				($telefone_old!=$telefone) ||
-				($telemovel_old!=$telemovel) ||
+				($telefone_old!=$telefone_ee) ||
+				($telemovel_old!=$telemovel_ee) ||
 				($email_old!=$email) ||
                 ($rgpd_ee_old!=$rgpd_ee))
 			{
 				try
 				{
 					if($db->updateFamilyMemberAllFields($fid_ee, $nome_ee, $prof_ee, $morada, $codigo_postal,
-                        $telefone, $telemovel, $email, $rgpd_ee))
+                        ($telefone_ee && $telefone_ee!=0)?$telefone_ee:null,
+                        ($telemovel_ee && $telemovel_ee!="" && $telemovel_ee!=0)?$telemovel_ee:null,
+                        ($email && $email!="")?$email:null,
+                        $rgpd_ee))
 					{
 						if($fid_ee!=$fid_pai && $fid_ee!=$fid_mae)
 						{

@@ -70,6 +70,12 @@ $menu->renderHTML();
     $cod_postal = "";
     $telefone = "";
     $telemovel = "";
+    $telefone_pai = "";
+    $telemovel_pai = "";
+    $telefone_mae = "";
+    $telemovel_mae = "";
+    $telefone_enc_edu = "";
+    $telemovel_enc_edu = "";
     $nif = "";
     $escuteiro = "Nao";
     $enc_edu = "Mae";
@@ -151,6 +157,8 @@ $menu->renderHTML();
                 {
                     $pai = Utils::sanitizeOutput($father['nome']);
                     $prof_pai = Utils::sanitizeOutput($father['prof']);
+                    $telefone_pai = Utils::sanitizeOutput($father['telefone']);
+                    $telemovel_pai = Utils::sanitizeOutput($father['telemovel']);
                 }
             }
             catch(Exception $e)
@@ -170,6 +178,8 @@ $menu->renderHTML();
                 {
                     $mae = Utils::sanitizeOutput($mother['nome']);
                     $prof_mae = Utils::sanitizeOutput($mother['prof']);
+                    $telefone_mae = Utils::sanitizeOutput($mother['telefone']);
+                    $telemovel_mae = Utils::sanitizeOutput($mother['telemovel']);
                 }
             }
             catch(Exception $e)
@@ -247,6 +257,8 @@ $menu->renderHTML();
             $outro_enc_edu_quem = $enc_edu_quem;
             $nome_enc_edu = isset($nome_ee) ? $nome_ee : "";
             $prof_enc_edu = isset($prof_ee) ? $prof_ee : "";
+            $telefone_enc_edu = isset($telefone) ? $telefone : "";
+            $telemovel_enc_edu = isset($telemovel) ? $telemovel : "";
         }
 
         if($foto != "" && file_exists(UserData::getCatechumensPhotosFolder() . '/' . $foto))
@@ -275,6 +287,12 @@ $menu->renderHTML();
             $cod_postal = isset($_SESSION['cod_postal']) ? $_SESSION['cod_postal'] : "";
             $telefone = isset($_SESSION['telefone']) ? $_SESSION['telefone'] : "";
             $telemovel = isset($_SESSION['telemovel']) ? $_SESSION['telemovel'] : "";
+            $telefone_pai = isset($_SESSION['telefone_pai']) ? $_SESSION['telefone_pai'] : "";
+            $telemovel_pai = isset($_SESSION['telemovel_pai']) ? $_SESSION['telemovel_pai'] : "";
+            $telefone_mae = isset($_SESSION['telefone_mae']) ? $_SESSION['telefone_mae'] : "";
+            $telemovel_mae = isset($_SESSION['telemovel_mae']) ? $_SESSION['telemovel_mae'] : "";
+            $telefone_enc_edu = isset($_SESSION['telefone_enc_edu']) ? $_SESSION['telefone_enc_edu'] : "";
+            $telemovel_enc_edu = isset($_SESSION['telemovel_enc_edu']) ? $_SESSION['telemovel_enc_edu'] : "";
             $nif = isset($_SESSION['nif']) ? $_SESSION['nif'] : "";
             $escuteiro = isset($_SESSION['escuteiro']) ? $_SESSION['escuteiro'] : "Nao";
             $enc_edu = isset($_SESSION['enc_edu']) ? $_SESSION['enc_edu'] : "Mae";
@@ -343,6 +361,8 @@ $menu->renderHTML();
                     {
                         $pai = Utils::sanitizeOutput($father['nome']);
                         $prof_pai = Utils::sanitizeOutput($father['prof']);
+                        $telefone_pai = Utils::sanitizeOutput($father['telefone']);
+                        $telemovel_pai = Utils::sanitizeOutput($father['telemovel']);
                     }
                 }
                 catch(Exception $e)
@@ -362,6 +382,8 @@ $menu->renderHTML();
                     {
                         $mae = Utils::sanitizeOutput($mother['nome']);
                         $prof_mae = Utils::sanitizeOutput($mother['prof']);
+                        $telefone_mae = Utils::sanitizeOutput($mother['telefone']);
+                        $telemovel_mae = Utils::sanitizeOutput($mother['telemovel']);
                     }
                 }
                 catch(Exception $e)
@@ -439,6 +461,8 @@ $menu->renderHTML();
                 $outro_enc_edu_quem = $enc_edu_quem;
                 $nome_enc_edu = isset($nome_ee) ? $nome_ee : "";
                 $prof_enc_edu = isset($prof_ee) ? $prof_ee : "";
+                $telefone_enc_edu = isset($telefone) ? $telefone : "";
+                $telemovel_enc_edu = isset($telemovel) ? $telemovel : "";
             }
         }
     }
@@ -541,24 +565,6 @@ $menu->renderHTML();
                 <label for="codigo_postal">Código postal:</label>
                 <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $cod_postal . '');} else {echo('');} ?>" required>
                 <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-            </div>
-        </div>
-
-        <!--telefone-->
-        <div class="col-xs-2">
-            <div id="telefone_div">
-              <label for="tel">Telefone:</label>
-              <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone . '');} else {echo('');} ?>">
-              <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-            </div>
-        </div>
-
-        <!--telemovel-->
-        <div class="col-xs-2">
-            <div id="telemovel_div">
-              <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-              <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel . '');} else {echo('');} ?>">
-              <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
             </div>
         </div>
 
@@ -707,18 +713,36 @@ $menu->renderHTML();
     </datalist>
 
     <!--outro encarregado educacao nome-->
-    <div class="col-xs-6">
+    <div class="col-xs-3">
       <label for="nome_end_edu"> Nome:</label>
       <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $nome_enc_edu . '');} else {echo('');} ?>">
     </div>
 
    <!--outro encarregado educacao profissao-->
-    <div class="col-xs-4">
+    <div class="col-xs-3">
       <label for="prof_enc_edu"> Profissão:</label>
       <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $prof_enc_edu . '');} else {echo('');} ?>">
     </div>
+
+    <!--telefone outro encarregado educacao-->
+    <div class="col-xs-2">
+      <div id="telefone_enc_edu_div">
+        <label for="telefone_enc_edu">Telefone:</label>
+        <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" onclick="verifica_telefone_enc_edu()" onchange="verifica_telefone_enc_edu()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $telefone_enc_edu . '');} else {echo('');} ?>">
+        <span id="erro_telefone_enc_edu_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
+    </div>
+
+    <!--telemovel outro encarregado educacao-->
+    <div class="col-xs-2">
+      <div id="telemovel_enc_edu_div">
+        <label for="telemovel_enc_edu"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+        <input type="tel" class="form-control" id="telemovel_enc_edu" name="telemovel_enc_edu" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>" onclick="verifica_telemovel_enc_edu()" onchange="verifica_telemovel_enc_edu()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $telemovel_enc_edu . '');} else {echo('');} ?>">
+        <span id="erro_telemovel_enc_edu_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
     </div>
     <div class="clearfix"></div>
+    </div>
 
 
 
@@ -728,7 +752,7 @@ $menu->renderHTML();
 
     <!--pai-->
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-xs-4">
       <label for="pai">Pai:</label>
       <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $pai . '');} else {echo('');} ?>">
     </div>
@@ -738,13 +762,32 @@ $menu->renderHTML();
       <label for="prof_pai">Profissão:</label>
       <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_pai . '');} else {echo('');} ?>">
     </div>
+
+    <!--telefone pai-->
+    <div class="col-xs-2">
+      <div id="telefone_pai_div">
+        <label for="telefone_pai">Telefone:</label>
+        <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" onclick="verifica_telefone_pai()" onchange="verifica_telefone_pai()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone_pai . '');} else {echo('');} ?>">
+        <span id="erro_telefone_pai_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
+    </div>
+
+    <!--telemovel pai-->
+    <div class="col-xs-2">
+      <div id="telemovel_pai_div">
+        <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+        <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do pai" onclick="verifica_telemovel_pai()" onchange="verifica_telemovel_pai()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel_pai . '');} else {echo('');} ?>">
+        <span id="erro_telemovel_pai_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
+    </div>
+    <div class="clearfix"></div>
     </div>
 
 
 
     <!--mae-->
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-xs-4">
       <label for="mae">Mãe:</label>
       <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $mae . '');} else {echo('');} ?>">
     </div>
@@ -753,6 +796,24 @@ $menu->renderHTML();
     <div class="col-xs-4">
       <label for="prof_mae">Profissão:</label>
       <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_mae . '');} else {echo('');} ?>">
+    </div>
+
+    <!--telefone mae-->
+    <div class="col-xs-2">
+      <div id="telefone_mae_div">
+        <label for="telefone_mae">Telefone:</label>
+        <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" onclick="verifica_telefone_mae()" onchange="verifica_telefone_mae()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone_mae . '');} else {echo('');} ?>">
+        <span id="erro_telefone_mae_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
+    </div>
+
+    <!--telemovel mae-->
+    <div class="col-xs-2">
+      <div id="telemovel_mae_div">
+        <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+        <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> da mãe" onclick="verifica_telemovel_mae()" onchange="verifica_telemovel_mae()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel_mae . '');} else {echo('');} ?>">
+        <span id="erro_telemovel_mae_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+      </div>
     </div>
     <div class="clearfix"></div>
     </div>
@@ -1048,8 +1109,12 @@ function validar()
     var nifElem = document.getElementById('nif');
     var nif = (nifElem)? nifElem.value : "";
     var NIF_ENABLED = <?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)?'true':'false' ?>;
-	var telefone = document.getElementById('telefone').value;
-    var telemovel = document.getElementById('telemovel').value;
+	var telefone_pai = document.getElementById('telefone_pai').value;
+    var telemovel_pai = document.getElementById('telemovel_pai').value;
+    var telefone_mae = document.getElementById('telefone_mae').value;
+    var telemovel_mae = document.getElementById('telemovel_mae').value;
+    var telefone_enc_edu = document.getElementById('telefone_enc_edu').value;
+    var telemovel_enc_edu = document.getElementById('telemovel_enc_edu').value;
     var pai = document.getElementById('pai').value;
     var prof_pai = document.getElementById('prof_pai').value;
     var mae = document.getElementById('mae').value;
@@ -1107,20 +1172,53 @@ function validar()
 
 
 
-    if( (telefone=="" || telefone==undefined) && (telemovel=="" || telemovel==undefined) )
+    if(telefone_pai!="" && telefone_pai!=undefined && !telefone_valido(telefone_pai, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
     {
-    alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
-    return false;
+        alert("O número de telefone do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
     }
-    else if(telefone!="" && telefone!=undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    if(telemovel_pai!="" && telemovel_pai!=undefined && !telefone_valido(telemovel_pai, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
     {
-        alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-    return false;
+        alert("O número de telemóvel do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
     }
-    else if(telemovel!="" && telemovel!=undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    if(telefone_mae!="" && telefone_mae!=undefined && !telefone_valido(telefone_mae, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
     {
-        alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-    return false;
+        alert("O número de telefone da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel_mae!="" && telemovel_mae!=undefined && !telefone_valido(telemovel_mae, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+
+    if(enc_edu_pai && (telefone_pai=="" || telefone_pai==undefined) && (telemovel_pai=="" || telemovel_pai==undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
+    }
+    if(enc_edu_mae && (telefone_mae=="" || telefone_mae==undefined) && (telemovel_mae=="" || telemovel_mae==undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
+    }
+
+    if(telefone_enc_edu!="" && telefone_enc_edu!=undefined && !telefone_valido(telefone_enc_edu, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel_enc_edu!="" && telemovel_enc_edu!=undefined && !telefone_valido(telemovel_enc_edu, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+
+    if(enc_edu_outro && (telefone_enc_edu=="" || telefone_enc_edu==undefined) && (telemovel_enc_edu=="" || telemovel_enc_edu==undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
     }
 
 
@@ -1418,38 +1516,110 @@ function verifica_data_comunhao()
 	}
 }
 
-function verifica_telefone()
+function verifica_telefone_pai()
 {
-	var telefone = document.getElementById('telefone').value;
+	var telefone = document.getElementById('telefone_pai').value;
 
 	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
 	{ 
-		$('#telefone_div').addClass('has-error');
-		$('#telefone_div').addClass('has-feedback');
-		$('#erro_telefone_icon').show(); 
+		$('#telefone_pai_div').addClass('has-error');
+		$('#telefone_pai_div').addClass('has-feedback');
+		$('#erro_telefone_pai_icon').show(); 
 		return false;
 	} else {
-	 	$('#telefone_div').removeClass('has-error');
-		$('#telefone_div').removeClass('has-feedback');
-		$('#erro_telefone_icon').hide();  
+	 	$('#telefone_pai_div').removeClass('has-error');
+		$('#telefone_pai_div').removeClass('has-feedback');
+		$('#erro_telefone_pai_icon').hide();  
 		return true;
 	}
 }
 
-function verifica_telemovel()
+function verifica_telemovel_pai()
 {
-	var telemovel = document.getElementById('telemovel').value;
+	var telemovel = document.getElementById('telemovel_pai').value;
 
 	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
 	{ 
-		$('#telemovel_div').addClass('has-error');
-		$('#telemovel_div').addClass('has-feedback');
-		$('#erro_telemovel_icon').show();  
+		$('#telemovel_pai_div').addClass('has-error');
+		$('#telemovel_pai_div').addClass('has-feedback');
+		$('#erro_telemovel_pai_icon').show();  
 		return false;
 	} else {
-	 	$('#telemovel_div').removeClass('has-error');
-		$('#telemovel_div').removeClass('has-feedback');
-		$('#erro_telemovel_icon').hide();  
+	 	$('#telemovel_pai_div').removeClass('has-error');
+		$('#telemovel_pai_div').removeClass('has-feedback');
+		$('#erro_telemovel_pai_icon').hide();  
+		return true;
+	}
+}
+
+function verifica_telefone_mae()
+{
+	var telefone = document.getElementById('telefone_mae').value;
+
+	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
+	{ 
+		$('#telefone_mae_div').addClass('has-error');
+		$('#telefone_mae_div').addClass('has-feedback');
+		$('#erro_telefone_mae_icon').show(); 
+		return false;
+	} else {
+	 	$('#telefone_mae_div').removeClass('has-error');
+		$('#telefone_mae_div').removeClass('has-feedback');
+		$('#erro_telefone_mae_icon').hide();  
+		return true;
+	}
+}
+
+function verifica_telemovel_mae()
+{
+	var telemovel = document.getElementById('telemovel_mae').value;
+
+	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
+	{ 
+		$('#telemovel_mae_div').addClass('has-error');
+		$('#telemovel_mae_div').addClass('has-feedback');
+		$('#erro_telemovel_mae_icon').show();  
+		return false;
+	} else {
+	 	$('#telemovel_mae_div').removeClass('has-error');
+		$('#telemovel_mae_div').removeClass('has-feedback');
+		$('#erro_telemovel_mae_icon').hide();  
+		return true;
+	}
+}
+
+function verifica_telefone_enc_edu()
+{
+	var telefone = document.getElementById('telefone_enc_edu').value;
+
+	if(!telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telefone!="" && telefone!=undefined)
+	{ 
+		$('#telefone_enc_edu_div').addClass('has-error');
+		$('#telefone_enc_edu_div').addClass('has-feedback');
+		$('#erro_telefone_enc_edu_icon').show(); 
+		return false;
+	} else {
+	 	$('#telefone_enc_edu_div').removeClass('has-error');
+		$('#telefone_enc_edu_div').removeClass('has-feedback');
+		$('#erro_telefone_enc_edu_icon').hide();  
+		return true;
+	}
+}
+
+function verifica_telemovel_enc_edu()
+{
+	var telemovel = document.getElementById('telemovel_enc_edu').value;
+
+	if(!telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>') && telemovel!="" && telemovel!=undefined)
+	{ 
+		$('#telemovel_enc_edu_div').addClass('has-error');
+		$('#telemovel_enc_edu_div').addClass('has-feedback');
+		$('#erro_telemovel_enc_edu_icon').show();  
+		return false;
+	} else {
+	 	$('#telemovel_enc_edu_div').removeClass('has-error');
+		$('#telemovel_enc_edu_div').removeClass('has-feedback');
+		$('#erro_telemovel_enc_edu_icon').hide();  
 		return true;
 	}
 }

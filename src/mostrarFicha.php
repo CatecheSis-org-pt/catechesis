@@ -134,9 +134,13 @@ $menu->renderHTML();
 		
 		$nome_pai = NULL;
 		$prof_pai = NULL;
+		$telefone_pai = NULL;
+		$telemovel_pai = NULL;
 		
 		$nome_mae = NULL;
 		$prof_mae = NULL;
+		$telefone_mae = NULL;
+		$telemovel_mae = NULL;
 		
 		$casados = "Não";
 		$casados_como = NULL;
@@ -198,6 +202,8 @@ $menu->renderHTML();
                     $father = $db->getFamilyMember($fid_pai);
                     $nome_pai = Utils::sanitizeOutput($father['nome']);
                     $prof_pai = Utils::sanitizeOutput($father['prof']);
+                    $telefone_pai = Utils::sanitizeOutput($father['telefone']);
+                    $telemovel_pai = Utils::sanitizeOutput($father['telemovel']);
                 }
                 catch(Exception $e)
                 {
@@ -216,6 +222,8 @@ $menu->renderHTML();
                     $mother = $db->getFamilyMember($fid_mae);
                     $nome_mae = Utils::sanitizeOutput($mother['nome']);
                     $prof_mae = Utils::sanitizeOutput($mother['prof']);
+                    $telefone_mae = Utils::sanitizeOutput($mother['telefone']);
+                    $telemovel_mae = Utils::sanitizeOutput($mother['telemovel']);
                 }
                 catch(Exception $e)
                 {
@@ -465,34 +473,6 @@ $menu->renderHTML();
 	      	<?php if($codigo_postal){ echo("value='" . $codigo_postal . "'");}?>  readonly>
 	    </div>
 	    </div>
-	    
-	    
-	    
-	    <!--telefone-->
-	    <div class="col-xs-2">
-	    <div id="telefone_div">
-	      <label for="tel">Telefone:</label>
-	      <div class="input-group">
-	      <input type="tel" class="form-control" id="telefone" name="telefone"  style="cursor: auto;" 
-	      	<?php if($telefone){ echo("value='" . $telefone . "'");}?> readonly>
-	      <span class="input-group-addon no-print"><?php if($telefone){ echo('<a href="tel:' . $telefone . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
-	      </div>
-	    </div>
-	    </div>
-	    
-	    
-	    
-	    <!--telemovel-->
-	    <div class="col-xs-2">
-	    <div id="telemovel_div">
-	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-	      <div class="input-group">
-	      <input type="tel" class="form-control" id="telemovel" name="telemovel"  style="cursor: auto;" 
-	      	<?php if($telemovel){ echo("value='" . $telemovel . "'");}?> readonly>
-	      	<span class="input-group-addon no-print"><?php if($telemovel){ echo('<a href="tel:' . $telemovel . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
-	      </div>
-	    </div>
-	    </div>   
 	    <div class="clearfix"></div>
 	   </div>
 	    
@@ -557,6 +537,34 @@ $menu->renderHTML();
 	      	<span class="input-group-addon no-print"><?php if($email){ echo('<a href="mailto:' . $email . '"><span class="glyphicon glyphicon-envelope"></span></a>');}?></span>
 	      </div>
 	    </div>
+	    
+	    
+	    
+	    <!--telefone-->
+	    <div class="col-xs-2">
+	    <div id="telefone_div">
+	      <label for="tel">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone" name="telefone"  style="cursor: auto;" 
+	      	<?php if($telefone){ echo("value='" . $telefone . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone){ echo('<a href="tel:' . $telefone . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+	    
+	    
+	    
+	    <!--telemovel-->
+	    <div class="col-xs-2">
+	    <div id="telemovel_div">
+	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telemovel" name="telemovel"  style="cursor: auto;" 
+	      	<?php if($telemovel){ echo("value='" . $telemovel . "'");}?> readonly>
+	      	<span class="input-group-addon no-print"><?php if($telemovel){ echo('<a href="tel:' . $telemovel . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>   
 	    <div class="clearfix"></div>
 	    </div>
 	
@@ -574,7 +582,7 @@ $menu->renderHTML();
     
 	    <!--pai-->
 	    <div class="form-group">
-	    <div class="col-xs-8">
+	    <div class="col-xs-4">
 	      <label for="pai">Pai:</label>
 	      <input type="text" class="form-control" id="pai" name="pai"  style="cursor: auto;" 
 	      	<?php if($nome_pai){ echo("value='" . $nome_pai . "'");}?> readonly>
@@ -586,13 +594,38 @@ $menu->renderHTML();
 	      <input type="text" class="form-control" id="prof_pai" name="prof_pai"  style="cursor: auto;" 
 	      	<?php if($prof_pai){ echo("value='" . $prof_pai . "'");}?> readonly>
 	    </div>
+
+	    <!--telefone pai-->
+	    <div class="col-xs-2">
+	    <div id="telefone_pai_div">
+	      <label for="telefone_pai">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai"  style="cursor: auto;" 
+	      	<?php if($telefone_pai){ echo("value='" . $telefone_pai . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone_pai){ echo('<a href="tel:' . $telefone_pai . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+
+	    <!--telemovel pai-->
+	    <div class="col-xs-2">
+	    <div id="telemovel_pai_div">
+	      <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai"  style="cursor: auto;" 
+	      	<?php if($telemovel_pai){ echo("value='" . $telemovel_pai . "'");}?> readonly>
+	      	<span class="input-group-addon no-print"><?php if($telemovel_pai){ echo('<a href="tel:' . $telemovel_pai . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+	    <div class="clearfix"></div>
 	    </div>
 	    
 	    
 	    
 	    <!--mae-->
 	    <div class="form-group">
-	    <div class="col-xs-8">
+	    <div class="col-xs-4">
 	      <label for="mae">Mãe:</label>
 	      <input type="text" class="form-control" id="mae" name="mae"  style="cursor: auto;" 
 	      	<?php if($nome_mae){ echo("value='" . $nome_mae . "'");}?> readonly>
@@ -603,6 +636,30 @@ $menu->renderHTML();
 	      <label for="prof_mae">Profissão:</label>
 	      <input type="text" class="form-control" id="prof_mae" name="prof_mae"  style="cursor: auto;" 
 	      	<?php if($prof_mae){ echo("value='" . $prof_mae . "'");}?> readonly>
+	    </div>
+
+	    <!--telefone mae-->
+	    <div class="col-xs-2">
+	    <div id="telefone_mae_div">
+	      <label for="telefone_mae">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae"  style="cursor: auto;" 
+	      	<?php if($telefone_mae){ echo("value='" . $telefone_mae . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone_mae){ echo('<a href="tel:' . $telefone_mae . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+
+	    <!--telemovel mae-->
+	    <div class="col-xs-2">
+	    <div id="telemovel_mae_div">
+	      <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae"  style="cursor: auto;" 
+	      	<?php if($telemovel_mae){ echo("value='" . $telemovel_mae . "'");}?> readonly>
+	      	<span class="input-group-addon no-print"><?php if($telemovel_mae){ echo('<a href="tel:' . $telemovel_mae . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
 	    </div>
 	    <div class="clearfix"></div>
 	    </div>
