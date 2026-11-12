@@ -98,6 +98,52 @@ $db = new PdoDatabaseManager();
         die();
     }
 
+    // Backwards compatibility with older submissions where only telefone/telemovel were recorded:
+    $submission['telefone_pai'] = $submission['telefone_pai'] ?? '';
+    $submission['telemovel_pai'] = $submission['telemovel_pai'] ?? '';
+    $submission['telefone_mae'] = $submission['telefone_mae'] ?? '';
+    $submission['telemovel_mae'] = $submission['telemovel_mae'] ?? '';
+    $submission['telefone_enc_edu'] = $submission['telefone_enc_edu'] ?? '';
+    $submission['telemovel_enc_edu'] = $submission['telemovel_enc_edu'] ?? '';
+    $submission['telefone'] = $submission['telefone'] ?? '';
+    $submission['telemovel'] = $submission['telemovel'] ?? '';
+
+    if ($submission['enc_edu'] == 0) {
+        if (empty($submission['telefone_pai']) && !empty($submission['telefone'])) {
+            $submission['telefone_pai'] = $submission['telefone'];
+        }
+        if (empty($submission['telemovel_pai']) && !empty($submission['telemovel'])) {
+            $submission['telemovel_pai'] = $submission['telemovel'];
+        }
+    } else if ($submission['enc_edu'] == 1) {
+        if (empty($submission['telefone_mae']) && !empty($submission['telefone'])) {
+            $submission['telefone_mae'] = $submission['telefone'];
+        }
+        if (empty($submission['telemovel_mae']) && !empty($submission['telemovel'])) {
+            $submission['telemovel_mae'] = $submission['telemovel'];
+        }
+    } else if ($submission['enc_edu'] == 2) {
+        if (empty($submission['telefone_enc_edu']) && !empty($submission['telefone'])) {
+            $submission['telefone_enc_edu'] = $submission['telefone'];
+        }
+        if (empty($submission['telemovel_enc_edu']) && !empty($submission['telemovel'])) {
+            $submission['telemovel_enc_edu'] = $submission['telemovel'];
+        }
+    }
+
+    if (empty($submission['telefone']) && empty($submission['telemovel'])) {
+        if ($submission['enc_edu'] == 0) {
+            $submission['telefone'] = $submission['telefone_pai'];
+            $submission['telemovel'] = $submission['telemovel_pai'];
+        } else if ($submission['enc_edu'] == 1) {
+            $submission['telefone'] = $submission['telefone_mae'];
+            $submission['telemovel'] = $submission['telemovel_mae'];
+        } else if ($submission['enc_edu'] == 2) {
+            $submission['telefone'] = $submission['telefone_enc_edu'];
+            $submission['telemovel'] = $submission['telemovel_enc_edu'];
+        }
+    }
+
 
     if(isset($submission['cid']))
     {
@@ -224,15 +270,31 @@ $db = new PdoDatabaseManager();
                </datalist>
 
                <!--outro encarregado educacao nome-->
-               <div class="col-lg-6">
+               <div class="col-lg-3">
                    <label for="nome_end_edu"> Nome:</label>
                    <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" onchange="atualiza_tabela_autorizacoes()" value="<?php echo($submission['enc_edu_nome']);?>" readonly>
                </div>
 
                <!--outro encarregado educacao profissao-->
-               <div class="col-lg-4">
+               <div class="col-lg-3">
                    <label for="prof_enc_edu"> Profissão:</label>
                    <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" value="<?php echo($submission['prof_enc_edu']);?>" readonly>
+               </div>
+
+               <!--telefone outro encarregado educacao-->
+               <div class="col-lg-2">
+                   <div id="telefone_enc_edu_div">
+                       <label for="telefone_enc_edu">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" value="<?php echo($submission['telefone_enc_edu']);?>" readonly>
+                   </div>
+               </div>
+
+               <!--telemovel outro encarregado educacao-->
+               <div class="col-lg-2">
+                   <div id="telemovel_enc_edu_div">
+                       <label for="telemovel_enc_edu"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                       <input type="tel" class="form-control" id="telemovel_enc_edu" name="telemovel_enc_edu" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>" value="<?php echo($submission['telemovel_enc_edu']);?>" readonly>
+                   </div>
                </div>
            </div>
            <div class="clearfix"></div>
@@ -245,7 +307,7 @@ $db = new PdoDatabaseManager();
 
            <!--pai-->
            <div class="form-group">
-               <div class="col-lg-8">
+               <div class="col-lg-4">
                    <label for="pai">Pai:</label>
                    <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai"  onchange="atualiza_tabela_autorizacoes()" value="<?php echo($submission['pai_nome']);?>" readonly>
                </div>
@@ -255,13 +317,29 @@ $db = new PdoDatabaseManager();
                    <label for="prof_pai">Profissão:</label>
                    <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" value="<?php echo($submission['prof_pai']);?>" readonly>
                </div>
+
+               <!--telefone pai-->
+               <div class="col-lg-2">
+                   <div id="telefone_pai_div">
+                       <label for="telefone_pai">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" value="<?php echo($submission['telefone_pai']);?>" readonly>
+                   </div>
+               </div>
+
+               <!--telemovel pai-->
+               <div class="col-lg-2">
+                   <div id="telemovel_pai_div">
+                       <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                       <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do pai" value="<?php echo($submission['telemovel_pai']);?>" readonly>
+                   </div>
+               </div>
            </div>
 
 
 
            <!--mae-->
            <div class="form-group">
-               <div class="col-lg-8">
+               <div class="col-lg-4">
                    <label for="mae">Mãe:</label>
                    <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" onchange="atualiza_tabela_autorizacoes()" value="<?php echo($submission['mae_nome']);?>" readonly>
                </div>
@@ -270,6 +348,22 @@ $db = new PdoDatabaseManager();
                <div class="col-lg-4">
                    <label for="prof_mae">Profissão:</label>
                    <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" value="<?php echo($submission['prof_mae']);?>" readonly>
+               </div>
+
+               <!--telefone mae-->
+               <div class="col-lg-2">
+                   <div id="telefone_mae_div">
+                       <label for="telefone_mae">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" value="<?php echo($submission['telefone_mae']);?>" readonly>
+                   </div>
+               </div>
+
+               <!--telemovel mae-->
+               <div class="col-lg-2">
+                   <div id="telemovel_mae_div">
+                       <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                       <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> da mãe" value="<?php echo($submission['telemovel_mae']);?>" readonly>
+                   </div>
                </div>
                <div class="clearfix"></div>
            </div>
@@ -770,8 +864,14 @@ function validar()
 	
 	var cod_postal = document.getElementById('codigo_postal').value;
 	var data_nasc = document.getElementById('data_nasc').value;
-	var telefone = document.getElementById('telefone').value;
-    var telemovel = document.getElementById('telemovel').value;
+	var telefone = document.getElementById('telefone') ? document.getElementById('telefone').value : '';
+    var telemovel = document.getElementById('telemovel') ? document.getElementById('telemovel').value : '';
+    var telefone_pai = document.getElementById('telefone_pai') ? document.getElementById('telefone_pai').value : '';
+    var telemovel_pai = document.getElementById('telemovel_pai') ? document.getElementById('telemovel_pai').value : '';
+    var telefone_mae = document.getElementById('telefone_mae') ? document.getElementById('telefone_mae').value : '';
+    var telemovel_mae = document.getElementById('telemovel_mae') ? document.getElementById('telemovel_mae').value : '';
+    var telefone_enc_edu = document.getElementById('telefone_enc_edu') ? document.getElementById('telefone_enc_edu').value : '';
+    var telemovel_enc_edu = document.getElementById('telemovel_enc_edu') ? document.getElementById('telemovel_enc_edu').value : '';
     var pai = document.getElementById('pai').value;
     var prof_pai = document.getElementById('prof_pai').value;
     var mae = document.getElementById('mae').value;
@@ -806,22 +906,62 @@ function validar()
 	}
                 
         
-        
-        if((telefone==="" || telefone===undefined) && (telemovel==="" || telemovel===undefined) )
-        {
-		alert("Deve introduzir pelo menos um número de telefone ou telemóvel.");
-		return false; 
-        }
-        else if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
-        {
-        	alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-		return false; 
-        }
-        else if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
-        {
-        	alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
-		return false; 
-        }
+    if(telefone_pai!=="" && telefone_pai!==undefined && !telefone_valido(telefone_pai, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel_pai!=="" && telemovel_pai!==undefined && !telefone_valido(telemovel_pai, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel do pai que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telefone_mae!=="" && telefone_mae!==undefined && !telefone_valido(telefone_mae, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel_mae!=="" && telemovel_mae!==undefined && !telefone_valido(telemovel_mae, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel da mãe que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telefone_enc_edu!=="" && telefone_enc_edu!==undefined && !telefone_valido(telefone_enc_edu, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel_enc_edu!=="" && telemovel_enc_edu!==undefined && !telefone_valido(telemovel_enc_edu, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel do encarregado de educação que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telefone!=="" && telefone!==undefined && !telefone_valido(telefone, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telefone que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+    if(telemovel!=="" && telemovel!==undefined && !telefone_valido(telemovel, '<?= Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) ?>'))
+    {
+        alert("O número de telemóvel que introduziu é inválido. Deve conter 9 dígitos ou iniciar-se com '+xxx ' seguido de 9 digitos.");
+        return false;
+    }
+
+    if(enc_edu_pai && (telefone_pai==="" || telefone_pai===undefined) && (telemovel_pai==="" || telemovel_pai===undefined) && (telefone==="" || telefone===undefined) && (telemovel==="" || telemovel===undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
+    }
+    if(enc_edu_mae && (telefone_mae==="" || telefone_mae===undefined) && (telemovel_mae==="" || telemovel_mae===undefined) && (telefone==="" || telefone===undefined) && (telemovel==="" || telemovel===undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
+    }
+    if(enc_edu_outro && (telefone_enc_edu==="" || telefone_enc_edu===undefined) && (telemovel_enc_edu==="" || telemovel_enc_edu===undefined) && (telefone==="" || telefone===undefined) && (telemovel==="" || telemovel===undefined))
+    {
+        alert("Deve introduzir pelo menos um número de telefone ou telemóvel para o encarregado de educação.");
+        return false;
+    }
         
         
         <?php if($_REQUEST['modo']!='editar') :?>
@@ -1075,29 +1215,35 @@ $(document).ready(function(){
     {
         var enc_edu_nome = "";
         var enc_edu_parentesco = "";
-        var telemovel = document.getElementById('telemovel').value;
-        var telefone = document.getElementById('telefone').value;
-        var enc_edu_tel = 0;
+        var telemovel = document.getElementById('telemovel') ? document.getElementById('telemovel').value : '';
+        var telefone = document.getElementById('telefone') ? document.getElementById('telefone').value : '';
+        var enc_edu_tel = "";
 
         if(document.getElementById('enc_edu1').checked) //Pai
         {
             enc_edu_nome = document.getElementById('pai').value;
             enc_edu_parentesco = "Pai";
+            telemovel = document.getElementById('telemovel_pai') && document.getElementById('telemovel_pai').value!=="" ? document.getElementById('telemovel_pai').value : telemovel;
+            telefone = document.getElementById('telefone_pai') && document.getElementById('telefone_pai').value!=="" ? document.getElementById('telefone_pai').value : telefone;
         }
         else if(document.getElementById('enc_edu2').checked) //Mae
         {
             enc_edu_nome = document.getElementById('mae').value;
             enc_edu_parentesco = "Mãe";
+            telemovel = document.getElementById('telemovel_mae') && document.getElementById('telemovel_mae').value!=="" ? document.getElementById('telemovel_mae').value : telemovel;
+            telefone = document.getElementById('telefone_mae') && document.getElementById('telefone_mae').value!=="" ? document.getElementById('telefone_mae').value : telefone;
         }
         else if(document.getElementById('enc_edu3').checked) //Outro
         {
             enc_edu_nome = document.getElementById('nome_enc_edu').value;
             enc_edu_parentesco = document.getElementById('outro_enc_edu_quem').value;
+            telemovel = document.getElementById('telemovel_enc_edu') && document.getElementById('telemovel_enc_edu').value!=="" ? document.getElementById('telemovel_enc_edu').value : telemovel;
+            telefone = document.getElementById('telefone_enc_edu') && document.getElementById('telefone_enc_edu').value!=="" ? document.getElementById('telefone_enc_edu').value : telefone;
         }
 
         if(telemovel!==undefined && telemovel!=="")
             enc_edu_tel = telemovel;
-        else
+        else if(telefone!==undefined && telefone!=="")
             enc_edu_tel = telefone;
 
         var autorizacao_nome_enc_edu = document.getElementById('autorizacao_nome_enc_edu');

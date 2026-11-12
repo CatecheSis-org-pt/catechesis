@@ -136,6 +136,46 @@ $menu->renderHTML();
 	  	$telemovel_mae = Utils::sanitizeInput($_POST['telemovel_mae']);
 	  	$telefone_enc_edu = Utils::sanitizeInput($_POST['telefone_enc_edu']);
 	  	$telemovel_enc_edu = Utils::sanitizeInput($_POST['telemovel_enc_edu']);
+
+        // Backwards compatibility fallback if only telefone/telemovel were submitted
+        if (isset($_POST['enc_edu'])) {
+            $enc_edu_temp = Utils::sanitizeInput($_POST['enc_edu']);
+            if ($enc_edu_temp == "Pai") {
+                if (empty($telefone_pai) && !empty($telefone)) {
+                    $telefone_pai = $telefone;
+                }
+                if (empty($telemovel_pai) && !empty($telemovel)) {
+                    $telemovel_pai = $telemovel;
+                }
+            } else if ($enc_edu_temp == "Mae") {
+                if (empty($telefone_mae) && !empty($telefone)) {
+                    $telefone_mae = $telefone;
+                }
+                if (empty($telemovel_mae) && !empty($telemovel)) {
+                    $telemovel_mae = $telemovel;
+                }
+            } else if ($enc_edu_temp == "Outro") {
+                if (empty($telefone_enc_edu) && !empty($telefone)) {
+                    $telefone_enc_edu = $telefone;
+                }
+                if (empty($telemovel_enc_edu) && !empty($telemovel)) {
+                    $telemovel_enc_edu = $telemovel;
+                }
+            }
+
+            if (empty($telefone) && empty($telemovel)) {
+                if ($enc_edu_temp == "Pai") {
+                    $telefone = $telefone_pai;
+                    $telemovel = $telemovel_pai;
+                } else if ($enc_edu_temp == "Mae") {
+                    $telefone = $telefone_mae;
+                    $telemovel = $telemovel_mae;
+                } else if ($enc_edu_temp == "Outro") {
+                    $telefone = $telefone_enc_edu;
+                    $telemovel = $telemovel_enc_edu;
+                }
+            }
+        }
 	  	$escuteiro = Utils::sanitizeInput($_POST['escuteiro']);
 	  	$baptizado = Utils::sanitizeInput($_POST['baptizado']);
 	  	$paroquia_baptismo = Utils::sanitizeInput($_POST['paroquia_baptismo']);

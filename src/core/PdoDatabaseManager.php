@@ -138,8 +138,11 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
                                         string $photo = null, string $obs = null,
                                         string $responsibleName = null, string $responsibleJob = null,
                                         string $responsibleRelationship = null,
+                                        string $responsiblePhone = null, string $responsibleCellPhone = null,
                                         string $fatherName = null, string $fatherJob = null,
+                                        string $fatherPhone = null, string $fatherCellPhone = null,
                                         string $motherName = null, string $motherJob = null,
+                                        string $motherPhone = null, string $motherCellPhone = null,
                                         int $marriageType = null,
                                         string $phone = null, string $cellPhone = null, string $email = null,
                                         string $baptismDate = null, string $baptismParish = null,
@@ -2244,7 +2247,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $catecheticalYearStart = intval($catecheticalYear / 10000);
         $catecheticalYearEnd = $catecheticalYear % 10000;
 
-        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
+        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
         $sql = $sql . " ORDER BY nome;";
 
         $result = [];
@@ -2294,7 +2297,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $result = [];
         try
         {
-            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE iid=:iid;";
+            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE iid=:iid;";
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":iid", $eid, PDO::PARAM_INT);
@@ -2496,10 +2499,16 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param string|null $responsibleName
      * @param string|null $responsibleJob
      * @param string|null $responsibleRelationship
+     * @param string|null $responsiblePhone
+     * @param string|null $responsibleCellPhone
      * @param string|null $fatherName
      * @param string|null $fatherJob
+     * @param string|null $fatherPhone
+     * @param string|null $fatherCellPhone
      * @param string|null $motherName
      * @param string|null $motherJob
+     * @param string|null $motherPhone
+     * @param string|null $motherCellPhone
      * @param int|null $marriageType - one of the constants in the class Marriage, or null
      * @param string|null $phone
      * @param string|null $cellPhone
@@ -2519,8 +2528,11 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                                         string $photo = null, string $obs = null,
                                         string $responsibleName = null, string $responsibleJob = null,
                                         string $responsibleRelationship = null,
+                                        string $responsiblePhone = null, string $responsibleCellPhone = null,
                                         string $fatherName = null, string $fatherJob = null,
+                                        string $fatherPhone = null, string $fatherCellPhone = null,
                                         string $motherName = null, string $motherJob = null,
+                                        string $motherPhone = null, string $motherCellPhone = null,
                                         int $marriageType = null,
                                         string $phone = null, string $cellPhone = null, string $email = null,
                                         string $baptismDate = null, string $baptismParish = null,
@@ -2558,8 +2570,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         try
         {
             //Build query
-            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, mae_nome, prof_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid)";
-            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :mae_nome, :prof_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, NULL);";
+            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid)";
+            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :telefone_pai, :telemovel_pai, :mae_nome, :prof_mae, :telefone_mae, :telemovel_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :telefone_enc_edu, :telemovel_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, NULL);";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -2587,6 +2599,14 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":prof_pai", $fatherJob, PDO::PARAM_STR);
             else
                 $stm->bindParam(":prof_pai", $mynull, PDO::PARAM_NULL);
+            if(isset($fatherPhone) && $fatherPhone!="")
+                $stm->bindParam(":telefone_pai", $fatherPhone, PDO::PARAM_STR);
+            else
+                $stm->bindParam(":telefone_pai", $mynull, PDO::PARAM_NULL);
+            if(isset($fatherCellPhone) && $fatherCellPhone!="")
+                $stm->bindParam(":telemovel_pai", $fatherCellPhone, PDO::PARAM_STR);
+            else
+                $stm->bindParam(":telemovel_pai", $mynull, PDO::PARAM_NULL);
 
             if(isset($motherName) && $motherName!="")
                 $stm->bindParam(":mae_nome", $motherName, PDO::PARAM_STR);
@@ -2596,6 +2616,14 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":prof_mae", $motherJob, PDO::PARAM_STR);
             else
                 $stm->bindParam(":prof_mae", $mynull, PDO::PARAM_NULL);
+            if(isset($motherPhone) && $motherPhone!="")
+                $stm->bindParam(":telefone_mae", $motherPhone, PDO::PARAM_STR);
+            else
+                $stm->bindParam(":telefone_mae", $mynull, PDO::PARAM_NULL);
+            if(isset($motherCellPhone) && $motherCellPhone!="")
+                $stm->bindParam(":telemovel_mae", $motherCellPhone, PDO::PARAM_STR);
+            else
+                $stm->bindParam(":telemovel_mae", $mynull, PDO::PARAM_NULL);
 
             if($responsibleIndex == 2) //Responsible other than mother or father
             {
@@ -2613,12 +2641,24 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                     $stm->bindParam(":prof_enc_edu", $responsibleJob, PDO::PARAM_STR);
                 else
                     $stm->bindParam(":prof_enc_edu", $mynull, PDO::PARAM_NULL);
+
+                if(isset($responsiblePhone) && $responsiblePhone != "")
+                    $stm->bindParam(":telefone_enc_edu", $responsiblePhone, PDO::PARAM_STR);
+                else
+                    $stm->bindParam(":telefone_enc_edu", $mynull, PDO::PARAM_NULL);
+
+                if(isset($responsibleCellPhone) && $responsibleCellPhone != "")
+                    $stm->bindParam(":telemovel_enc_edu", $responsibleCellPhone, PDO::PARAM_STR);
+                else
+                    $stm->bindParam(":telemovel_enc_edu", $mynull, PDO::PARAM_NULL);
             }
             else
             {
                 $stm->bindParam(":enc_edu_parentesco", $mynull, PDO::PARAM_NULL);
                 $stm->bindParam(":enc_edu_nome", $mynull, PDO::PARAM_NULL);
                 $stm->bindParam(":prof_enc_edu", $mynull, PDO::PARAM_NULL);
+                $stm->bindParam(":telefone_enc_edu", $mynull, PDO::PARAM_NULL);
+                $stm->bindParam(":telemovel_enc_edu", $mynull, PDO::PARAM_NULL);
             }
 
             if(isset($marriage) && $marriage!="")

@@ -378,11 +378,17 @@ CREATE TABLE pedidoInscricao
     #familiar fields
     pai_nome                    VARCHAR(255),
     prof_pai		            VARCHAR(80),
+    telefone_pai                VARCHAR(20),
+    telemovel_pai               VARCHAR(20),
     mae_nome                    VARCHAR(255),
     prof_mae		            VARCHAR(80),
+    telefone_mae                VARCHAR(20),
+    telemovel_mae               VARCHAR(20),
     enc_edu_parentesco          VARCHAR(50) NULL,       # Preechido apenas se enc_edu=2
     enc_edu_nome                VARCHAR(255) NULL,      # Preenchido apenas se enc. edu. nao for pai nem mae
     prof_enc_edu                VARCHAR(80),            # Preenchido apenas se enc. edu. nao for pai nem mae
+    telefone_enc_edu            VARCHAR(20),
+    telemovel_enc_edu           VARCHAR(20),
     casados_como		        VARCHAR(20),
     morada		                VARCHAR(320),
     cod_postal	                VARCHAR(50),
