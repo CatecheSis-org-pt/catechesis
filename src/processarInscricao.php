@@ -321,7 +321,11 @@ $menu->renderHTML();
 
         if($nifEnabled)
         {
-            if(!$nif || $nif==="" || !DataValidationUtils::validateNIF($nif, true))
+            if($_REQUEST['modo'] == "aprovar" && (empty($nif) || $nif === ""))
+            {
+                $nif = null;
+            }
+            else if(!$nif || $nif==="" || !DataValidationUtils::validateNIF($nif, true))
             {
                 echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O número de identificação fiscal que introduziu é inválido.</div>");
                 $inputs_invalidos = true;
