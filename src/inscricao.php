@@ -502,7 +502,7 @@ $menu->renderHTML();
 
   <!--nome-->
     <div class="form-group">
-    <div class="col-xs-6">
+    <div class="col-lg-6">
       <label for="nome">Nome:</label>
       <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo do catequizando" onchange="verifica_catequizando_inscrito()" value="<?php  if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar')){ echo('' . $nome . '');} else {echo('');} ?>" required>
       <div class="alert alert-danger" id="catequizando_inscrito" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Catequizando já inscrito anteriormente!</div>
@@ -512,7 +512,7 @@ $menu->renderHTML();
 
    <!--data nascimento-->
     <div class="form-group">
-     <div class="col-xs-2">
+     <div class="col-lg-2">
      <div class="input-append date" id="data_nasc_div" data-date="" data-date-format="dd-mm-yyyy">
       <label for="data_nasc">Nasceu a:</label>
       <!--<div class="input-group">-->
@@ -527,7 +527,7 @@ $menu->renderHTML();
 
    <!--local nascimento-->
     <div class="form-group">
-    <div class="col-xs-3">
+    <div class="col-lg-3">
       <label for="localidade">Em:</label>
       <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" list="locais_nascimento" value="<?php  if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar')){ echo('' . $local_nasc . '');} else {echo('');} ?>" required>
     </div>
@@ -535,7 +535,7 @@ $menu->renderHTML();
 
 
      <!--numero irmaos-->
-    <div class="col-xs-1">
+    <div class="col-lg-1">
     <div id="num_irmaos_div">
       <label for="num_irmaos">Irmãos:</label>
       <input type="number" min=0 class="form-control" id="num_irmaos" name="num_irmaos" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $num_irmaos . '');} else {echo('0');} ?>">
@@ -548,7 +548,7 @@ $menu->renderHTML();
 
    <!--morada-->
     <div class="form-group">
-    <div class="col-xs-12">
+    <div class="col-lg-12">
       <label for="morada">Morada:</label>
       <input type="text" class="form-control" id="morada" name="morada" placeholder="Morada do encarregado de educação" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $morada . '');} else {echo('');} ?>" required>
     </div>
@@ -560,7 +560,7 @@ $menu->renderHTML();
     <div class="form-group">
 
         <!--codigo postal-->
-        <div class="col-xs-4">
+        <div class="col-lg-4">
             <div id="codigo_postal_div">
                 <label for="codigo_postal">Código postal:</label>
                 <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="xxxx-xxx Localidade" list="codigos_postais" onclick="verifica_codigo_postal()" onchange="verifica_codigo_postal()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $cod_postal . '');} else {echo('');} ?>" required>
@@ -570,7 +570,7 @@ $menu->renderHTML();
 
         <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
         <!--NIF-->
-        <div class="col-xs-2">
+        <div class="col-lg-2">
             <div id="nif_div">
                 <label for="nif">NIF:</label>
                 <div class="input-group">
@@ -589,7 +589,7 @@ $menu->renderHTML();
 
    <!--escuteiro-->
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
     <div class="row" style="margin-top:20px; "></div>
     	<label for="e_escuteiro">É escuteiro(a):</label>
     	<label class="radio-inline"><input type="radio" name="escuteiro" value="Sim" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && ($escuteiro=='Sim' || $escuteiro==1)){ echo('checked');} ?>>Sim</label>
@@ -605,7 +605,7 @@ $menu->renderHTML();
     <!--baptizado-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
     <div class="row" style="margin-top:20px; "></div>
     	<label for="e_baptizado">É baptizado(a):</label>
     	<label class="radio-inline"><input type="radio" id="baptizado1" name="baptizado" value="Sim" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['baptizado']=='Sim'){ echo('checked');} ?>>Sim</label>
@@ -619,7 +619,7 @@ $menu->renderHTML();
     <!--paroquia de baptismo-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['baptizado']=='Sim'){ echo('in');} ?>" id="paroquia_baptismo_collapse">
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="paroquia_baptismo"> Paróquia de baptismo: </label>
       <input type="text" class="form-control" id="paroquia_baptismo" name="paroquia_baptismo" placeholder="Paróquia de baptismo" list="paroquias" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['paroquia_baptismo'] . '');} else {echo('');} ?>">
     </div>
@@ -629,7 +629,7 @@ $menu->renderHTML();
     <!--data de baptismo-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
-     <div class="col-xs-2">
+     <div class="col-lg-2">
      <div class="input-append date" id="data_baptismo_div" data-date="" data-date-format="dd-mm-yyyy">
       <label for="data_baptismo">Data:</label>
       <input class="form-control" id="data_baptismo" name="data_baptismo" size="16" type="text" onclick="verifica_data_baptismo()" onchange="verifica_data_baptismo()" placeholder="dd-mm-aaaa" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['data_baptismo'] . '');} else {echo('');} ?>" >
@@ -648,7 +648,7 @@ $menu->renderHTML();
     <!--primeira comunhao-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
     	<label for="fez_primeira_comunhao">Fez primeira comunhão:</label>
     	<label class="radio-inline"><input type="radio" id="comunhao1" name="comunhao" value="Sim" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['comunhao']=='Sim'){ echo('checked');} ?>>Sim</label>
 	<label class="radio-inline"><input type="radio" id="comunhao2" name="comunhao" value="Nao" <?php  if($_REQUEST['modo']!='regresso' || ($_REQUEST['modo']=='regresso' && $_SESSION['comunhao']!='Sim')){ echo('checked');} ?>>Não</label>
@@ -661,7 +661,7 @@ $menu->renderHTML();
     <!--paroquia primeira comunhao-->
      <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['comunhao']=='Sim'){ echo('in');} ?>" id="paroquia_comunhao_collapse">
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="paroquia_comunhao"> Paróquia 1ª comunhão:</label>
       <input type="text" class="form-control" id="paroquia_comunhao" name="paroquia_comunhao" placeholder="Paróquia 1ª comunhão" list="paroquias" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['paroquia_comunhao'] . '');} else {echo('');} ?>">
     </div>
@@ -670,7 +670,7 @@ $menu->renderHTML();
     <!--data primeira comunhao-->
     <?php if($_REQUEST['modo']=='editar'){ echo("<!--");} ?>
     <div class="form-group">
-     <div class="col-xs-2">
+     <div class="col-lg-2">
      <div class="input-append date" id="data_comunhao_div" data-date="" data-date-format="dd-mm-yyyy">
       <label for="data_comunhao">Data:</label>
       <input class="form-control" id="data_comunhao" name="data_comunhao" size="16" type="text" onclick="verifica_data_comunhao()" onchange="verifica_data_comunhao()" placeholder="dd-mm-aaaa" value="<?php  if($_REQUEST['modo']=='regresso'){ echo('' . $_SESSION['data_comunhao'] . '');} else {echo('');} ?>" >
@@ -688,7 +688,7 @@ $menu->renderHTML();
 
      <!--encarregado educacao-->
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
         <div class="row" style="margin-top:20px; "></div>
     	<label for="encarregado educacao">Encarregado de educação:</label>
     	<label class="radio-inline"><input type="radio" id="enc_edu1" name="enc_edu" value="Pai" onchange="mostrar_ocultar_campo_outro_enc_edu();" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Pai'){ echo('checked');} ?>>Pai</label>
@@ -701,7 +701,7 @@ $menu->renderHTML();
 
     <!--outro encarregado educacao quem-->
     <div class="form-group collapse <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])) && $enc_edu=='Outro'){ echo('in');} ?>" id="encarregado_educacao_collapse">
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <label for="outro_enc_edu_quem"> Parentesco:</label>
       <input type="text" class="form-control" id="outro_enc_edu_quem" name="outro_enc_edu_quem" placeholder="Ex: Avó" list="parentesco" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $outro_enc_edu_quem . '');} else {echo('');} ?>">
     </div>
@@ -713,19 +713,19 @@ $menu->renderHTML();
     </datalist>
 
     <!--outro encarregado educacao nome-->
-    <div class="col-xs-3">
+    <div class="col-lg-3">
       <label for="nome_end_edu"> Nome:</label>
       <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" placeholder="Nome completo do encarregado de educação" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $nome_enc_edu . '');} else {echo('');} ?>">
     </div>
 
    <!--outro encarregado educacao profissao-->
-    <div class="col-xs-3">
+    <div class="col-lg-3">
       <label for="prof_enc_edu"> Profissão:</label>
       <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $prof_enc_edu . '');} else {echo('');} ?>">
     </div>
 
     <!--telemovel outro encarregado educacao-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telemovel_enc_edu_div">
         <label for="telemovel_enc_edu"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
         <input type="tel" class="form-control" id="telemovel_enc_edu" name="telemovel_enc_edu" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>" onclick="verifica_telemovel_enc_edu()" onchange="verifica_telemovel_enc_edu()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $telemovel_enc_edu . '');} else {echo('');} ?>">
@@ -734,7 +734,7 @@ $menu->renderHTML();
     </div>
 
     <!--telefone outro encarregado educacao-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telefone_enc_edu_div">
         <label for="telefone_enc_edu">Telefone:</label>
         <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" onclick="verifica_telefone_enc_edu()" onchange="verifica_telefone_enc_edu()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'editar', 'irmao'])){ echo('' . $telefone_enc_edu . '');} else {echo('');} ?>">
@@ -752,19 +752,19 @@ $menu->renderHTML();
 
     <!--pai-->
     <div class="form-group">
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="pai">Pai:</label>
       <input type="text" class="form-control" id="pai" name="pai" placeholder="Nome completo do pai" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $pai . '');} else {echo('');} ?>">
     </div>
 
     <!--profissao pai-->
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="prof_pai">Profissão:</label>
       <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_pai . '');} else {echo('');} ?>">
     </div>
 
     <!--telemovel pai-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telemovel_pai_div">
         <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
         <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do pai" onclick="verifica_telemovel_pai()" onchange="verifica_telemovel_pai()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel_pai . '');} else {echo('');} ?>">
@@ -773,7 +773,7 @@ $menu->renderHTML();
     </div>
 
     <!--telefone pai-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telefone_pai_div">
         <label for="telefone_pai">Telefone:</label>
         <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" onclick="verifica_telefone_pai()" onchange="verifica_telefone_pai()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone_pai . '');} else {echo('');} ?>">
@@ -787,19 +787,19 @@ $menu->renderHTML();
 
     <!--mae-->
     <div class="form-group">
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="mae">Mãe:</label>
       <input type="text" class="form-control" id="mae" name="mae" placeholder="Nome completo da mãe" list="familiares" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $mae . '');} else {echo('');} ?>">
     </div>
 
     <!--profissao mae-->
-    <div class="col-xs-4">
+    <div class="col-lg-4">
       <label for="prof_mae">Profissão:</label>
       <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" list="profissoes" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $prof_mae . '');} else {echo('');} ?>">
     </div>
 
     <!--telemovel mae-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telemovel_mae_div">
         <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
         <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> da mãe" onclick="verifica_telemovel_mae()" onchange="verifica_telemovel_mae()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telemovel_mae . '');} else {echo('');} ?>">
@@ -808,7 +808,7 @@ $menu->renderHTML();
     </div>
 
     <!--telefone mae-->
-    <div class="col-xs-2">
+    <div class="col-lg-2">
       <div id="telefone_mae_div">
         <label for="telefone_mae">Telefone:</label>
         <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" onclick="verifica_telefone_mae()" onchange="verifica_telefone_mae()" value="<?php  if(isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['irmao', 'regresso', 'editar'])){ echo('' . $telefone_mae . '');} else {echo('');} ?>">
@@ -822,7 +822,7 @@ $menu->renderHTML();
 
     <!--casados-->
     <div class="form-group">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
     	<label for="casados">Casados:</label>
     	<label class="radio-inline"><input type="radio" id="casados1" name="casados" value="Sim" <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados=='Sim'){ echo('checked');} ?>>Sim</label>
 	<label class="radio-inline"><input type="radio" id="casados2" name="casados" value="Nao" <?php  if((!isset($_REQUEST['modo']) || !in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) || ((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados!='Sim')){ echo('checked');} ?>>Não</label>
@@ -833,7 +833,7 @@ $menu->renderHTML();
 
      <!--casados como-->
     <div class="form-group collapse <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados=='Sim'){ echo('in');} ?>" id="casados_como">
-    <div class="col-xs-8">
+    <div class="col-lg-8">
     	<label for="casados_como">Se respondeu <i>Sim</i> indique:</label>
     	<label class="radio-inline"><input type="radio" name="casados_como" value="igreja" <?php  if((!isset($_REQUEST['modo']) || !in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) || ((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados_como=='igreja')){ echo('checked');} ?>>Igreja</label>
 	<label class="radio-inline"><input type="radio" name="casados_como" value="civil"  <?php  if((isset($_REQUEST['modo']) && in_array($_REQUEST['modo'], ['regresso', 'irmao', 'editar'])) && $casados_como=='civil'){ echo('checked');} ?>>Civil</label>
@@ -846,7 +846,7 @@ $menu->renderHTML();
 
      <!--email-->  
     <div class="form-group">
-    <div class="col-xs-12">
+    <div class="col-lg-12">
       <label for="email">Para que seja informado de notícias e atividades da nossa catequese, indique-nos o seu e-mail. Assim poderá organizar melhor a sua vida e planear a sua agenda.<br>E-mail:</label>
       <input type="email" class="form-control" id="email" name="email" placeholder="endereco@example.com" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $email . '');} else {echo('');} ?>">
     </div>
@@ -889,7 +889,7 @@ $menu->renderHTML();
         <div class="panel-body">
 
             <div class="form-group">
-              <div class="col-xs-8">
+              <div class="col-lg-8">
               <div class="row"></div>
                     <div class="radio">
                         <label><input type="radio" id="quer_inscrever" name="quer_inscrever" value="Nao" <?php  if($_REQUEST['modo']!='regresso' || ($_REQUEST['modo']=='regresso' && $_SESSION['quer_inscrever']!='Sim')){ echo('checked');} ?>> Não inscrever agora num grupo de catequese</label>
@@ -905,14 +905,14 @@ $menu->renderHTML();
               <div class="jumbotron collapse <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['quer_inscrever']=='Sim'){ echo('in');} ?>" id="quer_inscrever_collapse">
 
                   <div class="form-group">
-                    <div class="col-xs-4" style="margin-top: 3px;">
+                    <div class="col-lg-4" style="margin-top: 3px;">
                      <label for="ano_catequetico">Ano catequético: </label>          
                       <?php
                           echo("<span>" . Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) . "</span>\n");
                       ?>
                     </div>
 
-                      <div class="col-xs-4">
+                      <div class="col-lg-4">
                         <label for="catecismo">Catecismo:</label>
                       <select name="catecismo">
 
@@ -948,7 +948,7 @@ $menu->renderHTML();
                       </select>
                     </div>
 
-                      <div class="col-xs-3">
+                      <div class="col-lg-3">
                         <label for="turma">Grupo:</label>
                       <select name="turma">
 
@@ -984,7 +984,7 @@ $menu->renderHTML();
                     </div>
 
 
-                      <div class="checkbox col-xs-1" style="margin-top: 3px;">
+                      <div class="checkbox col-lg-1" style="margin-top: 3px;">
                         <label><input id="pago" name="pago" type="checkbox" <?php   if($_REQUEST['modo']=='regresso' && ($_SESSION['pago']=='on' || $_SESSION['pago']==1)){ echo("checked");}?> > Pago</label>
                       </div>
 
