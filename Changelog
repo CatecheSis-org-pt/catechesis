@@ -16,6 +16,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 #### Correções:
 - Corrigido bug na edição de fichas de catequizandos que podia causar mistura de dados quando eram abertas várias fichas em simultâneo em separadores diferentes do navegador;
 - É agora possível aprovar pedidos de inscrição antigos, realizados com o campo opcional "NIF" desativado, quando o CatecheSis foi entretanto configurado para exigir o NIF em todas as fichas novas;
+- Por vezes, as imagens de alguns catequizandos no modo "Quem é quem" não eram mostradas, por ser atingido o limite máximo de conexões simultâneas nalguns servidores web. O carregamento das imagens passou a ser "lazy", para evitar este problema;
 
 
 ## [Versão 2.5.0] - 2026-10-28
