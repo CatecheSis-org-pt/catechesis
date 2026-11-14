@@ -207,6 +207,7 @@ $menu->renderHTML();
         $autoriza_saida = null;
         $autorizacoes_saida_menores = null;
         $observacoes = null;
+        $ano_escolaridade = null;
         if($_REQUEST['modo']=="aprovar")
         {
             $foto_cam = Utils::sanitizeInput($_POST['foto_file']);         // Caminho do ficheiro da foto, ja registada
@@ -227,6 +228,7 @@ $menu->renderHTML();
             }
 
             $iid = intval(Utils::sanitizeInput($_POST['iid']));
+            $ano_escolaridade = isset($_POST['ano_escolaridade']) ? Utils::sanitizeInput($_POST['ano_escolaridade']) : null;
         }
         else
         {
@@ -1225,6 +1227,21 @@ $menu->renderHTML();
 
         if($_REQUEST['modo']=="aprovar")
         {
+            //Registar escolaridade
+            if(isset($ano_escolaridade) && $ano_escolaridade !== "")
+            {
+                try
+                {
+                    if($db->insertCatechumenSchoolingRecord($cid, Utils::currentCatecheticalYear(), $ano_escolaridade))
+                    {
+                        catechumenArchiveLog($cid, "Actualizado percurso escolar do catequizando com id=" . $cid . ". Acrescentou-se que no ano lectivo de " . Utils::formatCatecheticalYear(Utils::currentCatecheticalYear()) . " o ano escolar era " . $ano_escolaridade . ".");
+                    }
+                }
+                catch(Exception $e)
+                {
+                }
+            }
+
             //Marcar pedido de inscricao como processado
             setEnrollmentOrderAsProcessed($iid, $cid);
         }
