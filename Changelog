@@ -5,6 +5,7 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 ## [Versão UNRELEASED] - 2026-11-xx
 
 #### Novidades:
+- Os formulários públicos de inscrição e renovação de matrículas agora incluem o ano escolar. Este é utilizado pelo CatecheSis para fazer melhores recomendações de catecismo para novas inscrições;
 - Adicionada verificação para NIFs inválidos ou não preenchidos no relatório de dados inconsistentes;
 
 
