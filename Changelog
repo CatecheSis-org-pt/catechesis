@@ -4,13 +4,18 @@ Todas as alterações significativas ao CatecheSis são registadas aqui.
 
 ## [Versão UNRELEASED] - 2026-11-xx
 
-#### Melhorias de usabilidade:
-- O NIF '000 000 000" é agora aceite na edição de fichas de catequizandos, para facilitar a transição em paróquias que passaram a utilizar este campo mas onde a maior parte das fichas ainda não o tem preenchido;
+#### Novidades:
 - Adicionada verificação para NIFs inválidos ou não preenchidos no relatório de dados inconsistentes;
+
+
+#### Melhorias de usabilidade:
+- Os campos "telemóvel" e "telefone" nas fichas dos catequizandos e nos formulários de inscrição aparecem agora associados a cada familiar (pai, mãe, encarregado de educação), para tornar mais explícito de quem é cada número de telefone na ficha;
+- O NIF '000 000 000" é agora aceite na edição de fichas de catequizandos, para facilitar a transição em paróquias que passaram a utilizar este campo mas onde a maior parte das fichas ainda não o tem preenchido;
+- A legibilidade do formulário de inscrição interno em dispositivos móveis foi melhorada;
 
 #### Correções:
 - Corrigido bug na edição de fichas de catequizandos que podia causar mistura de dados quando eram abertas várias fichas em simultâneo em separadores diferentes do navegador;
-
+- É agora possível aprovar pedidos de inscrição antigos, realizados com o campo opcional "NIF" desativado, quando o CatecheSis foi entretanto configurado para exigir o NIF em todas as fichas novas;
 
 
 ## [Versão 2.5.0] - 2026-10-28
