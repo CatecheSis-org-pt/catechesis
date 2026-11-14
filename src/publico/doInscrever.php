@@ -168,6 +168,7 @@ $navbar->renderHTML();
         $email = Utils::sanitizeInput($_POST['email']);
 
         //Percurso catequetico
+        $ano_escolaridade = intval(Utils::sanitizeInput($_POST['ano_escolaridade']));
         $ja_frequentou_catequese = Utils::sanitizeInput($_POST['ja_frequentou_catequese']);
         $ultimo_catecismo = intval(Utils::sanitizeInput($_POST['ultimo_catecismo']));
         $escuteiro = Utils::sanitizeInput($_POST['escuteiro']);
@@ -236,6 +237,7 @@ $navbar->renderHTML();
 		$_SESSION['telemovel'] = $telemovel;
 		$_SESSION['email'] = $email;
 
+        $_SESSION['ano_escolaridade'] = $ano_escolaridade;
         $_SESSION['ja_frequentou_catequese'] = $ja_frequentou_catequese;
         $_SESSION['ultimo_catecismo'] = $ultimo_catecismo;
         $_SESSION['escuteiro'] = $escuteiro;
@@ -466,6 +468,12 @@ $navbar->renderHTML();
 	  		$inputs_invalidos = true;	  	
 	  	}
 
+        if(isset($ano_escolaridade) && ($ano_escolaridade < 1 || $ano_escolaridade > 12))
+        {
+            echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O ano de escolaridade selecionado é inválido.</div>");
+            $inputs_invalidos = true;
+        }
+
 	  	if(isset($ultimo_catecismo) && ($ultimo_catecismo=="" || $ultimo_catecismo < 1 || $ultimo_catecismo > 10) )
         {
             echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O valor do campo último catecismo frequentado é inválido.</div>");
@@ -544,7 +552,7 @@ $navbar->renderHTML();
                     $telefone, $telemovel, $email,
                     $data_baptismo, $paroquia_baptismo,
                     $data_comunhao, $paroquia_comunhao,
-                    $ultimo_catecismo);
+                    $ultimo_catecismo, $ano_escolaridade);
             }
             catch(Exception $e)
             {

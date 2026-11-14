@@ -403,8 +403,29 @@ $pageUI->addWidget($footer);
 
 
            <div class="panel panel-default" id="painel_percurso_catequetico">
-               <div class="panel-heading">Percurso catequético</div>
+               <div class="panel-heading">Percurso catequético e escolar</div>
                <div class="panel-body">
+
+                   <!--ano de escolaridade-->
+                   <div class="form-group">
+                       <div class="col-lg-3">
+                           <div class="row" style="margin-top:20px; "></div>
+                           <label for="ano_escolaridade">Ano de escolaridade que frequenta em <?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear());?>:</label>
+                           <select id="ano_escolaridade" name="ano_escolaridade" class="form-control">
+                               <?php
+                               for($i = 1; $i <= 12; $i++)
+                               {
+                                   ?>
+                                   <option value="<?= $i ?>" <?php if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && isset($_SESSION['ano_escolaridade']) && $_SESSION['ano_escolaridade']==$i){ echo('selected');} ?>><?= $i ?>º ano</option>
+                                   <?php
+                               }
+                               ?>
+                           </select>
+                       </div>
+                       <div class="clearfix"></div>
+                   </div>
+
+                   <div class="row" style="margin-bottom:20px; "></div>
 
                    <!--ja frequentou a catequese-->
                    <div class="form-group">

@@ -407,6 +407,7 @@ CREATE TABLE pedidoInscricao
 
     #outros fields
     ultimo_catecismo            INT NULL,               # Ultimo catecismo frequentado
+    ano_escolaridade            TINYINT,                # Ano escolar que frequenta
     cid                         INT NULL,               # Quando o pedido for processado, preencher aqui cid do catequizando
 
 

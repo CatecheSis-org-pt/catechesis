@@ -118,7 +118,7 @@ interface DatabaseManager
                                         string $phone = null, string $cellPhone = null, string $email = null,
                                         string $baptismDate = null, string $baptismParish = null,
                                         string $comunionDate = null, string $comunionParish = null,
-                                        int $lastCatechism = null);
+                                        int $lastCatechism = null, int $schoolYear = null);
     public function updateRenewalOrderStatus(int $rid, int $status, int $enrollmentCatecheticalYear = null,
                                              int $enrollmentCatechism = null, string $enrollmentGroup = null);          // Updates the status of a renewal order submission
     public function deleteRenewalOrder(int $rid);                                                                       // Deletes a renewal order from the database

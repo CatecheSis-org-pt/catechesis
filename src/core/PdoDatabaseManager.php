@@ -147,7 +147,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
                                         string $phone = null, string $cellPhone = null, string $email = null,
                                         string $baptismDate = null, string $baptismParish = null,
                                         string $comunionDate = null, string $comunionParish = null,
-                                        int $lastCatechism = null);
+                                        int $lastCatechism = null, int $schoolYear = null);
     public function updateRenewalOrderStatus(int $rid, int $status, int $enrollmentCatecheticalYear = null,
                                              int $enrollmentCatechism = null, string $enrollmentGroup = null);
     public function deleteRenewalOrder(int $rid);
@@ -2256,7 +2256,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $catecheticalYearStart = intval($catecheticalYear / 10000);
         $catecheticalYearEnd = $catecheticalYear % 10000;
 
-        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
+        $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, ano_escolaridade, cid FROM pedidoInscricao WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 6) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 6)) ";
         $sql = $sql . " ORDER BY nome;";
 
         $result = [];
@@ -2306,7 +2306,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $result = [];
         try
         {
-            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid FROM pedidoInscricao WHERE iid=:iid;";
+            $sql = "SELECT iid, data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, ano_escolaridade, cid FROM pedidoInscricao WHERE iid=:iid;";
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":iid", $eid, PDO::PARAM_INT);
@@ -2546,7 +2546,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                                         string $phone = null, string $cellPhone = null, string $email = null,
                                         string $baptismDate = null, string $baptismParish = null,
                                         string $comunionDate = null, string $comunionParish = null,
-                                        int $lastCatechism = null)
+                                        int $lastCatechism = null, int $schoolYear = null)
     {
         if(!$this->connectAsNeeded(DatabaseAccessMode::ONLINE_ENROLLMENT))
             throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
@@ -2579,8 +2579,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         try
         {
             //Build query
-            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, cid)";
-            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :telefone_pai, :telemovel_pai, :mae_nome, :prof_mae, :telefone_mae, :telemovel_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :telefone_enc_edu, :telemovel_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, NULL);";
+            $sql = "INSERT INTO pedidoInscricao(data_hora, endereco_ip, nome, data_nasc, local_nasc, nif, num_irmaos, escuteiro, autorizou_fotos, autorizou_saida_sozinho, enc_edu, foto, obs, pai_nome, prof_pai, telefone_pai, telemovel_pai, mae_nome, prof_mae, telefone_mae, telemovel_mae, enc_edu_parentesco, enc_edu_nome, prof_enc_edu, telefone_enc_edu, telemovel_enc_edu, casados_como, morada, cod_postal, telefone, telemovel, email, data_baptismo, paroquia_baptismo, data_comunhao, paroquia_comunhao, autorizacoesSaidaMenores, ultimo_catecismo, ano_escolaridade, cid)";
+            $sql = $sql . "VALUES(NOW(), :endereco_ip, :nome, STR_TO_DATE(:data_nasc, '%d-%m-%Y'), :local_nasc, :nif, :num_irmaos, :escuteiro, :autorizou_fotos, :autorizou_saida_sozinho, :enc_edu, :foto, :obs, :pai_nome, :prof_pai, :telefone_pai, :telemovel_pai, :mae_nome, :prof_mae, :telefone_mae, :telemovel_mae, :enc_edu_parentesco, :enc_edu_nome, :prof_enc_edu, :telefone_enc_edu, :telemovel_enc_edu, :casados_como, :morada, :cod_postal, :telefone, :telemovel, :email, STR_TO_DATE(:data_baptismo, '%d-%m-%Y'), :paroquia_baptismo, STR_TO_DATE(:data_comunhao, '%d-%m-%Y'), :paroquia_comunhao, :autorizacoesSaidaMenores, :ultimo_catecismo, :ano_escolaridade, NULL);";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -2721,6 +2721,11 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":ultimo_catecismo", $lastCatechism, PDO::PARAM_INT);
             else
                 $stm->bindParam(":ultimo_catecismo", $mynull, PDO::PARAM_NULL);
+
+            if(isset($schoolYear) && $schoolYear!="" && $schoolYear >= 1 && $schoolYear <= 12)
+                $stm->bindParam(":ano_escolaridade", $schoolYear, PDO::PARAM_INT);
+            else
+                $stm->bindParam(":ano_escolaridade", $mynull, PDO::PARAM_NULL);
 
 
 

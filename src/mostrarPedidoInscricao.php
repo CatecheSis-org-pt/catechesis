@@ -441,8 +441,34 @@ $db = new PdoDatabaseManager();
 
 
    <div class="panel panel-default" id="painel_percurso_catequetico">
-       <div class="panel-heading">Percurso catequético</div>
+       <div class="panel-heading">Percurso catequético e escolar</div>
        <div class="panel-body">
+
+           <!--ano de escolaridade-->
+           <div class="form-group">
+               <div class="col-lg-3">
+                   <div class="row" style="margin-top:20px; "></div>
+                   <label for="ano_escolaridade">Ano de escolaridade:</label>
+                   <select id="ano_escolaridade" name="ano_escolaridade_disabled" class="form-control" disabled>
+                       <?php
+                       if(!isset($submission['ano_escolaridade']) || $submission['ano_escolaridade'] == '')
+                       {
+                           echo('<option value="" selected>Não especificado</option>');
+                       }
+                       for($i = 1; $i <= 12; $i++)
+                       {
+                           ?>
+                           <option value="<?= $i ?>" <?php if(isset($submission['ano_escolaridade']) && $submission['ano_escolaridade']==$i){ echo('selected'); } ?>><?= $i ?>º ano</option>
+                           <?php
+                       }
+                       ?>
+                   </select>
+                   <input type="hidden" name="ano_escolaridade" value="<?php echo($submission['ano_escolaridade']);?>">
+               </div>
+               <div class="clearfix"></div>
+           </div>
+
+           <div class="row" style="margin-bottom:20px; "></div>
 
            <!--ja frequentou a catequese-->
            <div class="form-group">
