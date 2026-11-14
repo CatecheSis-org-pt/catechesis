@@ -416,28 +416,6 @@ $db = new PdoDatabaseManager();
                   <span id="erro_postal_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                 </div>
                 </div>
-
-
-
-                <!--telemovel-->
-                <div class="col-lg-2">
-                    <div id="telemovel_div">
-                      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
-                      <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                    </div>
-                </div>
-
-
-
-                <!--telefone-->
-                <div class="col-lg-2">
-                <div id="telefone_div">
-                  <label for="tel">Telefone:</label>
-                  <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Telefone do encarregado de educação" onclick="verifica_telefone()" onchange="verifica_telefone(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telefone']);?>" readonly>
-                  <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                </div>
-                </div>
                 <div class="clearfix"></div>
             </div>
 
