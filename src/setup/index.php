@@ -90,7 +90,7 @@ switch($current_step)
 
     case 2:
         // Define requirements
-        $checker->requirePhpVersion('>=7.4')
+        $checker->requirePhpVersion('>=8.2')
             ->requirePhpExtensions(['pdo_mysql', 'gd', 'xml', 'XMLWriter', /*'xsl',*/ 'zip', 'DOM', 'MBString'])
             ->requireClasses(['PDO', 'finfo', 'stdClass'])
             //->requireApacheModules(['mod_rewrite'])
@@ -112,12 +112,6 @@ switch($current_step)
         {
             $reqs_satisfied = false;
             $https_pass = false;
-        }
-
-        // Enforce PHP version < 8.0 (installation wizard requirement)
-        if (defined('PHP_VERSION_ID') ? PHP_VERSION_ID >= 80000 : version_compare(PHP_VERSION, '8.0.0', '>=')) {
-            $reqs_satisfied = false;
-            $custom_errors[] = 'A versão do PHP deve ser inferior a 8.0. Versão detetada: ' . PHP_VERSION;
         }
         break;
 
