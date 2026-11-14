@@ -290,6 +290,7 @@ $pageUI->addWidget($orderDetailsDialog);
                                             $catequizando_nome = Utils::sanitizeOutput($pedido['nome']);
                                             $data_nascimento = Utils::sanitizeOutput($pedido['data_nasc']);
                                             $ultimo_catecismo = $pedido['ultimo_catecismo'];
+                                            $ano_escolaridade = $pedido['ano_escolaridade'] ?? null;
                                             $observacoes = Utils::escapeSingleQuotes(Utils::doubleEscapeDoubleQuotes(Utils::doubleEscapeWhiteSpaces(Utils::sanitizeOutput($pedido['obs']))));
 
 
@@ -299,7 +300,7 @@ $pageUI->addWidget($orderDetailsDialog);
 
                                             echo("\t<td><a href=\"mostrarPedidoInscricao.php?iid=" . $iid . "\" target=\"_blank\" rel=\"noopener noreferrer\" \"></a>" . $catequizando_nome . "</td>");
 
-                                            echo("\t<td>" . computeRecommendedCatechism($data_nascimento, $ultimo_catecismo) . "º</td>\n");
+                                            echo("\t<td>" . computeRecommendedCatechism($data_nascimento, $ultimo_catecismo, $ano_escolaridade) . "º</td>\n");
 
                                             echo("\t<td>");
                                             if(isset($observacoes) && $observacoes != "")

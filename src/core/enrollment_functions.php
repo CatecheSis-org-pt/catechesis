@@ -243,60 +243,67 @@ function addAuthorizationToList(int $cid, string $name, string $relationship, st
 
 /**
  * Computes the recommended catechism for a catechumen given its birth date and his/her previous catechism (if he/she
- * frequented catechesis in another parish).
+ * frequented catechesis in another parish) or the currently attended school year.
  * @param $birthDate
  * @param null $previousCatechism
+ * @param null $schoolYear
  */
-function computeRecommendedCatechism($birthDate, $previousCatechism = null): int
+function computeRecommendedCatechism($birthDate, $previousCatechism = null, $schoolYear = null): int
 {
-
-    // Compute recommendation based on the previously frequented catechism (if any)
-    $catechumenHistoryRecommendation = 0;
-    if(isset($previousCatechism) && intval($previousCatechism) >= 1 && intval($previousCatechism) <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
+    if(isset($schoolYear) && $schoolYear !== '' && intval($schoolYear) >= 1)
     {
-        //Catechumen already frequented catechesis before (perhaps in another parish)
-        $catechumenHistoryRecommendation = intval($previousCatechism) + 1;
-    }
-
-
-    // Compute recomendation based on age
-    $ageRecomendation = 0;
-    {
-        $this_october = date_create(date('Y-10-31'));
-        $this_december = date_create(date('Y-12-31'));
-
-        if( (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL) &&
-            (date('m') >= 1 && date('m') <= 6) )
-        {
-            // Make the computations as if we were on the past year, because we are still enrolling children for the current year
-
-            $current_start_year = date('Y') - 1;  // The civil year when the current catechetical year started
-            $this_october = date_create(date("$current_start_year-10-3"));
-            $this_december = date_create(date("$current_start_year-12-31"));
-        }
-
-        $ageInOctober = date_diff(date_create($birthDate), $this_october)->y;
-        $ageInDecember = date_diff(date_create($birthDate), $this_december)->y;
-
-        $conditionalChild = (date_create($birthDate)->format('m') > 10); //Conditional catechumens brithdays are in November or December
-        if($conditionalChild)
-            $ageRecomendation = $ageInDecember - 6 + 1;   //Conditional catechumens
-        else
-            $ageRecomendation = $ageInOctober - 6 + 1;    //6 years old maps to 1st catechism
-                                                          //7 years old maps to 2nd catechism
-                                                          //...
-    }
-
-
-    if(abs($catechumenHistoryRecommendation - $ageRecomendation) <= 1)
-    {
-        // Priority to the continuity of the catechetical path, in case the difference in the recommendations is no more than 1 year
-        $recommendation = $catechumenHistoryRecommendation;
+        $recommendation = intval($schoolYear);
     }
     else
     {
-        // Priority to the age, in case the difference in the recommendations is more than 1 year
-        $recommendation = max($catechumenHistoryRecommendation, $ageRecomendation);
+        // Compute recommendation based on the previously frequented catechism (if any)
+        $catechumenHistoryRecommendation = 0;
+        if(isset($previousCatechism) && intval($previousCatechism) >= 1 && intval($previousCatechism) <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
+        {
+            //Catechumen already frequented catechesis before (perhaps in another parish)
+            $catechumenHistoryRecommendation = intval($previousCatechism) + 1;
+        }
+
+
+        // Compute recomendation based on age
+        $ageRecomendation = 0;
+        {
+            $this_october = date_create(date('Y-10-31'));
+            $this_december = date_create(date('Y-12-31'));
+
+            if( (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::PORTUGAL) &&
+                (date('m') >= 1 && date('m') <= 6) )
+            {
+                // Make the computations as if we were on the past year, because we are still enrolling children for the current year
+
+                $current_start_year = date('Y') - 1;  // The civil year when the current catechetical year started
+                $this_october = date_create(date("$current_start_year-10-3"));
+                $this_december = date_create(date("$current_start_year-12-31"));
+            }
+
+            $ageInOctober = date_diff(date_create($birthDate), $this_october)->y;
+            $ageInDecember = date_diff(date_create($birthDate), $this_december)->y;
+
+            $conditionalChild = (date_create($birthDate)->format('m') > 10); //Conditional catechumens brithdays are in November or December
+            if($conditionalChild)
+                $ageRecomendation = $ageInDecember - 6 + 1;   //Conditional catechumens
+            else
+                $ageRecomendation = $ageInOctober - 6 + 1;    //6 years old maps to 1st catechism
+                                                              //7 years old maps to 2nd catechism
+                                                              //...
+        }
+
+
+        if(abs($catechumenHistoryRecommendation - $ageRecomendation) <= 1)
+        {
+            // Priority to the continuity of the catechetical path, in case the difference in the recommendations is no more than 1 year
+            $recommendation = $catechumenHistoryRecommendation;
+        }
+        else
+        {
+            // Priority to the age, in case the difference in the recommendations is more than 1 year
+            $recommendation = max($catechumenHistoryRecommendation, $ageRecomendation);
+        }
     }
 
 

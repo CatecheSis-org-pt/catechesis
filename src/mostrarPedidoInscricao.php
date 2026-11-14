@@ -763,7 +763,7 @@ if(!isset($submission['cid']))
                             }
 
 
-                            $catecismo_recomendado = computeRecommendedCatechism($submission['data_nasc'], $submission['ultimo_catecismo']);
+                            $catecismo_recomendado = computeRecommendedCatechism($submission['data_nasc'], $submission['ultimo_catecismo'], $submission['ano_escolaridade'] ?? null);
 
                             if (isset($result) && count($result)>=1)
                             {
@@ -785,6 +785,8 @@ if(!isset($submission['cid']))
                         <span><small><i><b>Recomendado: </b><?php echo($catecismo_recomendado);?>º</i>&nbsp;</small>
                             <?php
                             $razoes = "";
+                            if(isset($submission['ano_escolaridade']) && $submission['ano_escolaridade'] != '')
+                                $razoes = $razoes . "Ano de escolaridade: " . $submission['ano_escolaridade'] . "º<br>";
                             if(isset($submission['ultimo_catecismo']))
                                 $razoes = $razoes . "Ultimo catecismo frequentado: " . $submission['ultimo_catecismo'] . "º<br>";
                             $razoes = $razoes . "Idade do catequizando: " . date_diff(date_create($submission['data_nasc']), date_create('today'))->y . " anos";
