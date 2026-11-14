@@ -5,7 +5,7 @@ use catechesis\Authenticator;
 
 <div class="news-block-left" data-animation="animate__slideInRight">
 
-    <h3>Campos telefone/telemóvel reorganizados 📞 </h3>
+    <h3>📞 Campos telefone/telemóvel reorganizados</h3>
 
     <p>Agora, nas fichas dos catequizandos, os campos de telefone e telemóvel aparecem junto ao pai/mãe, para tornar mais explícito de quem é cada número de telefone.</p>
 
@@ -22,13 +22,13 @@ use catechesis\Authenticator;
 
 <div class="news-block-right" data-animation="animate__slideInLeft">
 
-    <h3>Melhorias no tratamento do campo NIF 📝</h3>
+    <h3>📝 Melhorias no tratamento do campo NIF</h3>
 
-    <p>Ao editar fichas de catequizandos, o campo NIF pode agora ser preenchido com o valor `000 000 000`, quando não souber o NIF.<br>
-        Utilize o botão azul junto ao campo NIF <img style="width: 100px; height: auto;" src="help/onboarding/img/botao_NIF.png"/> para preencher automaticamente com este valor.</p>
+    <p>Ao editar fichas de catequizandos, pode agora preencher o campo NIF com o valor `000 000 000`, quando não souber o NIF.<br>
+        Utilize o botão azul junto ao campo NIF <img style="width: 100px; height: auto;" src="help/onboarding/img/botao_NIF.png"/> para o preencher automaticamente com este valor, somente quando não tem a informação necessária para o preencher.</p>
 
-    <p>Se a sua paróquia passou a utilizar recentemente o campo NIF nos formulários de inscrição do CatecgeSis, nesta fase de transição, muitas fichas antigas ainda não têm o NIF preenchido.
-        O relatório de dados inconsistentes irá informá-lo acerca de catequizandos com o NIF em falta.</p>
+    <p>Se a sua paróquia passou a utilizar recentemente o campo NIF nos formulários de inscrição do CatecheSis, nesta fase de transição, muitas fichas antigas ainda não têm o NIF preenchido.
+        O relatório de dados inconsistentes irá informar acerca de catequizandos com o NIF em falta.</p>
 
     <p><i>Nota: O campo NIF pode não estar disponível na sua paróquia, se um administrador não o tiver ativado.</i></p>
 
@@ -41,6 +41,14 @@ use catechesis\Authenticator;
     if(Authenticator::isAdmin())
     {
         ?>
+        <div class="news-block-left" data-animation="animate__slideInRight">
+
+            <h3>🎒 Ano escolar nos formulários de inscrição</h3>
+
+            <p>Os formulários públicos de inscrição e renovação de matrículas agora incluem o ano escolar. Este é utilizado pelo CatecheSis para fazer melhores recomendações de catecismo para novas inscrições.</p>
+
+
+        </div>
         <?php
     }
 ?>
