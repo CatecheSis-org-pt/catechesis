@@ -81,7 +81,7 @@ class MainNavbar extends Widget
         foreach($this->newFeaturesDialog->getJSDependencies() as $path)
             $this->addJSDependency($path);
 
-        $this->unsupportedPhpVersionDialog = new UnsupportedPhpVersionDialogWidget("unsupportedPhpVersion");
+        $this->unsupportedPhpVersionDialog = new UnsupportedPhpVersionDialogWidget("unsupportedPhpVersion", null, true);
         foreach($this->unsupportedPhpVersionDialog->getCSSDependencies() as $path)
             $this->addCSSDependency($path);
         foreach($this->unsupportedPhpVersionDialog->getJSDependencies() as $path)
@@ -119,18 +119,6 @@ class MainNavbar extends Widget
         $this->updateDialog->renderJS();
         $this->newFeaturesDialog->renderJS();
         $this->unsupportedPhpVersionDialog->renderJS();
-        ?>
-        <script>
-        $(function() {
-            $('[data-toggle="popover"]').popover({
-                html: true,
-                content: function() {
-                    return $('#popover-content').html();
-                }
-            });
-        });
-        </script>
-        <?php
     }
 
     /**
