@@ -281,14 +281,6 @@ $db = new PdoDatabaseManager();
                    <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" value="<?php echo($submission['prof_enc_edu']);?>" readonly>
                </div>
 
-               <!--telefone outro encarregado educacao-->
-               <div class="col-lg-2">
-                   <div id="telefone_enc_edu_div">
-                       <label for="telefone_enc_edu">Telefone:</label>
-                       <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" value="<?php echo($submission['telefone_enc_edu']);?>" readonly>
-                   </div>
-               </div>
-
                <!--telemovel outro encarregado educacao-->
                <div class="col-lg-2">
                    <div id="telemovel_enc_edu_div">
@@ -296,9 +288,16 @@ $db = new PdoDatabaseManager();
                        <input type="tel" class="form-control" id="telemovel_enc_edu" name="telemovel_enc_edu" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>" value="<?php echo($submission['telemovel_enc_edu']);?>" readonly>
                    </div>
                </div>
+
+               <!--telefone outro encarregado educacao-->
+               <div class="col-lg-2">
+                   <div id="telefone_enc_edu_div">
+                       <label for="telefone_enc_edu">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" value="<?php echo($submission['telefone_enc_edu']);?>" readonly>
+                   </div>
+               </div>
            </div>
            <div class="clearfix"></div>
-
 
 
 
@@ -318,19 +317,19 @@ $db = new PdoDatabaseManager();
                    <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" value="<?php echo($submission['prof_pai']);?>" readonly>
                </div>
 
-               <!--telefone pai-->
-               <div class="col-lg-2">
-                   <div id="telefone_pai_div">
-                       <label for="telefone_pai">Telefone:</label>
-                       <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" value="<?php echo($submission['telefone_pai']);?>" readonly>
-                   </div>
-               </div>
-
                <!--telemovel pai-->
                <div class="col-lg-2">
                    <div id="telemovel_pai_div">
                        <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
                        <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do pai" value="<?php echo($submission['telemovel_pai']);?>" readonly>
+                   </div>
+               </div>
+
+               <!--telefone pai-->
+               <div class="col-lg-2">
+                   <div id="telefone_pai_div">
+                       <label for="telefone_pai">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" value="<?php echo($submission['telefone_pai']);?>" readonly>
                    </div>
                </div>
            </div>
@@ -350,19 +349,19 @@ $db = new PdoDatabaseManager();
                    <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" value="<?php echo($submission['prof_mae']);?>" readonly>
                </div>
 
-               <!--telefone mae-->
-               <div class="col-lg-2">
-                   <div id="telefone_mae_div">
-                       <label for="telefone_mae">Telefone:</label>
-                       <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" value="<?php echo($submission['telefone_mae']);?>" readonly>
-                   </div>
-               </div>
-
                <!--telemovel mae-->
                <div class="col-lg-2">
                    <div id="telemovel_mae_div">
                        <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
                        <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> da mãe" value="<?php echo($submission['telemovel_mae']);?>" readonly>
+                   </div>
+               </div>
+
+               <!--telefone mae-->
+               <div class="col-lg-2">
+                   <div id="telefone_mae_div">
+                       <label for="telefone_mae">Telefone:</label>
+                       <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" value="<?php echo($submission['telefone_mae']);?>" readonly>
                    </div>
                </div>
                <div class="clearfix"></div>
@@ -420,6 +419,17 @@ $db = new PdoDatabaseManager();
 
 
 
+                <!--telemovel-->
+                <div class="col-lg-2">
+                    <div id="telemovel_div">
+                      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
+                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
+                      <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                    </div>
+                </div>
+
+
+
                 <!--telefone-->
                 <div class="col-lg-2">
                 <div id="telefone_div">
@@ -428,18 +438,7 @@ $db = new PdoDatabaseManager();
                   <span id="erro_telefone_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                 </div>
                 </div>
-
-
-
-                <!--telemovel-->
-                <div class="col-lg-2">
-                    <div id="telemovel_div">
-                      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
-                      <input type="tel" class="form-control" id="telemovel" name="telemovel" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do encarregado de educação" onclick="verifica_telemovel()" onchange="verifica_telemovel(); atualiza_tabela_autorizacoes();" value="<?php echo($submission['telemovel']);?>" readonly>
-                      <span id="erro_telemovel_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
+                <div class="clearfix"></div>
             </div>
 
 

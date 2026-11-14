@@ -540,20 +540,6 @@ $menu->renderHTML();
 	    
 	    
 	    
-	    <!--telefone-->
-	    <div class="col-xs-2">
-	    <div id="telefone_div">
-	      <label for="tel">Telefone:</label>
-	      <div class="input-group">
-	      <input type="tel" class="form-control" id="telefone" name="telefone"  style="cursor: auto;" 
-	      	<?php if($telefone){ echo("value='" . $telefone . "'");}?> readonly>
-	      <span class="input-group-addon no-print"><?php if($telefone){ echo('<a href="tel:' . $telefone . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
-	      </div>
-	    </div>
-	    </div>
-	    
-	    
-	    
 	    <!--telemovel-->
 	    <div class="col-xs-2">
 	    <div id="telemovel_div">
@@ -562,6 +548,20 @@ $menu->renderHTML();
 	      <input type="tel" class="form-control" id="telemovel" name="telemovel"  style="cursor: auto;" 
 	      	<?php if($telemovel){ echo("value='" . $telemovel . "'");}?> readonly>
 	      	<span class="input-group-addon no-print"><?php if($telemovel){ echo('<a href="tel:' . $telemovel . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>   
+	    
+	    
+	    
+	    <!--telefone-->
+	    <div class="col-xs-2">
+	    <div id="telefone_div">
+	      <label for="tel">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone" name="telefone"  style="cursor: auto;" 
+	      	<?php if($telefone){ echo("value='" . $telefone . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone){ echo('<a href="tel:' . $telefone . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    </div>   
@@ -595,18 +595,6 @@ $menu->renderHTML();
 	      	<?php if($prof_pai){ echo("value='" . $prof_pai . "'");}?> readonly>
 	    </div>
 
-	    <!--telefone pai-->
-	    <div class="col-xs-2">
-	    <div id="telefone_pai_div">
-	      <label for="telefone_pai">Telefone:</label>
-	      <div class="input-group">
-	      <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai"  style="cursor: auto;" 
-	      	<?php if($telefone_pai){ echo("value='" . $telefone_pai . "'");}?> readonly>
-	      <span class="input-group-addon no-print"><?php if($telefone_pai){ echo('<a href="tel:' . $telefone_pai . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
-	      </div>
-	    </div>
-	    </div>
-
 	    <!--telemovel pai-->
 	    <div class="col-xs-2">
 	    <div id="telemovel_pai_div">
@@ -615,6 +603,18 @@ $menu->renderHTML();
 	      <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai"  style="cursor: auto;" 
 	      	<?php if($telemovel_pai){ echo("value='" . $telemovel_pai . "'");}?> readonly>
 	      	<span class="input-group-addon no-print"><?php if($telemovel_pai){ echo('<a href="tel:' . $telemovel_pai . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+
+	    <!--telefone pai-->
+	    <div class="col-xs-2">
+	    <div id="telefone_pai_div">
+	      <label for="telefone_pai">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai"  style="cursor: auto;" 
+	      	<?php if($telefone_pai){ echo("value='" . $telefone_pai . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone_pai){ echo('<a href="tel:' . $telefone_pai . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    </div>
@@ -638,18 +638,6 @@ $menu->renderHTML();
 	      	<?php if($prof_mae){ echo("value='" . $prof_mae . "'");}?> readonly>
 	    </div>
 
-	    <!--telefone mae-->
-	    <div class="col-xs-2">
-	    <div id="telefone_mae_div">
-	      <label for="telefone_mae">Telefone:</label>
-	      <div class="input-group">
-	      <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae"  style="cursor: auto;" 
-	      	<?php if($telefone_mae){ echo("value='" . $telefone_mae . "'");}?> readonly>
-	      <span class="input-group-addon no-print"><?php if($telefone_mae){ echo('<a href="tel:' . $telefone_mae . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
-	      </div>
-	    </div>
-	    </div>
-
 	    <!--telemovel mae-->
 	    <div class="col-xs-2">
 	    <div id="telemovel_mae_div">
@@ -658,6 +646,18 @@ $menu->renderHTML();
 	      <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae"  style="cursor: auto;" 
 	      	<?php if($telemovel_mae){ echo("value='" . $telemovel_mae . "'");}?> readonly>
 	      	<span class="input-group-addon no-print"><?php if($telemovel_mae){ echo('<a href="tel:' . $telemovel_mae . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
+	      </div>
+	    </div>
+	    </div>
+
+	    <!--telefone mae-->
+	    <div class="col-xs-2">
+	    <div id="telefone_mae_div">
+	      <label for="telefone_mae">Telefone:</label>
+	      <div class="input-group">
+	      <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae"  style="cursor: auto;" 
+	      	<?php if($telefone_mae){ echo("value='" . $telefone_mae . "'");}?> readonly>
+	      <span class="input-group-addon no-print"><?php if($telefone_mae){ echo('<a href="tel:' . $telefone_mae . '"><span class="glyphicon glyphicon-earphone"></span></a>');}?></span>
 	      </div>
 	    </div>
 	    </div>

@@ -237,15 +237,6 @@ $pageUI->addWidget($footer);
                            <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" placeholder="Profissão do encarregado de educação" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_enc_edu'] . '');} else {echo('');} ?>">
                        </div>
 
-                       <!--telefone outro encarregado educacao-->
-                       <div class="col-lg-2">
-                           <div id="telefone_enc_edu_div">
-                               <label for="telefone_enc_edu">Telefone:</label>
-                               <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" onclick="verifica_telefone_enc_edu()" onchange="verifica_telefone_enc_edu(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_enc_edu'] . '');} else {echo('');} ?>">
-                               <span id="erro_telefone_enc_edu_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                           </div>
-                       </div>
-
                        <!--telemovel outro encarregado educacao-->
                        <div class="col-lg-2">
                            <div id="telemovel_enc_edu_div">
@@ -254,9 +245,17 @@ $pageUI->addWidget($footer);
                                <span id="erro_telemovel_enc_edu_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                            </div>
                        </div>
+
+                       <!--telefone outro encarregado educacao-->
+                       <div class="col-lg-2">
+                           <div id="telefone_enc_edu_div">
+                               <label for="telefone_enc_edu">Telefone:</label>
+                               <input type="tel" class="form-control" id="telefone_enc_edu" name="telefone_enc_edu" placeholder="Telefone" onclick="verifica_telefone_enc_edu()" onchange="verifica_telefone_enc_edu(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_enc_edu'] . '');} else {echo('');} ?>">
+                               <span id="erro_telefone_enc_edu_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                           </div>
+                       </div>
                    </div>
                    <div class="clearfix"></div>
-
 
 
 
@@ -276,21 +275,21 @@ $pageUI->addWidget($footer);
                            <input type="text" class="form-control" id="prof_pai" name="prof_pai" placeholder="Profissão do pai" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_pai'] . '');} else {echo('');} ?>">
                        </div>
 
-                       <!--telefone pai-->
-                       <div class="col-lg-2">
-                           <div id="telefone_pai_div">
-                               <label for="telefone_pai">Telefone:</label>
-                               <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" onclick="verifica_telefone_pai()" onchange="verifica_telefone_pai(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_pai'] . '');} else {echo('');} ?>">
-                               <span id="erro_telefone_pai_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                           </div>
-                       </div>
-
                        <!--telemovel pai-->
                        <div class="col-lg-2">
                            <div id="telemovel_pai_div">
                                <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
                                <input type="tel" class="form-control" id="telemovel_pai" name="telemovel_pai" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> do pai" onclick="verifica_telemovel_pai()" onchange="verifica_telemovel_pai(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel_pai'] . '');} else {echo('');} ?>">
                                <span id="erro_telemovel_pai_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                           </div>
+                       </div>
+
+                       <!--telefone pai-->
+                       <div class="col-lg-2">
+                           <div id="telefone_pai_div">
+                               <label for="telefone_pai">Telefone:</label>
+                               <input type="tel" class="form-control" id="telefone_pai" name="telefone_pai" placeholder="Telefone do pai" onclick="verifica_telefone_pai()" onchange="verifica_telefone_pai(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_pai'] . '');} else {echo('');} ?>">
+                               <span id="erro_telefone_pai_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                            </div>
                        </div>
                    </div>
@@ -310,21 +309,21 @@ $pageUI->addWidget($footer);
                            <input type="text" class="form-control" id="prof_mae" name="prof_mae" placeholder="Profissão da mãe" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['prof_mae'] . '');} else {echo('');} ?>">
                        </div>
 
-                       <!--telefone mae-->
-                       <div class="col-lg-2">
-                           <div id="telefone_mae_div">
-                               <label for="telefone_mae">Telefone:</label>
-                               <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" onclick="verifica_telefone_mae()" onchange="verifica_telefone_mae(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_mae'] . '');} else {echo('');} ?>">
-                               <span id="erro_telefone_mae_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
-                           </div>
-                       </div>
-
                        <!--telemovel mae-->
                        <div class="col-lg-2">
                            <div id="telemovel_mae_div">
                                <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
                                <input type="tel" class="form-control" id="telemovel_mae" name="telemovel_mae" placeholder="<?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?> da mãe" onclick="verifica_telemovel_mae()" onchange="verifica_telemovel_mae(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telemovel_mae'] . '');} else {echo('');} ?>">
                                <span id="erro_telemovel_mae_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
+                           </div>
+                       </div>
+
+                       <!--telefone mae-->
+                       <div class="col-lg-2">
+                           <div id="telefone_mae_div">
+                               <label for="telefone_mae">Telefone:</label>
+                               <input type="tel" class="form-control" id="telefone_mae" name="telefone_mae" placeholder="Telefone da mãe" onclick="verifica_telefone_mae()" onchange="verifica_telefone_mae(); atualiza_tabela_autorizacoes();" value="<?php  if($_REQUEST['modo']=='irmao' || $_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar'){ echo('' . $_SESSION['telefone_mae'] . '');} else {echo('');} ?>">
+                               <span id="erro_telefone_mae_icon" class="glyphicon glyphicon-remove form-control-feedback" style="display:none;"></span>
                            </div>
                        </div>
                        <div class="clearfix"></div>
