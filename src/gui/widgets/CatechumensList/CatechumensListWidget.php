@@ -244,12 +244,12 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                     <div class="catechumen-card <?= ($this->is_selector?'catechumen-card-selectable':'') ?> <?= ($isSelected?'selected':'') ?>" data-cid="<?= $cid ?>" onclick="<?= ($this->is_selector?'toggle_catechumen_selection(this)':'window.open(\'mostrarFicha.php?cid=' . $cid . '\');') ?>" >
                         <div class="catechumen-card-inner">
                             <div class="catechumen-card-front">
-                                <img src="<?php
-                                if($foto && $foto!="")
-                                    echo("resources/catechumenPhoto.php?foto_name=$foto");
-                                else
-                                    echo("img/default-user-icon-profile.png");
-                                ?>">
+                                <img class="lazy-grid-img" 
+                                     src="img/default-user-icon-profile.png" 
+                                     <?php if($foto && $foto != ""): ?>
+                                         data-src="resources/catechumenPhoto.php?foto_name=<?= $foto ?>"
+                                     <?php endif; ?>
+                                >
                                 <h3><?= Utils::firstAndLastName(Utils::sanitizeOutput($row['nome'])) ?></h3>
                             </div>
                         </div>
@@ -637,6 +637,16 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
             }
             <?php endif; ?>
 
+            // Helper to lazily load images for a specific grid page
+            function load_grid_page_images(widgetId, pageNumber) {
+                var page = $('#' + widgetId + '_catechist_groups_panel').find('.catechumens-grid-page[data-page="' + pageNumber + '"]');
+                page.find('img.lazy-grid-img[data-src]').each(function() {
+                    var img = $(this);
+                    img.attr('src', img.attr('data-src'));
+                    img.removeAttr('data-src');
+                });
+            }
+
             function change_grid_page(widgetId, target) {
                 var pagination = $('#' + widgetId + '_pagination');
                 var currentPage = pagination.find('li.active').find('a').text();
@@ -665,6 +675,9 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
                 var widgetPanel = $('#' + widgetId + '_catechist_groups_panel');
                 widgetPanel.find('.catechumens-grid-page').hide();
                 widgetPanel.find('.catechumens-grid-page[data-page="' + targetPage + '"]').show();
+
+                // Lazy load images on the target page
+                load_grid_page_images(widgetId, targetPage);
             }
 
             $(function () {
@@ -790,6 +803,12 @@ class CatechumensListWidget extends AbstractCatechumensListingWidget
 
             $('#<?=$this->getID()?>_tabList').parent().tooltip();
             $('#<?=$this->getID()?>_tabGrid').parent().tooltip();
+
+            // Load the active grid page's images when the grid tab is shown
+            $('a[href="#<?=$this->getID()?>_tabGrid"]').on('shown.bs.tab', function () {
+                var activePage = parseInt($('#<?=$this->getID()?>_pagination li.active a').text()) || 1;
+                load_grid_page_images('<?=$this->getID()?>', activePage);
+            });
 
         </script>
         <?php
