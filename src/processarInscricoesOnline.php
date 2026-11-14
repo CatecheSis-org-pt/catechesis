@@ -472,6 +472,7 @@ $pageUI->addWidget($orderDetailsDialog);
                                             <th>ID do pedido</th>
                                             <th>Nome do catequizando</th>
                                             <th>Último catecismo frequentado</th>
+                                            <th>Ano de escolaridade</th>
                                             <th>Observações</th>
                                             <th>Ações</th> <!-- Accoes -->
                                         </tr>
@@ -487,6 +488,8 @@ $pageUI->addWidget($orderDetailsDialog);
                                             $enc_edu_email = Utils::sanitizeOutput($pedido['enc_edu_email']);
                                             $catequizando_nome = Utils::sanitizeOutput($pedido['catequizando_nome']);
                                             $ultimo_catecismo = intval($pedido['ultimo_catecismo']);
+                                            $ano_escolaridade = isset($pedido['ano_escolaridade']) && $pedido['ano_escolaridade'] !== '' ? intval($pedido['ano_escolaridade']) : null;
+                                            $ano_escolaridade_dialogo = (isset($ano_escolaridade) && $ano_escolaridade > 0) ? ($ano_escolaridade . "º ano") : "";
                                             $observacoes = Utils::escapeSingleQuotes(Utils::doubleEscapeDoubleQuotes(Utils::doubleEscapeWhiteSpaces(Utils::sanitizeOutput($pedido['observacoes']))));
 
 
@@ -496,10 +499,12 @@ $pageUI->addWidget($orderDetailsDialog);
 
                                             echo("\t<td><a href='' data-toggle=\"modal\" data-target=\"#detalhesPedido\" onclick=\"preparar_detalhes("
                                                 . $rid . ",'" . $enc_edu_nome . "','" . $enc_edu_tel . "','" . $enc_edu_email
-                                                . "','" . $catequizando_nome . "'," . $ultimo_catecismo . ",'" . $observacoes . "')\"></a>");
+                                                . "','" . $catequizando_nome . "'," . $ultimo_catecismo . ",'" . $ano_escolaridade_dialogo . "','" . $observacoes . "')\"></a>");
                                             echo($catequizando_nome . "</td>");
 
                                             echo("\t<td>" . $ultimo_catecismo . "º</td>\n");
+
+                                            echo("\t<td>" . (isset($ano_escolaridade) && $ano_escolaridade > 0 ? $ano_escolaridade . "º" : "") . "</td>\n");
 
                                             echo("\t<td>");
                                             if(isset($observacoes) && $observacoes != "")
@@ -542,6 +547,7 @@ $pageUI->addWidget($orderDetailsDialog);
                                             <th>ID do pedido</th>
                                             <th>Nome do catequizando</th>
                                             <th>Último catecismo frequentado</th>
+                                            <th>Ano de escolaridade</th>
                                             <th>Observações</th>
                                             <th>Ações</th> <!-- Accoes -->
                                         </tr>
@@ -557,6 +563,8 @@ $pageUI->addWidget($orderDetailsDialog);
                                             $enc_edu_email = Utils::sanitizeOutput($pedido['enc_edu_email']);
                                             $catequizando_nome = Utils::sanitizeOutput($pedido['catequizando_nome']);
                                             $ultimo_catecismo = intval($pedido['ultimo_catecismo']);
+                                            $ano_escolaridade = isset($pedido['ano_escolaridade']) && $pedido['ano_escolaridade'] !== '' ? intval($pedido['ano_escolaridade']) : null;
+                                            $ano_escolaridade_dialogo = (isset($ano_escolaridade) && $ano_escolaridade > 0) ? ($ano_escolaridade . "º ano") : "";
                                             $observacoes = Utils::escapeSingleQuotes(Utils::doubleEscapeDoubleQuotes(Utils::doubleEscapeWhiteSpaces(Utils::sanitizeOutput($pedido['observacoes']))));
 
 
@@ -566,10 +574,12 @@ $pageUI->addWidget($orderDetailsDialog);
 
                                             echo("\t<td><a href='' data-toggle=\"modal\" data-target=\"#detalhesPedido\" onclick=\"preparar_detalhes("
                                                 . $rid . ",'" . $enc_edu_nome . "','" . $enc_edu_tel . "','" . $enc_edu_email
-                                                . "','" . $catequizando_nome . "'," . $ultimo_catecismo . ",'" . $observacoes . "')\"></a>");
+                                                . "','" . $catequizando_nome . "'," . $ultimo_catecismo . ",'" . $ano_escolaridade_dialogo . "','" . $observacoes . "')\"></a>");
                                             echo($catequizando_nome . "</td>");
 
                                             echo("\t<td>" . $ultimo_catecismo . "º</td>\n");
+
+                                            echo("\t<td>" . (isset($ano_escolaridade) && $ano_escolaridade > 0 ? $ano_escolaridade . "º" : "") . "</td>\n");
 
                                             echo("\t<td>");
                                             if(isset($observacoes) && $observacoes != "")
@@ -679,6 +689,7 @@ $orderDetailsDialog->setBodyContents(<<<HTML_CODE
                 <div style="margin-top: 20px"></div>
                 <p><span><b>Nome do catequizando: </b></span><span id="dialogo_catequizando"></span></p>
                 <p><span><b>Último catecismo frequentado: </b></span><span id="dialogo_catecismo"></span></p>
+                <p><span><b>Ano de escolaridade: </b></span><span id="dialogo_ano_escolaridade"></span></p>
                 <div style="margin-top: 20px"></div>
                 <p><span><b>Encarregado de educação: </b></span><span id="dialogo_enc_edu"></span></p>
                 <p><span><b>Telefone: </b></span><span id="dialogo_tel"></span></p>
@@ -788,7 +799,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
         document.getElementById("form_processar_pedido_inscricao").submit();
     }
 
-    function preparar_detalhes(rid, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, observacoes)
+    function preparar_detalhes(rid, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, ano_escolaridade, observacoes)
     {
         document.getElementById("dialogo_id").innerText = rid;
         document.getElementById("dialogo_enc_edu").innerText = enc_edu_nome;
@@ -796,6 +807,7 @@ $pageUI->renderJS(); // Render the widgets' JS code
         document.getElementById("dialogo_email").innerHTML = "<a href=\"mailto:" + enc_edu_email + "\">" + enc_edu_email + "</a>";
         document.getElementById("dialogo_catequizando").innerText = catequizando_nome;
         document.getElementById("dialogo_catecismo").innerText = ultimo_catecismo + "º";
+        document.getElementById("dialogo_ano_escolaridade").innerText = ano_escolaridade;
         document.getElementById("dialogo_observações").innerHTML = observacoes;
     }
 </script>

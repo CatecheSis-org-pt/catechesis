@@ -101,7 +101,7 @@ interface DatabaseManager
     public function getNumberOfPendingRenewals(int $catecheticalYear = null);                                           // Counts the number of pending renewal submissions
     public function getNumberOfPendingEnrollments(int $catecheticalYear = null);                                        // Counts the number of pending enrollment submissions
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,  // Submits a renewal order to the database and returns its ID
-                                     string $ipAddress, string $email = null, string $obs = null);
+                                     string $ipAddress, string $email = null, string $obs = null, int $schoolYear = null);
     public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null, // Registers a new enrollment order
                                         int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,

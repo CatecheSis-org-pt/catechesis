@@ -130,7 +130,7 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function getNumberOfPendingRenewals(int $catecheticalYear = null);
     public function getNumberOfPendingEnrollments(int $catecheticalYear = null);
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,
-                                     string $ipAddress, string $email = null, string $obs = null);
+                                     string $ipAddress, string $email = null, string $obs = null, int $schoolYear = null);
     public function postEnrollmentOrder(string $catechumenName, string $birthDay, string $birthPlace, string $nif = null,
                                         int $nSiblings, string $address, string $postalCode,
                                         int $responsibleIndex, string $ipAddress,
@@ -2177,7 +2177,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
         $catecheticalYearStart = intval($catecheticalYear / 10000);
         $catecheticalYearEnd = $catecheticalYear % 10000;
 
-        $sql = "SELECT rid, data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, observacoes, processado, ano_catecismo_inscricao, turma_inscricao, ano_lectivo_inscricao FROM pedidoRenovacaoMatricula WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 7) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 7)) ";
+        $sql = "SELECT rid, data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, ano_escolaridade, observacoes, processado, ano_catecismo_inscricao, turma_inscricao, ano_lectivo_inscricao FROM pedidoRenovacaoMatricula WHERE ((YEAR(data_hora)=:ano_i AND MONTH(data_hora) >= 7) OR (YEAR(data_hora)=:ano_f  AND MONTH(data_hora) < 7)) ";
 
         if(isset($catechism) && $catechism >= 1 && $catechism <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
             $sql = $sql . " AND ultimo_catecismo=:catecismo";
@@ -2222,7 +2222,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
 
         try
         {
-            $sql = "SELECT rid, data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, observacoes, processado, ano_catecismo_inscricao, turma_inscricao, ano_lectivo_inscricao FROM pedidoRenovacaoMatricula WHERE rid=:rid;";
+            $sql = "SELECT rid, data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, ano_escolaridade, observacoes, processado, ano_catecismo_inscricao, turma_inscricao, ano_lectivo_inscricao FROM pedidoRenovacaoMatricula WHERE rid=:rid;";
             $stm = $this->_connection->prepare($sql);
 
             $stm->bindParam(":rid", $rid, PDO::PARAM_INT);
@@ -2446,17 +2446,18 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param $catechumenName
      * @param $lastCatechism
      * @param $obs
+     * @param $schoolYear
      * @return string|null
      */
     public function postRenewalOrder(string $applicantName, string $phone, string $catechumenName, int $lastCatechism,
-                                     string $ipAddress, string $email = null, string $obs = null)
+                                     string $ipAddress, string $email = null, string $obs = null, int $schoolYear = null)
     {
         if(!$this->connectAsNeeded(DatabaseAccessMode::ONLINE_ENROLLMENT))
             throw new Exception('Não foi possível estabelecer uma ligação à base de dados.');
 
         try
         {
-            $sql = "INSERT INTO pedidoRenovacaoMatricula(data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, observacoes, processado) VALUES(NOW(), :endereco_ip, :enc_edu_nome, :enc_edu_tel, :enc_edu_email, :catequizando_nome, :ultimo_catecismo, :observacoes, 0);";
+            $sql = "INSERT INTO pedidoRenovacaoMatricula(data_hora, endereco_ip, enc_edu_nome, enc_edu_tel, enc_edu_email, catequizando_nome, ultimo_catecismo, ano_escolaridade, observacoes, processado) VALUES(NOW(), :endereco_ip, :enc_edu_nome, :enc_edu_tel, :enc_edu_email, :catequizando_nome, :ultimo_catecismo, :ano_escolaridade, :observacoes, 0);";
 
             $stm = $this->_connection->prepare($sql);
 
@@ -2470,6 +2471,10 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":enc_edu_email", $mynull, PDO::PARAM_NULL);
             $stm->bindParam(":catequizando_nome", $catechumenName, PDO::PARAM_STR);
             $stm->bindParam(":ultimo_catecismo", $lastCatechism, PDO::PARAM_INT);
+            if(isset($schoolYear) && $schoolYear > 0)
+                $stm->bindParam(":ano_escolaridade", $schoolYear, PDO::PARAM_INT);
+            else
+                $stm->bindParam(":ano_escolaridade", $mynull, PDO::PARAM_NULL);
             if(isset($obs) && $obs!=null && $obs!="")
                 $stm->bindParam(":observacoes", $obs, PDO::PARAM_STR);
             else

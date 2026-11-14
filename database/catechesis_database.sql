@@ -343,6 +343,7 @@ CREATE TABLE pedidoRenovacaoMatricula
     enc_edu_email           VARCHAR(320),
     catequizando_nome       VARCHAR(255) NOT NULL,
     ultimo_catecismo        TINYINT NOT NULL,
+    ano_escolaridade        TINYINT,
     observacoes             LONGTEXT,
     processado              TINYINT NOT NULL,           # 0 = pedido pendente ;  1 = pedido ja processado
     ano_lectivo_inscricao	INT NULL,		            # Ano lectivo em que o catequiazando foi inscrito (depois de processado), guardado como uma um inteiro '20142015' por exemplo

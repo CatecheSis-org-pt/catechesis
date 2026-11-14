@@ -102,6 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $enc_edu_tel = Utils::sanitizeInput($_POST['enc_edu_tel']);
     $catequizando_nome = Utils::sanitizeInput($_POST['catequizando_nome']);
     $catequizando_catecismo = intval(Utils::sanitizeInput($_POST['catequizando_catecismo']));
+    $ano_escolaridade = isset($_POST['ano_escolaridade']) && $_POST['ano_escolaridade'] !== '' ? intval(Utils::sanitizeInput($_POST['ano_escolaridade'])) : null;
     $observacoes = Utils::escapeSingleQuotes(Utils::escapeDoubleQuotes(Utils::removeLineManipulators(Utils::sanitizeInput(($_POST['observacoes'])))));
     $declaracao_enc_edu = Utils::sanitizeInput($_POST['declaracao_enc_edu']);
     $rgpd = Utils::sanitizeInput($_POST['rgpd']);
@@ -125,6 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if(!isset($catequizando_catecismo) || $catequizando_catecismo=="" || $catequizando_catecismo < 1 || $catequizando_catecismo > intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)))
     {
         echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O campo último catecismo frequentado tem um valor inválido.</div>");
+        $inputs_invalidos = true;
+    }
+    if(isset($ano_escolaridade) && ($ano_escolaridade < 1 || $ano_escolaridade > 12))
+    {
+        echo("<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>Erro!</strong> O ano de escolaridade selecionado é inválido.</div>");
         $inputs_invalidos = true;
     }
 
@@ -167,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         try
         {
             // Register enrollment
-            $rid = $db->postRenewalOrder($enc_edu_nome, $enc_edu_tel, $catequizando_nome, $catequizando_catecismo, $_SERVER['REMOTE_ADDR'], $enc_edu_email, $observacoes);
+            $rid = $db->postRenewalOrder($enc_edu_nome, $enc_edu_tel, $catequizando_nome, $catequizando_catecismo, $_SERVER['REMOTE_ADDR'], $enc_edu_email, $observacoes, $ano_escolaridade);
 
         ?>
 

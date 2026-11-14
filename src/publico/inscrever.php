@@ -412,6 +412,7 @@ $pageUI->addWidget($footer);
                            <div class="row" style="margin-top:20px; "></div>
                            <label for="ano_escolaridade">Ano de escolaridade que frequenta em <?= Utils::formatCatecheticalYear(Utils::currentCatecheticalYear());?>:</label>
                            <select id="ano_escolaridade" name="ano_escolaridade" class="form-control">
+                               <option value=""></option>
                                <?php
                                for($i = 1; $i <= 12; $i++)
                                {

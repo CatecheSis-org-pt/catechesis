@@ -96,7 +96,7 @@ $navbar->renderHTML();
 
                 <!--Catequizando-->
                 <div class="form-group">
-                    <div class="col-lg-9">
+                    <div class="col-lg-6">
                         <label for="catequizando_nome">Nome do catequizando:</label>
                         <input type="text" class="form-control" id="catequizando_nome" name="catequizando_nome" placeholder="Nome completo do catequizando" style="cursor: auto;" value="" required>
                     </div>
@@ -109,6 +109,20 @@ $navbar->renderHTML();
                             {
                             ?>
                                 <option value="<?= $i ?>"><?= $i ?>º catecismo</option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="ano_escolaridade">Ano de escolaridade que frequenta:</label>
+                        <select id="ano_escolaridade" name="ano_escolaridade" class="form-control">
+                            <option value=""></option>
+                            <?php
+                            for($i = 1; $i <= 12; $i++)
+                            {
+                            ?>
+                                <option value="<?= $i ?>"><?= $i ?>º ano</option>
                             <?php
                             }
                             ?>
