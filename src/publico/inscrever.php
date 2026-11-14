@@ -423,7 +423,7 @@ $pageUI->addWidget($footer);
                                    for($i = 1; $i <= intval(Configurator::getConfigurationValueOrDefault(Configurator::KEY_NUM_CATECHISMS)) - 1; $i++)
                                    {
                                        ?>
-                                       <option value="<?= $i ?>" <?php  if($_REQUEST['modo']=='regresso' && $_SESSION['ultimo_catecismo']==1){ echo('selected');} ?>><?= $i ?>º catecismo</option>
+                                       <option value="<?= $i ?>" <?php  if(($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && isset($_SESSION['ultimo_catecismo']) && $_SESSION['ultimo_catecismo']==$i){ echo('selected');} ?>><?= $i ?>º catecismo</option>
                                        <?php
                                    }
                                    ?>
@@ -607,7 +607,7 @@ $pageUI->addWidget($footer);
                    <div class="form-group">
                        <div class="col-lg-12">
                            <label for="observacoes">Observações: (opcional)</label>
-                           <textarea class="form-control" id="observacoes" name="observacoes" rows="4" placeholder="Escreva aqui quaisquer observações que considere pertinentes para a catequese.&#10;Ex: o seu educando tem necessidades especiais?" style="cursor: auto;" value=""></textarea>
+                           <textarea class="form-control" id="observacoes" name="observacoes" rows="4" placeholder="Escreva aqui quaisquer observações que considere pertinentes para a catequese.&#10;Ex: o seu educando tem necessidades especiais?" style="cursor: auto;"><?php if(isset($_REQUEST['modo']) && ($_REQUEST['modo']=='regresso' || $_REQUEST['modo']=='editar') && isset($_SESSION['observacoes'])){ echo($_SESSION['observacoes']);} ?></textarea>
                        </div>
                    </div>
 
@@ -1271,6 +1271,8 @@ $(document).ready(function()
     $("#quer_inscrever2").click(function(){
         $("#quer_inscrever_collapse").collapse('show');
     });
+
+    atualiza_tabela_autorizacoes();
 });
 </script>
 
@@ -1296,7 +1298,7 @@ $(document).ready(function()
         var enc_edu_parentesco = "";
         var telemovel = "";
         var telefone = "";
-        var enc_edu_tel = 0;
+        var enc_edu_tel = "";
 
         if(document.getElementById('enc_edu1').checked) //Pai
         {
@@ -1322,16 +1324,24 @@ $(document).ready(function()
 
         if(telemovel!==undefined && telemovel!=="")
             enc_edu_tel = telemovel;
-        else
+        else if(telefone!==undefined && telefone!=="")
             enc_edu_tel = telefone;
+        else
+            enc_edu_tel = "";
 
         var autorizacao_nome_enc_edu = document.getElementById('autorizacao_nome_enc_edu');
         var autorizacao_parentesco_enc_edu = document.getElementById('autorizacao_parentesco_enc_edu');
         var autorizacao_tel_enc_edu = document.getElementById('autorizacao_tel_enc_edu');
 
-        autorizacao_nome_enc_edu.innerText = enc_edu_nome;
-        autorizacao_parentesco_enc_edu.innerText = enc_edu_parentesco + " (Encarregado de educação)";
-        autorizacao_tel_enc_edu.innerText = enc_edu_tel;
+        if(autorizacao_nome_enc_edu) {
+            autorizacao_nome_enc_edu.innerText = enc_edu_nome;
+        }
+        if(autorizacao_parentesco_enc_edu) {
+            autorizacao_parentesco_enc_edu.innerText = enc_edu_parentesco ? enc_edu_parentesco + " (Encarregado de educação)" : "";
+        }
+        if(autorizacao_tel_enc_edu) {
+            autorizacao_tel_enc_edu.innerText = enc_edu_tel;
+        }
     }
 </script>
 
