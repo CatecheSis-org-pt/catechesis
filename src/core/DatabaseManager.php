@@ -80,8 +80,8 @@ interface DatabaseManager
     public function deleteFamilyMember(int $fid);                                                                       // Deletes a family member from the database
     public function updateFamilyMemberName(int $fid, string $name);                                                     // Updates the name of a family member
     public function updateFamilyMemberJob(int $fid, string $job);                                                       // Updates the job of a family member
-    public function updateFamilyMemberAllFields(int $fid, string $name, string $job, string $address,                   // Updates all fields of a family member in a single query
-                                                string $zipCode, string $phone=null, string $cellPhone=null,
+    public function updateFamilyMemberAllFields(int $fid, string $name, string $job=null, string $address=null,       // Updates all fields of a family member in a single query
+                                                string $zipCode=null, string $phone=null, string $cellPhone=null,
                                                 string $email=null, bool $signedRGPD=false);
     public function getCatechumenAuthorizationList(int $cid);                                                           // Returns the list of family members authorized to pick up the catechumen
     public function addFamilyMemberToCatechumenAuthorizationlist(int $cid, int $fid, string $relationship);             // Adds a family member to the list of authorized members to pick up the catechumen

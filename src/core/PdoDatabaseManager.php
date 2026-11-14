@@ -109,8 +109,8 @@ interface PdoDatabaseManagerInterface extends DatabaseManager
     public function deleteFamilyMember(int $fid);
     public function updateFamilyMemberName(int $fid, string $name);
     public function updateFamilyMemberJob(int $fid, string $job);
-    public function updateFamilyMemberAllFields(int $fid, string $name, string $job, string $address,
-                                                string $zipCode, string $phone=null, string $cellPhone=null,
+    public function updateFamilyMemberAllFields(int $fid, string $name, string $job=null, string $address=null,
+                                                string $zipCode=null, string $phone=null, string $cellPhone=null,
                                                 string $email=null, bool $signedRGPD=false);
     public function getCatechumenAuthorizationList(int $cid);
     public function addFamilyMemberToCatechumenAuthorizationlist(int $cid, int $fid, string $relationship);
@@ -1877,8 +1877,8 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
      * @param string|null $email
      * @param bool $signedRGPD
      */
-    public function updateFamilyMemberAllFields(int $fid, string $name, string $job, string $address,
-                                                string $zipCode, string $phone=null, string $cellPhone=null,
+    public function updateFamilyMemberAllFields(int $fid, string $name, string $job=null, string $address=null,
+                                                string $zipCode=null, string $phone=null, string $cellPhone=null,
                                                 string $email=null, bool $signedRGPD=false)
     {
         if(!$this->connectAsNeeded(DatabaseAccessMode::DEFAULT_EDIT))
@@ -1893,9 +1893,18 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
             $mynull = null;
             $stm->bindParam(":fid", $fid, PDO::PARAM_INT);
             $stm->bindParam(":nome", $name);
-            $stm->bindParam(":prof", $job);
-            $stm->bindParam(":morada", $address);
-            $stm->bindParam(":codigo_postal", $zipCode);
+            if(isset($job) && $job!="")
+                $stm->bindParam(":prof", $job);
+            else
+                $stm->bindParam(":prof", $mynull, PDO::PARAM_NULL);
+            if(isset($address) && $address!="")
+                $stm->bindParam(":morada", $address);
+            else
+                $stm->bindParam(":morada", $mynull, PDO::PARAM_NULL);
+            if(isset($zipCode) && $zipCode!="")
+                $stm->bindParam(":codigo_postal", $zipCode);
+            else
+                $stm->bindParam(":codigo_postal", $mynull, PDO::PARAM_NULL);
             if(isset($phone) && $phone!="")
                 $stm->bindParam(":telefone", $phone);
             else
@@ -1908,7 +1917,7 @@ class PdoDatabaseManager implements PdoDatabaseManagerInterface
                 $stm->bindParam(":email", $email);
             else
                 $stm->bindParam(":email", $mynull, PDO::PARAM_NULL);
-            $stm->bindParam(":rgpd", $signedRGPD, PDO::PARAM_INT);if(isset($signedRGPD))
+            if(isset($signedRGPD))
             {
                 $rgpd = ($signedRGPD)?1:0;
                 $stm->bindParam(":rgpd", $rgpd, PDO::PARAM_INT);
