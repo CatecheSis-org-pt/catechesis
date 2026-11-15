@@ -371,7 +371,7 @@ $menu->renderHTML();
    
 	 <!--nome-->
 	 <div class="form-group">
-	    <div class="col-xs-6">
+	    <div class="col-lg-6">
 	      <label for="nome">Nome:</label>
 	      <input class="form-control" id="nome" name="nome" size="16" type="text" style="cursor: auto;" 
 	      	<?php if($nome){ echo("value='" . $nome . "'");}?> readonly>
@@ -379,7 +379,7 @@ $menu->renderHTML();
 	    
 	    	    
 	   <!--data nascimento-->
-	     <div class="col-xs-2">
+	     <div class="col-lg-2">
 	      <label for="data_nasc">Nasceu a:</label>
 	      <input class="form-control" id="data_nasc" name="data_nasc" size="16" type="text" style="cursor: auto;" 
 	      	<?php 
@@ -393,7 +393,7 @@ $menu->renderHTML();
 	    
 	    
 	   <!--local nascimento-->
-	    <div class="col-xs-3">
+	    <div class="col-lg-3">
 	      <label for="localidade">Em:</label>
 	      <input type="text" class="form-control" id="localidade" name="localidade" style="cursor: auto;" 
 	      	<?php if($local_nasc){ echo("value='" . $local_nasc . "'");}?> readonly>
@@ -401,7 +401,7 @@ $menu->renderHTML();
 	    
 	    
 	     <!--numero irmaos-->
-	   <div class="col-xs-1">
+	   <div class="col-lg-1">
 	    <div id="num_irmaos_div">
 	      <label for="num_irmaos">Irmãos:</label>
 	      <input type="text" min=0 class="form-control" id="num_irmaos" name="num_irmaos" style="cursor: auto;" 
@@ -416,7 +416,7 @@ $menu->renderHTML();
 	    
 	       <!--escuteiro-->
 	   <div class="form-group">
-	    <div class="col-xs-6">
+	    <div class="col-lg-6">
 	    	<label for="e_escuteiro">É escuteiro(a):</label>
 	    	<span class="input-xlarge uneditable-input"> <?php if($escuteiro==1 || $escuteiro=='Sim'){ echo("Sim");} else { echo("Não");}?> </span>
 	    </div>
@@ -426,7 +426,7 @@ $menu->renderHTML();
 	    
        <!--idade-->
 	   <div class="form-group">
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    	<label for="idade">Idade:</label><br>
 	    	<span class="input-xlarge uneditable-input">
 	    	<?= date_diff(date_create($data_nasc_row), date_create('today'))->y	?> anos
@@ -436,7 +436,7 @@ $menu->renderHTML();
 
        <?php if(Configurator::getConfigurationValueOrDefault(Configurator::KEY_OPTIONAL_FIELD_NIF_ENABLED)) { ?>
        <!--NIF-->
-       <div class="col-xs-3">
+       <div class="col-lg-3">
            <label for="nif">NIF:</label>
            <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
                <?php if($nif){ echo("value='" . $nif . "'");}?> readonly>
@@ -456,7 +456,7 @@ $menu->renderHTML();
     
 	   <!--morada-->
 	    <div class="form-group">
-	    <div class="col-xs-12">
+	    <div class="col-lg-12">
 	      <label for="morada">Morada:</label>
 	      <input type="text" class="form-control" id="morada" name="morada"  style="cursor: auto;" 
 	      	<?php if($morada){ echo("value='" . $morada . "'");}?>  readonly>
@@ -466,7 +466,7 @@ $menu->renderHTML();
 	    
 	    
 	    <!--codigo postal-->
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	    <div id="codigo_postal_div">
 	      <label for="codigo_postal">Código postal:</label>
 	      <input type="text" class="form-control" id="codigo_postal" name="codigo_postal"  style="cursor: auto;"
@@ -481,7 +481,7 @@ $menu->renderHTML();
 	    
 	    <!--encarregado educacao-->
 	   <div class="form-group">
-	    <div class="col-xs-8">
+	    <div class="col-lg-8">
 	    	<label for="encarregado educacao">Encarregado de educação:</label>
 	    	<span class="input-xlarge uneditable-input">  
 	    		<?php 
@@ -510,13 +510,13 @@ $menu->renderHTML();
 	    	if($fid_ee!=$fid_pai && $fid_ee!=$fid_mae)
 	    	{
 	    
-	    		echo('<div class="col-xs-8">');
+	    		echo('<div class="col-lg-8">');
 	    		echo(' <label for="nome_end_edu"> Nome:</label>');
 	    		echo(' <input type="text" class="form-control" id="nome_enc_edu" name="nome_enc_edu" style="cursor: auto;" value="' . $nome_ee . '" readonly>');
 		   	echo('</div>');
 		    
 		   
-		   	echo('<div class="col-xs-4">');
+		   	echo('<div class="col-lg-4">');
 		   	echo('  <label for="prof_enc_edu"> Profissão:</label>');
 		   	echo('  <input type="text" class="form-control" id="prof_enc_edu" name="prof_enc_edu" style="cursor: auto;"  value="' . $prof_ee . '" readonly>');
 		   	echo('</div>');
@@ -529,7 +529,7 @@ $menu->renderHTML();
 	    
 	    <!--email-->  
 	    <div class="form-group">
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	      <label for="email">E-mail:</label>
 	      <div class="input-group">
 	      <input type="email" class="form-control" id="email" name="email"  style="cursor: auto;" 
@@ -541,7 +541,7 @@ $menu->renderHTML();
 	    
 	    
 	    <!--telemovel-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telemovel_div">
 	      <label for="telm"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <div class="input-group">
@@ -555,7 +555,7 @@ $menu->renderHTML();
 	    
 	    
 	    <!--telefone-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telefone_div">
 	      <label for="tel">Telefone:</label>
 	      <div class="input-group">
@@ -582,21 +582,21 @@ $menu->renderHTML();
     
 	    <!--pai-->
 	    <div class="form-group">
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	      <label for="pai">Pai:</label>
 	      <input type="text" class="form-control" id="pai" name="pai"  style="cursor: auto;" 
 	      	<?php if($nome_pai){ echo("value='" . $nome_pai . "'");}?> readonly>
 	    </div>
 	    
 	    <!--profissao pai-->
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	      <label for="prof_pai">Profissão:</label>
 	      <input type="text" class="form-control" id="prof_pai" name="prof_pai"  style="cursor: auto;" 
 	      	<?php if($prof_pai){ echo("value='" . $prof_pai . "'");}?> readonly>
 	    </div>
 
 	    <!--telemovel pai-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telemovel_pai_div">
 	      <label for="telemovel_pai"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <div class="input-group">
@@ -608,7 +608,7 @@ $menu->renderHTML();
 	    </div>
 
 	    <!--telefone pai-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telefone_pai_div">
 	      <label for="telefone_pai">Telefone:</label>
 	      <div class="input-group">
@@ -625,21 +625,21 @@ $menu->renderHTML();
 	    
 	    <!--mae-->
 	    <div class="form-group">
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	      <label for="mae">Mãe:</label>
 	      <input type="text" class="form-control" id="mae" name="mae"  style="cursor: auto;" 
 	      	<?php if($nome_mae){ echo("value='" . $nome_mae . "'");}?> readonly>
 	    </div>
 	    
 	    <!--profissao mae-->
-	    <div class="col-xs-4">
+	    <div class="col-lg-4">
 	      <label for="prof_mae">Profissão:</label>
 	      <input type="text" class="form-control" id="prof_mae" name="prof_mae"  style="cursor: auto;" 
 	      	<?php if($prof_mae){ echo("value='" . $prof_mae . "'");}?> readonly>
 	    </div>
 
 	    <!--telemovel mae-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telemovel_mae_div">
 	      <label for="telemovel_mae"><?= (Configurator::getConfigurationValueOrDefault(Configurator::KEY_LOCALIZATION_CODE) == Locale::BRASIL)?"Celular":"Telemóvel" ?>:</label>
 	      <div class="input-group">
@@ -651,7 +651,7 @@ $menu->renderHTML();
 	    </div>
 
 	    <!--telefone mae-->
-	    <div class="col-xs-2">
+	    <div class="col-lg-2">
 	    <div id="telefone_mae_div">
 	      <label for="telefone_mae">Telefone:</label>
 	      <div class="input-group">
@@ -668,7 +668,7 @@ $menu->renderHTML();
 	    
 	    <!--casados-->
 	    <div class="form-group">
-	    <div class="col-xs-8">
+	    <div class="col-lg-8">
 	    	<label for="casados">Casados:</label>
 	    	<span class="input-xlarge uneditable-input">
 	    		<?php
@@ -723,16 +723,16 @@ $menu->renderHTML();
     
     <div class="row" style="margin-top:20px; "></div>
     
-    <div class="col-xs-6">
+    <div class="col-lg-6">
     	<span>Inscrito por: &nbsp;<span class="glyphicon glyphicon-user"></span> <?php echo('' . Utils::firstAndLastName($criado_por)); ?> &nbsp;&nbsp;&nbsp; <span class="glyphicon glyphicon-calendar"></span> <?php echo('' . $criado_em); ?></span>
     </div>
-    <div class="col-xs-6">
+    <div class="col-lg-6">
         <span>Última alteração: <?php if($modificou_quem) echo('&nbsp;<span class="glyphicon glyphicon-user"></span> ' . Utils::firstAndLastName($modificou_quem) .' &nbsp;&nbsp;&nbsp; <span class="glyphicon glyphicon-calendar"></span> ' . $modificou_data); else echo('nunca');?></span>
     </div>
    
    <!--
    <div class="row" style="margin-bottom:10px; "></div>
-   <div class="col-xs-12">
+   <div class="col-lg-12">
    <span>ID do catequizando: <?php echo('' . $cid); ?></span>
    </div>
     <div class="clearfix"></div>

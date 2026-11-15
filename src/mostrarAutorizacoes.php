@@ -528,14 +528,14 @@ $menu->renderHTML();
 
                     <!--nome-->
                     <div class="form-group">
-                        <div class="col-xs-6">
+                        <div class="col-lg-6">
                             <label for="nome">Nome:</label>
                             <input class="form-control" id="nome" name="nome" placeholder="Nome do catequizando" size="16" type="text" style="cursor: auto;"
                                 <?php if($_SESSION['nome']){ echo("value='" . $_SESSION['nome'] . "'");}?> readonly>
                         </div>
 
                         <!--data nascimento-->
-                        <div class="col-xs-2">
+                        <div class="col-lg-2">
                             <label for="data_nasc">Nasceu a:</label>
                             <input class="form-control" id="data_nasc" name="data_nasc" size="16" type="text" placeholder="dd-mm-aaaa" style="cursor: auto;"
                                 <?php
@@ -547,7 +547,7 @@ $menu->renderHTML();
                         </div>
 
                         <!--local nascimento-->
-                        <div class="col-xs-3">
+                        <div class="col-lg-3">
                             <label for="localidade">Em:</label>
                             <input type="text" class="form-control" id="localidade" name="localidade" placeholder="Local de nascimento" style="cursor: auto;"
                                 <?php if($_SESSION['local_nasc']){ echo("value='" . $_SESSION['local_nasc'] . "'");}?> readonly>
@@ -555,7 +555,7 @@ $menu->renderHTML();
 
 
                         <!--numero irmaos-->
-                        <div class="col-xs-1">
+                        <div class="col-lg-1">
                             <div id="num_irmaos_div">
                                 <label for="num_irmaos">Irmãos:</label>
                                 <input type="text" min=0 class="form-control" id="num_irmaos" name="num_irmaos" style="cursor: auto;"
@@ -567,7 +567,7 @@ $menu->renderHTML();
 
                     <!--escuteiro-->
                     <div class="form-group">
-                        <div class="col-xs-6">
+                        <div class="col-lg-6">
                             <label for="e_escuteiro">É escuteiro(a):</label>
                             <span class="input-xlarge uneditable-input"><?php if($_SESSION['escuteiro']==1){ echo("Sim");} else { echo("Não");}?></span>
                         </div>
@@ -577,7 +577,7 @@ $menu->renderHTML();
 
                     <!--idade-->
                     <div class="form-group">
-                        <div class="col-xs-2">
+                        <div class="col-lg-2">
                             <label for="idade">Idade:</label><br>
                             <span class="input-xlarge uneditable-input">
                             <?= date_diff(date_create($_SESSION['data_nasc_row']), date_create('today'))->y	?> anos
@@ -586,7 +586,7 @@ $menu->renderHTML();
                     </div>
 
                     <!--NIF-->
-                    <div class="col-xs-3">
+                    <div class="col-lg-3">
                         <label for="nif">NIF:</label>
                         <input type="text" class="form-control" id="nif" name="nif" style="cursor: auto;"
                             <?php if($_SESSION['nif']){ echo("value='" . $_SESSION['nif'] . "'");}?> readonly>
@@ -600,7 +600,7 @@ $menu->renderHTML();
             <div class="panel panel-default">
                 <div class="panel-heading">Autorização de saída de menor</div>
                 <div class="panel-body">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <div class="progress" style="width: 95%; margin: 0px auto; float:left">
                         <?php
                         if($_SESSION['autorizacao_saida_sozinho']==1)
@@ -633,7 +633,7 @@ $menu->renderHTML();
                 </div>
 
                 <div class="row" style="margin-top:50px; "></div>
-                <div class="col-xs-12">
+                <div class="col-lg-12">
                     <h5><b>Quem pode vir buscar o catequizando:</b></h5>
                     <table class="table table-hover">
                         <thead>
@@ -734,10 +734,10 @@ $menu->renderHTML();
 
             <div class="row" style="margin-top:20px; "></div>
 
-            <div class="col-xs-6">
+            <div class="col-lg-6">
                 <span>Inscrito por: &nbsp;<span class="glyphicon glyphicon-user"></span> <?php echo('' . Utils::firstAndLastName($criado_por)); ?> &nbsp;&nbsp;&nbsp; <span class="glyphicon glyphicon-calendar"></span> <?php echo('' . $criado_em); ?></span>
             </div>
-            <div class="col-xs-6">
+            <div class="col-lg-6">
                 <span>Última alteração: <?php if($modificou_quem) echo('&nbsp;<span class="glyphicon glyphicon-user"></span> ' . Utils::firstAndLastName($modificou_quem) .' &nbsp;&nbsp;&nbsp; <span class="glyphicon glyphicon-calendar"></span> ' . $modificou_data); else echo('nunca');?></span>
             </div>
 
