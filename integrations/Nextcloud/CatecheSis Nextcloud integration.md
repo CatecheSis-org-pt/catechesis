@@ -6,7 +6,7 @@ This document guides you in the configuration of Nextcloud with proper settings
 Throughout this document it is assumed that Nextcloud is already installed in
  the same server where CatecheSis is installed.
 
-**The latest Nextcloud version tested and confirmed to work with CatecheSis is 21.0.0.** 
+**The latest Nextcloud version tested and confirmed to work with CatecheSis is 35.0.3.2.** 
 
 ## Configuration
 
@@ -20,13 +20,62 @@ There are two ways of integrating the CatecheSis users database with Nextcloud:
 
 #### Using *User and Group SQL Backends* ***[RECOMENDED]***
 
-1. Run the SQL script `./User authentication/SQL user extension/create_view.sql` in your database;
-2. Install the app [User and Group SQL Backends](https://apps.nextcloud.com/apps/user_sql) through the Nextcloud apps store.
-3. Login to Nextcloud as admin and go to *Settings > SQL Backends*. Configure the fields as shown in the images below 
-   (adapt the database name, username and password to your CatecheSis database):
+NOTE: The app `User and Group SQL Backends` is not available anymore in the Nextcloud apps store, and the [original project](https://github.com/nextcloud/user_sql) is not maintained either. We provide here a work-around, which used a [forked version](https://github.com/renaudallard/user_sql ) of it.
+
+1. Run the SQL script `./User authentication/SQL user extension/create_view.sql` in your database, which replicates the CatecheSis users on Nextcloud. If you want to reduce the Nextcloud users only to those curretnly active in CatecheSis, use one of the alternate queries in [`./User authentication/SQL user extension/queries`](./User authentication/SQL user extension/queries) instead.
+2. Clone the following Git repo into your Nextcloud apps folder: https://github.com/renaudallard/user_sql
+3. Login to Nextcloud as admin and, through the Nextcloud Apps GUI, force the activation of this app (it is reported as incompatible with Nexctloud 35, so you must force it).
+4. ~~In Nextcloud GUI go to *Settings > SQL Backends*. Configure the fields as shown in the images below 
+   (adapt the database name, username and password to your CatecheSis database):~~ **_See note below_**
 
 ![Settings](User%20authentication/SQL%20user%20extension/Settings_1.png)
 ![Settings](User%20authentication/SQL%20user%20extension/Settings_2b.png)
+
+
+> NOTE: At the time of writing of this tutorial, it looks like the *SQL Backends* settings page is not working on Nextcloud 35. Pushing the buttons *Verify settings* or *Save* leads to an `HTTP Error 405 Method Not Allowed`. As a work-around, you can set these settings through `INSERT` queries to the database.
+
+To manually configure these settings, use the following SQL query, replacing `<YOUR_CATECHESIS_DATABASE>`, `<YOUR_DB_USER_PASSWORD>`and `<YOUR_DB_USER>` appropriately.
+For the database user, you can use the Nextcloud's database user and give it read (i.e. SELECT) permissions on the CatecheSis database, or you can use the CatecheSis' database user which already has permissions on it (but probably has more permissions than needed by Nextcloud).
+
+```SQL
+INSERT INTO `oc_appconfig` (`appid`, `configkey`, `configvalue`) VALUES
+('user_sql', 'db.database', '<YOUR_CATECHESIS_DATABASE>'),
+('user_sql', 'db.driver', 'mysql'),
+('user_sql', 'db.hostname', 'localhost'),
+('user_sql', 'db.password', '<YOUR_DB_USER_PASSWORD>'),
+('user_sql', 'db.ssl_ca', ''),
+('user_sql', 'db.ssl_cert', ''),
+('user_sql', 'db.ssl_key', ''),
+('user_sql', 'db.table.group', ''),
+('user_sql', 'db.table.group.column.admin', ''),
+('user_sql', 'db.table.group.column.gid', ''),
+('user_sql', 'db.table.group.column.name', ''),
+('user_sql', 'db.table.user', 'nextcloud_users'),
+('user_sql', 'db.table.user.column.active', 'active'),
+('user_sql', 'db.table.user.column.avatar', ''),
+('user_sql', 'db.table.user.column.disabled', ''),
+('user_sql', 'db.table.user.column.email', 'email'),
+('user_sql', 'db.table.user.column.home', ''),
+('user_sql', 'db.table.user.column.name', 'display_name'),
+('user_sql', 'db.table.user.column.password', 'password'),
+('user_sql', 'db.table.user.column.quota', ''),
+('user_sql', 'db.table.user.column.salt', ''),
+('user_sql', 'db.table.user.column.uid', 'username'),
+('user_sql', 'db.table.user.column.username', 'username'),
+('user_sql', 'db.table.user_group', ''),
+('user_sql', 'db.table.user_group.column.gid', ''),
+('user_sql', 'db.table.user_group.column.uid', ''),
+('user_sql', 'db.username', '<YOUR_DB_USER>'),
+('user_sql', 'opt.crypto_class', 'OCA\\UserSQL\\Crypto\\CryptBlowfish'),
+('user_sql', 'opt.crypto_param_0', '11'),
+('user_sql', 'opt.default_group', 'catequistas'),
+('user_sql', 'opt.email_sync', 'force_sql'),
+('user_sql', 'opt.home_location', ''),
+('user_sql', 'opt.home_mode', ''),
+('user_sql', 'opt.name_sync', 'force_sql'),
+('user_sql', 'opt.quota_sync', ''),
+('user_sql', 'opt.safe_store', '0');
+```
 
 
 
@@ -101,8 +150,9 @@ time a new user is created it is automatically joined in the group.
 From within the administrator account, create some folders and share them with 'Everyone' group.
 That way, catechists can easily share files with the whole group.
 
-The [Group folders app](https://apps.nextcloud.com/apps/groupfolders) facilitates this task, and
-has the advantage of creating shared folders with a specific quota (which can be set to unlimited).
+~~The [Group folders app](https://apps.nextcloud.com/apps/groupfolders) facilitates this task, and
+has the advantage of creating shared folders with a specific quota (which can be set to unlimited).~~ The group folders are now a feature built in Nextcloud, so there is no need to install any app.
+
 That way, you can set a folder without any quota where catechists can share everything freely,
 while each catechist still has a quota on the amount of files they can store in their personal accounts. 
 
@@ -181,6 +231,14 @@ Add to the `config.php` file the following line:
 'memcache.local' => '\OC\Memcache\APCu', 
 ```
 
+### Configure the server maintenance window
+
+Set a time of the day when the server usually has no use, so that Nextcloud can preform longer maintenance tasks at that time window (starting from that time + 4 hours).
+For example, to set to 2am, add to the `config.php` file the following line:
+
+```php
+'maintenance_window_start' => 2,
+```
 
 ### Configure cron jobs
 

@@ -1,3 +1,6 @@
-SELECT l.id AS uid, l.username AS username, u.email AS email, l.password AS password, u.nome AS display_name, u.estado AS active FROM ul_logins l, utilizador u WHERE l.username = u.username;
 
+# View with all CatecheSis users
 CREATE VIEW nextcloud_users AS SELECT l.id AS uid, l.username AS username, u.email AS email, l.password AS password, u.nome AS display_name, u.estado AS active FROM ul_logins l, utilizador u WHERE l.username = u.username;
+
+# View with only the active CatecheSis users
+CREATE VIEW nextcloud_users AS SELECT l.id AS uid, l.username AS username, u.email AS email, l.password AS password, u.nome AS display_name, u.estado AS active FROM ul_logins l, utilizador u WHERE l.username = u.username AND u.estado=1;
